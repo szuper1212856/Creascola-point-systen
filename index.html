@@ -1,114 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Class Leaderboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #eee;
-      text-align: center;
-      padding: 20px;
-    }
-    h1 { color: #0ff; }
-    .leaderboard {
-      margin: 20px auto;
-      max-width: 400px;
-      background: #222;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #0ff;
-    }
-    .class-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px;
-      border-bottom: 1px solid #333;
-    }
-    button {
-      background: #0ff;
-      border: none;
-      padding: 8px 12px;
-      margin: 5px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover { background: #0cc; }
-    #login-area, #points-area { margin-top: 20px; }
-  </style>
+<meta charset="UTF-8">
+<title>Creascola Credit Leaderboard</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #eee;
+    text-align: center;
+    padding: 20px;
+  }
+
+  h1 {
+    color: #0ff;
+    font-size: 3em;
+    margin-bottom: 20px;
+  }
+
+  .leaderboard {
+    margin: 20px auto;
+    max-width: 600px;
+    background: #222;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px #0ff;
+    font-size: 1.5em;
+  }
+
+  .class-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    border-bottom: 1px solid #333;
+  }
+
+  button {
+    background: #0ff;
+    border: none;
+    padding: 12px 20px;
+    margin: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+  }
+
+  button:hover { background: #0cc; }
+
+  #login-icon {
+    font-size: 2em;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    color: #0ff;
+  }
+
+  #login-area {
+    display: none;
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    background: #222;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #0ff;
+    max-width: 300px;
+    z-index: 100;
+  }
+
+  #login-area input {
+    width: 80%;
+    padding: 8px;
+    margin: 5px 0;
+    font-size: 1em;
+    border-radius: 5px;
+    border: none;
+  }
+
+  #points-area {
+    margin-top: 20px;
+    font-size: 1.2em;
+  }
+
+  select {
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 5px;
+  }
+</style>
 </head>
 <body>
 
-  <h1>🏆 Class Leaderboard</h1>
+<h1>🏆 Creascola Credit Leaderboard</h1>
 
-  <div id="login-area">
-    <h3>Login</h3>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <p id="login-status"></p>
-  </div>
+<div id="login-icon" onclick="toggleLogin()">🔑</div>
 
-  <div id="points-area" style="display:none;">
-    <h3>Add Points</h3>
-    <select id="class-select">
-      <option value="5.A">5.A</option>
-      <option value="5.B">5.B</option>
-      <option value="6.A">6.A</option>
-      <option value="6.B">6.B</option>
-      <option value="7.A">7.A</option>
-    </select>
-    <button onclick="addPoint()">+1 Point</button>
-  </div>
+<div id="login-area">
+  <h3>Login</h3>
+  <input type="text" id="username" placeholder="Username"><br>
+  <input type="password" id="password" placeholder="Password"><br>
+  <button onclick="login()">Login</button>
+  <p id="login-status"></p>
+</div>
 
-  <div class="leaderboard" id="leaderboard"></div>
+<div id="points-area" style="display:none;">
+  <h3>Add Points</h3>
+  <select id="class-select">
+    <option value="5.A">5.A</option>
+    <option value="5.B">5.B</option>
+    <option value="6.A">6.A</option>
+    <option value="6.B">6.B</option>
+    <option value="7.A">7.A</option>
+  </select>
+  <button onclick="addPoint()">+1 Point</button>
+</div>
 
-  <script>
-    // Default classes
-    const classes = ["5.A","5.B","6.A","6.B","7.A"];
+<div class="leaderboard" id="leaderboard"></div>
 
-    // Load or initialize scores
-    let scores = JSON.parse(localStorage.getItem("classScores")) || {};
-    classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
+<script>
+const classes = ["5.A","5.B","6.A","6.B","7.A"];
+let scores = JSON.parse(localStorage.getItem("classScores")) || {};
+classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
 
-    // Simple login system
-    const validUsers = { admin: "Crea", teacher: "Crea" }; // change as needed
-    let loggedIn = false;
+const validUsers = { admin: "Crea", teacher: "Crea" }; 
+let loggedIn = false;
 
-    function login() {
-      const user = document.getElementById("username").value;
-      const pass = document.getElementById("password").value;
-      if(validUsers[user] && validUsers[user] === pass) {
-        loggedIn = true;
-        document.getElementById("login-status").innerText = "✅ Logged in as " + user;
-        document.getElementById("points-area").style.display = "block";
-      } else {
-        document.getElementById("login-status").innerText = "❌ Wrong username or password";
-      }
-    }
+function toggleLogin() {
+  const area = document.getElementById("login-area");
+  area.style.display = area.style.display === "none" ? "block" : "none";
+}
 
-    function addPoint() {
-      if(!loggedIn) return;
-      const selected = document.getElementById("class-select").value;
-      scores[selected]++;
-      localStorage.setItem("classScores", JSON.stringify(scores));
-      renderLeaderboard();
-    }
+function login() {
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  if(validUsers[user] && validUsers[user] === pass) {
+    loggedIn = true;
+    document.getElementById("login-status").innerText = "✅ Logged in as " + user;
+    document.getElementById("points-area").style.display = "block";
+    toggleLogin(); // hide login after successful login
+  } else {
+    document.getElementById("login-status").innerText = "❌ Wrong username or password";
+  }
+}
 
-    function renderLeaderboard() {
-      const lb = document.getElementById("leaderboard");
-      lb.innerHTML = "<h3>Leaderboard</h3>";
-      // Sort by score
-      const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
-      sorted.forEach(([cls, pts]) => {
-        lb.innerHTML += `<div class="class-row"><span>${cls}</span><span>${pts} pts</span></div>`;
-      });
-    }
+function addPoint() {
+  if(!loggedIn) return;
+  const selected = document.getElementById("class-select").value;
+  scores[selected]++;
+  localStorage.setItem("classScores", JSON.stringify(scores));
+  renderLeaderboard();
+}
 
-    renderLeaderboard();
-  </script>
+function renderLeaderboard() {
+  const lb = document.getElementById("leaderboard");
+  lb.innerHTML = "<h3>Leaderboard</h3>";
+  const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  sorted.forEach(([cls, pts]) => {
+    lb.innerHTML += `<div class="class-row"><span>${cls}</span><span>${pts} pts</span></div>`;
+  });
+}
+
+renderLeaderboard();
+</script>
 
 </body>
 </html>
+
