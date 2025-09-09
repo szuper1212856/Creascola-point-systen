@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Class Leaderboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 { color: #0ff; }
+    .leaderboard {
+      margin: 20px auto;
+      max-width: 400px;
+      background: #222;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #0ff;
+    }
+    .class-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px;
+      border-bottom: 1px solid #333;
+    }
+    button {
+      background: #0ff;
+      border: none;
+      padding: 8px 12px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #0cc; }
+    #login-area, #points-area { margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>🏆 Class Leaderboard</h1>
+
+  <div id="login-area">
+    <h3>Login</h3>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p id="login-status"></p>
+  </div>
+
+  <div id="points-area" style="display:none;">
+    <h3>Add Points</h3>
+    <select id="class-select">
+      <option value="5.A">5.A</option>
+      <option value="5.B">5.B</option>
+      <option value="6.A">6.A</option>
+      <option value="6.B">6.B</option>
+      <option value="7.A">7.A</option>
+    </select>
+    <button onclick="addPoint()">+1 Point</button>
+  </div>
+
+  <div class="leaderboard" id="leaderboard"></div>
+
+  <script>
+    // Default classes
+    const classes = ["5.A","5.B","6.A","6.B","7.A"];
+
+    // Load or initialize scores
+    let scores = JSON.parse(localStorage.getItem("classScores")) || {};
+    classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
+
+    // Simple login system
+    const validUsers = { admin: "Crea", teacher: "Crea" }; // change as needed
+    let loggedIn = false;
+
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      if(validUsers[user] && validUsers[user] === pass) {
+        loggedIn = true;
+        document.getElementById("login-status").innerText = "✅ Logged in as " + user;
+        document.getElementById("points-area").style.display = "block";
+      } else {
+        document.getElementById("login-status").innerText = "❌ Wrong username or password";
+      }
+    }
+
+    function addPoint() {
+      if(!loggedIn) return;
+      const selected = document.getElementById("class-select").value;
+      scores[selected]++;
+      localStorage.setItem("classScores", JSON.stringify(scores));
+      renderLeaderboard();
+    }
+
+    function renderLeaderboard() {
+      const lb = document.getElementById("leaderboard");
+      lb.innerHTML = "<h3>Leaderboard</h3>";
+      // Sort by score
+      const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+      sorted.forEach(([cls, pts]) => {
+        lb.innerHTML += `<div class="class-row"><span>${cls}</span><span>${pts} pts</span></div>`;
+      });
+    }
+
+    renderLeaderboard();
+  </script>
+
+</body>
+</html>
