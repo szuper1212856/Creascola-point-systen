@@ -10,33 +10,33 @@
     color: #0ff;
     text-align: center;
     margin: 0;
-    padding: 0;
+    padding: 50px 20px; /* more space around */
   }
 
   h1 {
-    font-size: 4em;
-    margin: 30px 0 10px 0;
+    font-size: 3em;
+    margin-bottom: 40px;
   }
 
   .leaderboard {
     margin: 0 auto;
-    max-width: 800px;
+    max-width: 600px;
     background: #222;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 0 30px #0ff;
-    font-size: 2em;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px #0ff;
+    font-size: 1.8em;
   }
 
   .class-row {
     display: flex;
     justify-content: space-between;
-    padding: 15px;
+    padding: 12px;
     border-bottom: 2px solid #333;
   }
 
   #login-icon {
-    font-size: 3em;
+    font-size: 2.5em;
     cursor: pointer;
     position: fixed;
     top: 20px;
@@ -51,20 +51,20 @@
     top: 80px;
     right: 20px;
     background: #222;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 0 25px #0ff;
-    max-width: 350px;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px #0ff;
+    max-width: 300px;
     z-index: 100;
-    font-size: 1.5em;
+    font-size: 1.2em;
   }
 
   #login-area input, #points-area input, #points-area select {
     width: 80%;
-    padding: 12px;
+    padding: 10px;
     margin: 10px 0;
-    font-size: 1.2em;
-    border-radius: 10px;
+    font-size: 1em;
+    border-radius: 8px;
     border: none;
     text-align: center;
   }
@@ -72,12 +72,12 @@
   button {
     background: #0ff;
     border: none;
-    padding: 15px 25px;
+    padding: 12px 20px;
     margin: 10px;
-    border-radius: 15px;
+    border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 1.5em;
+    font-size: 1.2em;
   }
 
   button:hover {
@@ -86,7 +86,7 @@
 
   #points-area {
     margin-top: 30px;
-    font-size: 1.5em;
+    font-size: 1.2em;
   }
 </style>
 </head>
@@ -105,7 +105,7 @@
 </div>
 
 <div id="points-area" style="display:none;">
-  <h3>Add Points</h3>
+  <h3>Add or Remove Points</h3>
   <select id="class-select">
     <option value="5.A">5.A</option>
     <option value="5.B">5.B</option>
@@ -113,8 +113,8 @@
     <option value="6.B">6.B</option>
     <option value="7.A">7.A</option>
   </select><br>
-  <input type="number" id="points-input" placeholder="Points to add" min="1"><br>
-  <button onclick="addPoints()">Add Points</button>
+  <input type="text" id="points-input" placeholder="Points to add or - points to remove"><br>
+  <button onclick="updatePoints()">Update Points</button>
 </div>
 
 <div class="leaderboard" id="leaderboard"></div>
@@ -124,7 +124,7 @@ const classes = ["5.A","5.B","6.A","6.B","7.A"];
 let scores = JSON.parse(localStorage.getItem("classScores")) || {};
 classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
 
-const validUsers = { admin: " CC_Creadit_2025", teacher: "abcd" }; 
+const validUsers = { admin: "CC_Creadit_2025", teacher: "abcd" }; 
 let loggedIn = false;
 
 function toggleLogin() {
@@ -139,18 +139,19 @@ function login() {
     loggedIn = true;
     document.getElementById("login-status").innerText = "✅ Logged in as " + user;
     document.getElementById("points-area").style.display = "block";
-    toggleLogin();
+    toggleLogin(); // hide login after login
   } else {
     document.getElementById("login-status").innerText = "❌ Wrong username or password";
   }
 }
 
-function addPoints() {
+function updatePoints() {
   if(!loggedIn) return;
   const selected = document.getElementById("class-select").value;
-  const points = parseInt(document.getElementById("points-input").value);
-  if(isNaN(points) || points <= 0) return alert("Please enter a valid number of points!");
+  let points = parseInt(document.getElementById("points-input").value);
+  if(isNaN(points)) return alert("Please enter a valid number (use - to remove points).");
   scores[selected] += points;
+  if(scores[selected] < 0) scores[selected] = 0; // no negative total points
   localStorage.setItem("classScores", JSON.stringify(scores));
   renderLeaderboard();
   document.getElementById("points-input").value = "";
@@ -170,3 +171,4 @@ renderLeaderboard();
 
 </body>
 </html>
+
