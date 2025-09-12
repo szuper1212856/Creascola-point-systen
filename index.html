@@ -120,11 +120,11 @@
 <div class="leaderboard" id="leaderboard"></div>
 
 <script>
-const classes = ["5.A","5.B","6.A","6.B","7.A"];
+const classes = ["5.A","5.B","6.A","6.B","7.A","8.A"];
 let scores = JSON.parse(localStorage.getItem("classScores")) || {};
 classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
 
-const validUsers = { admin: "CC_Credit_25_26", teacher: "abcd" }; 
+const validUsers = { jenei_zsolt: "CC_admin", teacher: "abcd" }; 
 let loggedIn = false;
 
 function toggleLogin() {
