@@ -2,36 +2,39 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Creascola Credit Leaderboard</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
-    background: #111;
-    color: #0ff;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background: linear-gradient(135deg, #0a0f1a, #1c2a48);
+    color: #fff;
     text-align: center;
     margin: 0;
-    padding: 50px 20px; /* more space around */
+    padding: 20px;
   }
 
   h1 {
-    font-size: 3em;
-    margin-bottom: 40px;
+    font-size: clamp(2em, 5vw, 3.5em);
+    margin-bottom: 30px;
+    color: #00f6ff;
+    text-shadow: 0 0 15px #00f6ff;
   }
 
   .leaderboard {
     margin: 0 auto;
-    max-width: 600px;
-    background: #222;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px #0ff;
-    font-size: 1.8em;
+    max-width: 700px;
+    background: rgba(34, 34, 34, 0.9);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 246, 255, 0.5);
   }
 
   .class-row {
     display: flex;
     justify-content: space-between;
-    padding: 12px;
+    padding: 15px;
+    font-size: clamp(1.2em, 3vw, 1.8em);
     border-bottom: 2px solid #333;
   }
 
@@ -39,54 +42,65 @@
     font-size: 2.5em;
     cursor: pointer;
     position: fixed;
-    top: 20px;
-    right: 20px;
-    color: #0ff;
+    top: 15px;
+    right: 15px;
+    color: #00f6ff;
     z-index: 200;
   }
 
   #login-area {
     display: none;
     position: fixed;
-    top: 80px;
-    right: 20px;
+    top: 70px;
+    right: 15px;
     background: #222;
-    padding: 25px;
+    padding: 20px;
     border-radius: 15px;
-    box-shadow: 0 0 20px #0ff;
-    max-width: 300px;
+    box-shadow: 0 0 20px #00f6ff;
+    max-width: 320px;
+    width: 90%;
     z-index: 100;
-    font-size: 1.2em;
   }
 
-  #login-area input, #points-area input, #points-area select {
-    width: 80%;
-    padding: 10px;
-    margin: 10px 0;
-    font-size: 1em;
+  #login-area input,
+  #points-area input,
+  #points-area select {
+    width: 90%;
+    padding: 12px;
+    margin: 8px 0;
+    font-size: 1.1em;
     border-radius: 8px;
     border: none;
     text-align: center;
   }
 
   button {
-    background: #0ff;
+    background: #00f6ff;
+    color: #000;
     border: none;
     padding: 12px 20px;
     margin: 10px;
     border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 1.1em;
+    transition: 0.2s;
+    width: 80%;
+    max-width: 250px;
   }
 
   button:hover {
-    background: #0cc;
+    background: #00c8d6;
   }
 
   #points-area {
-    margin-top: 30px;
-    font-size: 1.2em;
+    margin: 25px auto;
+    max-width: 500px;
+  }
+
+  h3 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
   }
 </style>
 </head>
@@ -112,8 +126,9 @@
     <option value="6.A">6.A</option>
     <option value="6.B">6.B</option>
     <option value="7.A">7.A</option>
+    <option value="8.A">8.A</option>
   </select><br>
-  <input type="text" id="points-input" placeholder="Points to add or - points to remove"><br>
+  <input type="text" id="points-input" placeholder="Enter points (e.g. 5 or -2)"><br>
   <button onclick="updatePoints()">Update Points</button>
 </div>
 
@@ -124,7 +139,8 @@ const classes = ["5.A","5.B","6.A","6.B","7.A","8.A"];
 let scores = JSON.parse(localStorage.getItem("classScores")) || {};
 classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
 
-const validUsers = { jenei_zsolt: "CC_admin", kele_istvan: "CC_admin" }; 
+// Password for login
+const validUsers = { jenei_zsolt: "CC_admin" , kele_istvan: "CC_admin" };
 let loggedIn = false;
 
 function toggleLogin() {
@@ -139,7 +155,7 @@ function login() {
     loggedIn = true;
     document.getElementById("login-status").innerText = "✅ Logged in as " + user;
     document.getElementById("points-area").style.display = "block";
-    toggleLogin(); // hide login after login
+    toggleLogin();
   } else {
     document.getElementById("login-status").innerText = "❌ Wrong username or password";
   }
