@@ -134,55 +134,79 @@
 
 <div class="leaderboard" id="leaderboard"></div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js"></script>
+
 <script>
-const classes = ["5.A","5.B","6.A","6.B","7.A","8.A"];
-let scores = JSON.parse(localStorage.getItem("classScores")) || {};
-classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
+  // 🔹 Replace with your Firebase config (from Project settings → Your apps → Web)
+  const firebaseConfig = {
+    apiKey: "AIzaSyB7U-dQWlhnsb7JN7QoDGzTB4EyfPcCrDU",
+    authDomain: "creascola-leaderboard.firebaseapp.com",
+    databaseURL: "https://creascola-leaderboard-default-rtdb.europe-west1.firebasedatabase.app/",
+    projectId: "creascola-leaderboard",
+    storageBucket: "creascola-leaderboard.firebasestorage.app",
+    messagingSenderId: "227185192602",
+    appId: "1:227185192602:web:e1a6953c07ac3aa888f923"
+  };
 
-// Password for login
-const validUsers = { jenei_zsolt: "CC_admin" , kele_istvan: "CC_admin" };
-let loggedIn = false;
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-function toggleLogin() {
-  const area = document.getElementById("login-area");
-  area.style.display = area.style.display === "none" ? "block" : "none";
-}
+  // Classes
+  const classes = ["5.A","5.B","6.A","6.B","7.A","8.A"];
+  let scores = {};
 
-function login() {
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
-  if(validUsers[user] && validUsers[user] === pass) {
-    loggedIn = true;
-    document.getElementById("login-status").innerText = "✅ Logged in as " + user;
-    document.getElementById("points-area").style.display = "block";
-    toggleLogin();
-  } else {
-    document.getElementById("login-status").innerText = "❌ Wrong username or password";
+  // Login system
+  const validUsers = { admin: "CC_Creadit_25_26" };
+  let loggedIn = false;
+
+  function toggleLogin() {
+    const area = document.getElementById("login-area");
+    area.style.display = area.style.display === "none" ? "block" : "none";
   }
-}
 
-function updatePoints() {
-  if(!loggedIn) return;
-  const selected = document.getElementById("class-select").value;
-  let points = parseInt(document.getElementById("points-input").value);
-  if(isNaN(points)) return alert("Please enter a valid number (use - to remove points).");
-  scores[selected] += points;
-  if(scores[selected] < 0) scores[selected] = 0; // no negative total points
-  localStorage.setItem("classScores", JSON.stringify(scores));
-  renderLeaderboard();
-  document.getElementById("points-input").value = "";
-}
+  function login() {
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
+    if(validUsers[user] && validUsers[user] === pass) {
+      loggedIn = true;
+      document.getElementById("login-status").innerText = "✅ Logged in as " + user;
+      document.getElementById("points-area").style.display = "block";
+      toggleLogin();
+    } else {
+      document.getElementById("login-status").innerText = "❌ Wrong username or password";
+    }
+  }
 
-function renderLeaderboard() {
-  const lb = document.getElementById("leaderboard");
-  lb.innerHTML = "<h3>Leaderboard</h3>";
-  const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
-  sorted.forEach(([cls, pts]) => {
-    lb.innerHTML += `<div class="class-row"><span>${cls}</span><span>${pts} pts</span></div>`;
+  function updatePoints() {
+    if(!loggedIn) return;
+    const selected = document.getElementById("class-select").value;
+    let points = parseInt(document.getElementById("points-input").value);
+    if(isNaN(points)) return alert("Please enter a valid number (use - to remove points).");
+    if(!scores[selected]) scores[selected] = 0;
+    scores[selected] += points;
+    if(scores[selected] < 0) scores[selected] = 0;
+    // Save to Firebase
+    db.ref("scores").set(scores);
+    document.getElementById("points-input").value = "";
+  }
+
+  function renderLeaderboard() {
+    const lb = document.getElementById("leaderboard");
+    lb.innerHTML = "<h3>Leaderboard</h3>";
+    const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+    sorted.forEach(([cls, pts]) => {
+      lb.innerHTML += `<div class="class-row"><span>${cls}</span><span>${pts} pts</span></div>`;
+    });
+  }
+
+  // Load scores live from Firebase
+  db.ref("scores").on("value", (snapshot) => {
+    scores = snapshot.val() || {};
+    classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
+    renderLeaderboard();
   });
-}
-
-renderLeaderboard();
 </script>
 
 </body>
