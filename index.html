@@ -1,213 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Creascola Credit Leaderboard</title>
-<style>
-  body {
-    font-family: "Segoe UI", Tahoma, sans-serif;
-    background: linear-gradient(135deg, #0a0f1a, #1c2a48);
-    color: #fff;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creascola Credit Leaderboard</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(135deg, #0a0f1a, #1c2a48);
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
 
-  h1 {
-    font-size: clamp(2em, 5vw, 3.5em);
-    margin-bottom: 30px;
-    color: #00f6ff;
-    text-shadow: 0 0 15px #00f6ff;
-  }
+    h1 {
+      font-size: clamp(2em, 5vw, 3.5em);
+      margin-bottom: 30px;
+      color: #00f6ff;
+      text-shadow: 0 0 15px #00f6ff;
+    }
 
-  .leaderboard {
-    margin: 0 auto;
-    max-width: 700px;
-    background: rgba(34, 34, 34, 0.9);
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 0 30px rgba(0, 246, 255, 0.5);
-  }
+    .leaderboard {
+      margin: 0 auto;
+      max-width: 700px;
+      background: rgba(34, 34, 34, 0.9);
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0, 246, 255, 0.5);
+    }
 
-  .class-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px;
-    font-size: clamp(1.2em, 3vw, 1.8em);
-    border-bottom: 2px solid #333;
-  }
+    .class-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      font-size: clamp(1.2em, 3vw, 1.8em);
+      border-bottom: 2px solid #333;
+    }
 
-  #login-icon {
-    font-size: 2.5em;
-    cursor: pointer;
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    color: #00f6ff;
-    z-index: 200;
-  }
+    #login-icon {
+      font-size: 2.5em;
+      cursor: pointer;
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      color: #00f6ff;
+      z-index: 200;
+    }
 
-  #login-area {
-    display: none;
-    position: fixed;
-    top: 70px;
-    right: 15px;
-    background: #222;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px #00f6ff;
-    max-width: 320px;
-    width: 90%;
-    z-index: 100;
-  }
+    #login-area {
+      display: none;
+      position: fixed;
+      top: 70px;
+      right: 15px;
+      background: #222;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #00f6ff;
+      max-width: 320px;
+      width: 90%;
+      z-index: 100;
+    }
 
-  #login-area input,
-  #points-area input,
-  #points-area select {
-    width: 90%;
-    padding: 12px;
-    margin: 8px 0;
-    font-size: 1.1em;
-    border-radius: 8px;
-    border: none;
-    text-align: center;
-  }
+    #login-area input,
+    #points-area input,
+    #points-area select {
+      width: 90%;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 1.1em;
+      border-radius: 8px;
+      border: none;
+      text-align: center;
+    }
 
-  button {
-    background: #00f6ff;
-    color: #000;
-    border: none;
-    padding: 12px 20px;
-    margin: 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1.1em;
-    transition: 0.2s;
-    width: 80%;
-    max-width: 250px;
-  }
+    button {
+      background: #00f6ff;
+      color: #000;
+      border: none;
+      padding: 12px 20px;
+      margin: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1em;
+      transition: 0.2s;
+      width: 80%;
+      max-width: 250px;
+    }
 
-  button:hover {
-    background: #00c8d6;
-  }
+    button:hover {
+      background: #00c8d6;
+    }
 
-  #points-area {
-    margin: 25px auto;
-    max-width: 500px;
-  }
+    #points-area {
+      margin: 25px auto;
+      max-width: 500px;
+    }
 
-  h3 {
-    font-size: 1.5em;
-    margin-bottom: 15px;
-  }
-</style>
+    h3 {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>🏆 Creascola Credit Leaderboard</h1>
+  <h1>🏆 Creascola Credit Leaderboard</h1>
 
-<div id="login-icon" onclick="toggleLogin()">🔑</div>
+  <div id="login-icon" onclick="toggleLogin()">🔑</div>
 
-<div id="login-area">
-  <h3>Login</h3>
-  <input type="text" id="username" placeholder="Username"><br>
-  <input type="password" id="password" placeholder="Password"><br>
-  <button onclick="login()">Login</button>
-  <p id="login-status"></p>
-</div>
+  <div id="login-area">
+    <h3>Login</h3>
+    <input type="text" id="username" placeholder="Username"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button onclick="login()">Login</button>
+    <p id="login-status"></p>
+  </div>
 
-<div id="points-area" style="display:none;">
-  <h3>Add or Remove Points</h3>
-  <select id="class-select">
-    <option value="5.A">5.A</option>
-    <option value="5.B">5.B</option>
-    <option value="6.A">6.A</option>
-    <option value="6.B">6.B</option>
-    <option value="7.A">7.A</option>
-    <option value="8.A">8.A</option>
-  </select><br>
-  <input type="text" id="points-input" placeholder="Enter points (e.g. 5 or -2)"><br>
-  <button onclick="updatePoints()">Update Points</button>
-</div>
+  <div id="points-area" style="display:none;">
+    <h3>Add or Remove Points</h3>
+    <select id="class-select">
+      <option value="5.A">5.A</option>
+      <option value="5.B">5.B</option>
+      <option value="6.A">6.A</option>
+      <option value="6.B">6.B</option>
+      <option value="7.A">7.A</option>
+      <option value="8.A">8.A</option>
+    </select><br>
+    <input type="text" id="points-input" placeholder="Enter points (e.g. 5 or -2)"><br>
+    <button onclick="updatePoints()">Update Points</button>
+  </div>
 
-<div class="leaderboard" id="leaderboard"></div>
+  <div class="leaderboard" id="leaderboard"></div>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js"></script>
 
-<script>
-  // 🔹 Replace with your Firebase config (from Project settings → Your apps → Web)
-  const firebaseConfig = {
-    apiKey: "AIzaSyB7U-dQWlhnsb7JN7QoDGzTB4EyfPcCrDU",
-    authDomain: "creascola-leaderboard.firebaseapp.com",
-    databaseURL: "https://creascola-leaderboard-default-rtdb.europe-west1.firebasedatabase.app/",
-    projectId: "creascola-leaderboard",
-    storageBucket: "creascola-leaderboard.firebasestorage.app",
-    messagingSenderId: "227185192602",
-    appId: "1:227185192602:web:e1a6953c07ac3aa888f923"
-  };
+  <script>
+    // 🔹 Replace with your Firebase config (from Project settings → Your apps → Web)
+    const firebaseConfig = {
+      apiKey: "AIzaSyB7U-dQWlhnsb7JN7QoDGzTB4EyfPcCrDU",
+      authDomain: "creascola-leaderboard.firebaseapp.com",
+      databaseURL: "https://creascola-leaderboard-default-rtdb.firebaseio.com", // Make sure this URL is correct
+      projectId: "creascola-leaderboard",
+      storageBucket: "creascola-leaderboard.appspot.com",
+      messagingSenderId: "227185192602",
+      appId: "1:227185192602:web:e1a6953c07ac3aa888f923"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  // Classes
-  const classes = ["5.A","5.B","6.A","6.B","7.A","8.A"];
-  let scores = {};
+    // Classes
+    const classes = ["5.A", "5.B", "6.A", "6.B", "7.A", "8.A"];
+    let scores = {};
 
-  // Login system
-  const validUsers = { admin: "CC_Creadit_25_26" };
-  let loggedIn = false;
+    // Login system
+    const validUsers = { admin: "CC_Creadit_25_26" };
+    let loggedIn = false;
 
-  function toggleLogin() {
-    const area = document.getElementById("login-area");
-    area.style.display = area.style.display === "none" ? "block" : "none";
-  }
-
-  function login() {
-    const user = document.getElementById("username").value;
-    const pass = document.getElementById("password").value;
-    if(validUsers[user] && validUsers[user] === pass) {
-      loggedIn = true;
-      document.getElementById("login-status").innerText = "✅ Logged in as " + user;
-      document.getElementById("points-area").style.display = "block";
-      toggleLogin();
-    } else {
-      document.getElementById("login-status").innerText = "❌ Wrong username or password";
+    function toggleLogin() {
+      const area = document.getElementById("login-area");
+      area.style.display = area.style.display === "none" ? "block" : "none";
     }
-  }
 
-  function updatePoints() {
-    if(!loggedIn) return;
-    const selected = document.getElementById("class-select").value;
-    let points = parseInt(document.getElementById("points-input").value);
-    if(isNaN(points)) return alert("Please enter a valid number (use - to remove points).");
-    if(!scores[selected]) scores[selected] = 0;
-    scores[selected] += points;
-    if(scores[selected] < 0) scores[selected] = 0;
-    // Save to Firebase
-    db.ref("scores").set(scores);
-    document.getElementById("points-input").value = "";
-  }
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      if (validUsers[user] && validUsers[user] === pass) {
+        loggedIn = true;
+        document.getElementById("login-status").innerText = "✅ Logged in as " + user;
+        document.getElementById("points-area").style.display = "block";
+        toggleLogin();
+      } else {
+        document.getElementById("login-status").innerText = "❌ Wrong username or password";
+      }
+    }
 
-  function renderLeaderboard() {
-    const lb = document.getElementById("leaderboard");
-    lb.innerHTML = "<h3>Leaderboard</h3>";
-    const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
-    sorted.forEach(([cls, pts]) => {
-      lb.innerHTML += `<div class="class-row"><span>${cls}</span><span>${pts} pts</span></div>`;
+    function updatePoints() {
+      if (!loggedIn) return;
+      const selected = document.getElementById("class-select").value;
+      let points = parseInt(document.getElementById("points-input").value);
+      if (isNaN(points)) return alert("Please enter a valid number (use - to remove points).");
+      if (!scores[selected]) scores[selected] = 0;
+      scores[selected] += points;
+      if (scores[selected] < 0) scores[selected] = 0;
+      // Save to Firebase
+      db.ref("scores").set(scores);
+      document.getElementById("points-input").value = "";
+    }
+
+    function renderLeaderboard() {
+      const lb = document.getElementById("leaderboard");
+      lb.innerHTML = "<h3>Leaderboard</h3>";
+      const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+      sorted.forEach(([cls, pts]) => {
+        lb.innerHTML += `<div class="class-row"><span>${cls}</span><span>${pts} pts</span></div>`;
+      });
+    }
+
+    // Load scores live from Firebase
+    db.ref("scores").on("value", (snapshot) => {
+      scores = snapshot.val() || {};
+      classes.forEach(c => { if (scores[c] === undefined) scores[c] = 0; });
+      renderLeaderboard();
     });
-  }
-
-  // Load scores live from Firebase
-  db.ref("scores").on("value", (snapshot) => {
-    scores = snapshot.val() || {};
-    classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
-    renderLeaderboard();
-  });
-</script>
+  </script>
 
 </body>
 </html>
+
