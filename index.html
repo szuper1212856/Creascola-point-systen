@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Creascola Credit Leaderboard</title>
+  <link rel="icon" href="data:,"> <!-- Prevents favicon 404 -->
   <style>
     body {
       font-family: "Segoe UI", Tahoma, sans-serif;
@@ -134,25 +135,24 @@
 
   <div class="leaderboard" id="leaderboard"></div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <!-- ✅ Firebase v8 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <script>
-    // 🔹 Replace with your Firebase config (from Project settings → Your apps → Web)
+    // 🔹 Replace with your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyB7U-dQWlhnsb7JN7QoDGzTB4EyfPcCrDU",
       authDomain: "creascola-leaderboard.firebaseapp.com",
-      databaseURL: "https://creascola-leaderboard-default-rtdb.europe-west1.firebasedatabase.app/",  // Correct URL
+      databaseURL: "https://creascola-leaderboard-default-rtdb.europe-west1.firebasedatabase.app", // ✅ correct URL
       projectId: "creascola-leaderboard",
-      storageBucket: "creascola-leaderboard.firebasestorage.app",
+      storageBucket: "creascola-leaderboard.appspot.com",
       messagingSenderId: "227185192602",
       appId: "1:227185192602:web:e1a6953c07ac3aa888f923"
     };
 
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     // Classes
     const classes = ["5.A", "5.B", "6.A", "6.B", "7.A", "8.A"];
@@ -212,4 +212,3 @@
 
 </body>
 </html>
-
