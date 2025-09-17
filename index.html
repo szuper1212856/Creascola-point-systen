@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Creascola Credit Leaderboard</title>
-  <link rel="icon" href="data:,"> <!-- Prevents favicon 404 -->
+  <link rel="icon" href="data:," />
   <style>
     body {
       font-family: "Segoe UI", Tahoma, sans-serif;
@@ -106,20 +106,19 @@
   </style>
 </head>
 <body>
-
   <h1>🏆 Creascola Credit Leaderboard</h1>
 
   <div id="login-icon" onclick="toggleLogin()">🔑</div>
 
   <div id="login-area">
     <h3>Login</h3>
-    <input type="text" id="username" placeholder="Username"><br>
-    <input type="password" id="password" placeholder="Password"><br>
+    <input type="text" id="username" placeholder="Username" /><br />
+    <input type="password" id="password" placeholder="Password" /><br />
     <button onclick="login()">Login</button>
     <p id="login-status"></p>
   </div>
 
-  <div id="points-area" style="display:none;">
+  <div id="points-area" style="display: none;">
     <h3>Add or Remove Points</h3>
     <select id="class-select">
       <option value="5.A">5.A</option>
@@ -128,37 +127,26 @@
       <option value="6.B">6.B</option>
       <option value="7.A">7.A</option>
       <option value="8.A">8.A</option>
-    </select><br>
-    <input type="text" id="points-input" placeholder="Enter points (e.g. 5 or -2)"><br>
+    </select><br />
+    <input type="text" id="points-input" placeholder="Enter points (e.g. 5 or -2)" /><br />
     <button onclick="updatePoints()">Update Points</button>
   </div>
 
   <div class="leaderboard" id="leaderboard"></div>
 
-  <!-- ✅ Firebase v8 SDK -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-  <script>
-    // 🔹 Replace with your Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyDjnmGbQn-khtny8CV10hnfZ5XqHXyBsZk",
-  authDomain: "creascola-leaderboard.firebaseapp.com",
-  databaseURL: "https://creascola-leaderboard-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "creascola-leaderboard",
-  storageBucket: "creascola-leaderboard.firebasestorage.app",
-  messagingSenderId: "227185192602",
-  appId: "1:227185192602:web:e1a6953c07ac3aa888f923"
-};
+  <!-- Load Firebase config -->
+  <script src="firebase-config.js"></script>
 
+  <script>
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Classes
     const classes = ["5.A", "5.B", "6.A", "6.B", "7.A", "8.A"];
     let scores = {};
-
-    // Login system
     const validUsers = { admin: "CC_Creadit_25_26" };
     let loggedIn = false;
 
@@ -188,7 +176,6 @@ const firebaseConfig = {
       if (!scores[selected]) scores[selected] = 0;
       scores[selected] += points;
       if (scores[selected] < 0) scores[selected] = 0;
-      // Save to Firebase
       db.ref("scores").set(scores);
       document.getElementById("points-input").value = "";
     }
@@ -202,13 +189,11 @@ const firebaseConfig = {
       });
     }
 
-    // Load scores live from Firebase
     db.ref("scores").on("value", (snapshot) => {
       scores = snapshot.val() || {};
       classes.forEach(c => { if (scores[c] === undefined) scores[c] = 0; });
       renderLeaderboard();
     });
   </script>
-
 </body>
 </html>
