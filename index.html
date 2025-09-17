@@ -121,12 +121,12 @@
   <div id="points-area" style="display: none;">
     <h3>Add or Remove Points</h3>
     <select id="class-select">
-      <option value="5.A">5.A</option>
-      <option value="5.B">5.B</option>
-      <option value="6.A">6.A</option>
-      <option value="6.B">6.B</option>
-      <option value="7.A">7.A</option>
-      <option value="8.A">8.A</option>
+      <option value="5A">5A</option>
+      <option value="5B">5B</option>
+      <option value="6A">6A</option>
+      <option value="6B">6B</option>
+      <option value="7A">7A</option>
+      <option value="8A">8A</option>
     </select><br />
     <input type="text" id="points-input" placeholder="Enter points (e.g. 5 or -2)" /><br />
     <button onclick="updatePoints()">Update Points</button>
@@ -145,7 +145,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const classes = ["5.A", "5.B", "6.A", "6.B", "7.A", "8.A"];
+    const classes = ["5A", "5B", "6A", "6B", "7A", "8A"];
     let scores = {};
     const validUsers = { admin: "CC_Creadit_25_26" };
     let loggedIn = false;
