@@ -170,22 +170,44 @@
 
     function updatePoints() {
       if (!loggedIn) return;
+
       const selected = document.getElementById("class-select").value;
       let points = parseInt(document.getElementById("points-input").value);
-      if (isNaN(points)) return alert("Please enter a valid number (use - to remove points).");
+
+      if (isNaN(points)) {
+        alert("Please enter a valid number (use -2 to remove points).");
+        return;
+      }
+
       if (!scores[selected]) scores[selected] = 0;
+
       scores[selected] += points;
       if (scores[selected] < 0) scores[selected] = 0;
+
       db.ref("scores").set(scores);
+
       document.getElementById("points-input").value = "";
     }
 
     function renderLeaderboard() {
       const lb = document.getElementById("leaderboard");
       lb.innerHTML = "<h3>Leaderboard</h3>";
+
       const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-      sorted.forEach(([cls, pts]) => {
-        lb.innerHTML += `<div class="class-row"><span>${cls}</span><span>${pts} pts</span></div>`;
+
+      sorted.forEach(([cls, pts], index) => {
+        let medal = "";
+
+        if (index === 0) medal = " 🥇 1st";
+        else if (index === 1) medal = " 🥈 2nd";
+        else if (index === 2) medal = " 🥉 3rd";
+
+        lb.innerHTML += `
+          <div class="class-row">
+            <span>${cls}${medal}</span>
+            <span>${pts} pts</span>
+          </div>
+        `;
       });
     }
 
