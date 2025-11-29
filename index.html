@@ -4,188 +4,349 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Creascola Credit Leaderboard</title>
-
+  <link rel="icon" href="data:," />
   <style>
     :root{
-      --bg1:#0a0f1a; --bg2:#1c2a48; --card:#222;
-      --accent:#00f6ff; --accent2:#00c8d6;
+      --bg1:#0a0f1a;
+      --bg2:#1c2a48;
+      --card:#222;
+      --accent:#00f6ff;
+      --accent-2:#00c8d6;
     }
     body{
-      margin:0; font-family:Segoe UI, sans-serif;
-      background:linear-gradient(135deg,var(--bg1),var(--bg2));
-      color:white; padding:20px; display:flex;
-      flex-direction:column; align-items:center;
+      margin:0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:20px;
+      min-height:100vh;
+      box-sizing:border-box;
     }
-    h1{ color:var(--accent); text-shadow:0 0 14px #00f7; }
+
+    h1{
+      margin:18px 0;
+      font-size:clamp(1.8rem,5vw,3rem);
+      color:var(--accent);
+      text-shadow:0 0 14px rgba(0,246,255,0.15);
+    }
+
     .leaderboard{
-      width:100%; max-width:760px;
-      background:#222d; padding:20px;
-      border-radius:16px;
+      width:100%;
+      max-width:760px;
+      background:rgba(34,34,34,0.92);
+      border-radius:18px;
+      padding:20px;
+      box-shadow:0 8px 30px rgba(0,246,255,0.06);
+      box-sizing:border-box;
     }
+
     .class-row{
-      display:flex; justify-content:space-between;
-      padding:12px 14px; border-bottom:1px solid #fff1;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 14px;
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      font-size:clamp(1rem,2.4vw,1.3rem);
+      gap:8px;
     }
-    .left{ display:flex; gap:10px; }
-    .place{ width:70px; font-weight:bold; }
-    .pts{ width:120px; text-align:right; font-weight:bold; }
-    .gold{ border-left:4px solid gold; }
-    .silver{ border-left:4px solid silver; }
-    .bronze{ border-left:4px solid #cd7f32; }
+
+    .class-row .left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .class-row .place{
+      font-weight:700;
+      min-width:90px;
+      text-align:left;
+    }
+
+    .class-row .name{
+      font-weight:600;
+      letter-spacing:0.6px;
+    }
+
+    .class-row .pts{
+      font-weight:700;
+      min-width:120px;
+      text-align:right;
+    }
+
+    /* Top3 highlights */
+    .gold{
+      box-shadow: inset 0 0 18px rgba(255,215,0,0.06), 0 6px 18px rgba(255,215,0,0.04);
+      border-left:4px solid #ffd700;
+    }
+    .silver{
+      box-shadow: inset 0 0 18px rgba(192,192,192,0.06), 0 6px 18px rgba(192,192,192,0.03);
+      border-left:4px solid #c0c0c0;
+    }
+    .bronze{
+      box-shadow: inset 0 0 18px rgba(205,127,50,0.05), 0 6px 18px rgba(205,127,50,0.03);
+      border-left:4px solid #cd7f32;
+    }
+
+    /* login icon & panel */
     #login-icon{
-      position:fixed; right:15px; top:15px;
-      font-size:2rem; background:none; color:var(--accent);
-      border:none; cursor:pointer;
+      position:fixed;
+      top:14px;
+      right:14px;
+      font-size:1.9rem;
+      background:transparent;
+      border:none;
+      color:var(--accent);
+      cursor:pointer;
+      z-index:999;
     }
+
     #login-area{
-      display:none; position:fixed; right:15px; top:70px;
-      background:#222; padding:15px; width:300px;
+      display:none;
+      position:fixed;
+      top:64px;
+      right:14px;
+      background:var(--card);
+      padding:14px;
       border-radius:12px;
+      box-shadow:0 8px 26px rgba(0,0,0,0.6);
+      width:320px;
+      max-width:90%;
+      z-index:998;
     }
-    #login-area input{
-      width:90%; padding:10px; margin:7px 0;
-      border-radius:8px; border:none;
+
+    #login-area input, #points-area input, #points-area select{
+      width:92%;
+      padding:10px;
+      margin:8px 0;
+      border-radius:8px;
+      border:none;
+      text-align:center;
+      font-size:1rem;
+      box-sizing:border-box;
     }
-    #points-area{ display:none; margin-top:15px; }
-    #points-area input, #points-area select{
-      width:90%; padding:10px; margin:7px 0;
-      border-radius:8px; border:none;
+
+    #points-area{
+      margin:18px auto 12px;
+      display:block;
+      max-width:520px;
+      text-align:center;
     }
+
     button{
-      background:var(--accent); border:none;
-      padding:10px 16px; border-radius:10px;
-      cursor:pointer; font-weight:bold;
+      background:var(--accent);
+      border:none;
+      padding:10px 16px;
+      border-radius:10px;
+      color:#000;
+      font-weight:700;
+      cursor:pointer;
+      transition:all .15s ease;
+      width:82%;
+      max-width:260px;
     }
-    button:hover{ background:var(--accent2); }
+    button:hover{ background:var(--accent-2) }
+
+    /* small screens spacing */
+    @media (max-width:520px){
+      .class-row{ padding:10px; font-size:1rem; }
+      .class-row .place{ min-width:72px; font-size:0.95rem; }
+      .class-row .pts{ min-width:96px; font-size:0.95rem; }
+      #login-area{ right:8px; top:60px; width:92%; }
+    }
   </style>
 </head>
 <body>
+  <h1>🏆 Creascola Credit Leaderboard</h1>
 
-<h1>🏆 Creascola Credit Leaderboard</h1>
+  <button id="login-icon" onclick="toggleLogin()" aria-label="Open login">🔑</button>
 
-<button id="login-icon" onclick="toggleLogin()">🔑</button>
+  <div id="login-area" aria-hidden="true">
+    <h3 style="margin:0 0 8px 0;color:var(--accent)">Login</h3>
+    <input id="username" type="text" placeholder="Username" autocomplete="off" />
+    <input id="password" type="password" placeholder="Password" autocomplete="off" />
+    <div style="display:flex;justify-content:center">
+      <button onclick="login()">Login</button>
+    </div>
+    <p id="login-status" style="margin:6px 0 0 0;font-size:0.95rem"></p>
+  </div>
 
-<div id="login-area">
-  <h3>Admin Login</h3>
-  <input id="username" placeholder="Username">
-  <input id="password" placeholder="Password" type="password">
-  <button onclick="login()">Login</button>
-  <p id="login-status"></p>
-</div>
+  <div id="points-area" style="display:none;">
+    <h3 style="margin:6px 0 8px 0">Add or Remove Points</h3>
+    <select id="class-select" aria-label="Choose class">
+      <option value="7A">7A</option>
+      <option value="6B">6B</option>
+      <option value="6A">6A</option>
+      <option value="5A">5A</option>
+      <option value="5B">5B</option>
+      <option value="8A">8A</option>
+    </select><br/>
+    <input id="points-input" type="text" placeholder="Enter points (e.g. 5 or -2)" />
+    <div style="display:flex;justify-content:center">
+      <button onclick="updatePoints()">Update Points</button>
+    </div>
+  </div>
 
-<div id="points-area">
-  <h3>Add / Remove Points</h3>
-  <select id="class-select">
-    <option>7A</option><option>6B</option><option>6A</option>
-    <option>5A</option><option>5B</option><option>8A</option>
-  </select>
-  <input id="points-input" placeholder="Points (ex: 5 or -2)">
-  <button onclick="updatePoints()">Update Points</button>
-</div>
+  <div class="leaderboard" id="leaderboard" aria-live="polite"></div>
 
-<div class="leaderboard" id="leaderboard"></div>
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <!-- Your firebase-config.js should define: const firebaseConfig = { ... } -->
+  <script src="firebase-config.js"></script>
 
-<!-- YOUR firebase-config.js -->
-<script src="firebase-config.js"></script>
+  <script>
+    // initialize firebase (firebaseConfig must be in firebase-config.js)
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-<script>
-firebase.initializeApp(firebaseConfig);
-const rtdb = firebase.database();      // For scores
-const fs = firebase.firestore();       // For admin login
+    // classes (order here doesn't matter; sorting is automatic)
+    const classes = ["7A","6B","6A","5A","5B","8A"];
+    let scores = {};
+    // allowed admin users (keep credentials safe!)
+    const validUsers = {
+      "jenei_zsolt": "CC_admin",
+      "kele_istvan": "CC_admin"
+    };
+    let loggedIn = false;
 
-const classes = ["7A","6B","6A","5A","5B","8A"];
-let scores = {};
-let loggedIn = false;
-
-// Toggle login popup
-function toggleLogin(){
-  const a = document.getElementById("login-area");
-  a.style.display = a.style.display === "block" ? "none" : "block";
-}
-
-// SECURE Firestore Login
-async function login(){
-  const user = document.getElementById("username").value.trim();
-  const pass = document.getElementById("password").value.trim();
-  const status = document.getElementById("login-status");
-
-  try{
-    const doc = await fs.collection("validUsers").doc(user).get();
-    if(!doc.exists){ status.textContent = "❌ Invalid login"; return; }
-
-    const realPass = doc.data().password;
-    if(pass !== realPass){
-      status.textContent = "❌ Wrong password";
-      return;
+    // UI helpers
+    function toggleLogin(){
+      const area = document.getElementById('login-area');
+      area.style.display = (area.style.display === 'none' || area.style.display === '') ? 'block' : 'none';
+      area.setAttribute('aria-hidden', area.style.display === 'none');
     }
 
-    loggedIn = true;
-    status.textContent = "✅ Logged in!";
-    document.getElementById("points-area").style.display = "block";
-    document.getElementById("login-area").style.display = "none";
+    function login(){
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+      const status = document.getElementById('login-status');
 
-  } catch(e){
-    console.error(e);
-    status.textContent = "⚠️ Error connecting to server";
-  }
-}
+      if(validUsers[user] && validUsers[user] === pass){
+        loggedIn = true;
+        status.textContent = "✅ Logged in as " + user;
+        document.getElementById('points-area').style.display = 'block';
+        document.getElementById('login-area').style.display = 'none';
+      } else {
+        status.textContent = "❌ Wrong username or password";
+      }
+    }
 
-// Update points
-function updatePoints(){
-  if(!loggedIn) return alert("Login required!");
+    // update points (supports negative numbers like "-2")
+    function updatePoints(){
+      if(!loggedIn){
+        alert("Please log in first.");
+        return;
+      }
 
-  const c = document.getElementById("class-select").value;
-  const raw = document.getElementById("points-input").value.trim();
+      const selected = document.getElementById('class-select').value;
+      const raw = document.getElementById('points-input').value.trim();
 
-  if(!/^-?\d+$/.test(raw)) return alert("Enter a valid number");
+      // allow negative values with optional + or - sign and digits
+      if(!/^[-+]?\d+$/.test(raw)){
+        alert("Please enter a valid integer (e.g. 5 or -2).");
+        return;
+      }
 
-  scores[c] = (Number(scores[c]) || 0) + Number(raw);
-  if(scores[c] < 0) scores[c] = 0;
+      const points = parseInt(raw, 10);
+      if(!scores[selected]) scores[selected] = 0;
+      scores[selected] = Number(scores[selected]) + points;
+      if(scores[selected] < 0) scores[selected] = 0;
 
-  rtdb.ref("scores").set(scores);
-  document.getElementById("points-input").value = "";
-}
+      // write update to Firebase
+      db.ref('scores').set(scores).catch(err => {
+        console.error("Firebase write failed:", err);
+        alert("Failed to update scores. Check console.");
+      });
 
-// Show leaderboard
-function render(){
-  const lb = document.getElementById("leaderboard");
-  lb.innerHTML = "<h3>Leaderboard</h3>";
+      document.getElementById('points-input').value = '';
+    }
 
-  const sorted = Object.entries(scores)
-    .sort((a,b)=>b[1]-a[1]);
+    // render sorted leaderboard with trophy icons for top3
+    function renderLeaderboard(){
+      const lb = document.getElementById('leaderboard');
+      lb.innerHTML = '<h3 style="margin-top:0">Leaderboard</h3>';
 
-  sorted.forEach(([cls,pts],i)=>{
-    let place = (i+1)+".";
-    let rowClass = "";
+      // ensure all classes exist with numeric scores
+      classes.forEach(c => {
+        if(scores[c] === undefined) scores[c] = 0;
+      });
 
-    if(i===0){ place="🏆 1st"; rowClass="gold"; }
-    if(i===1){ place="🥈 2nd"; rowClass="silver"; }
-    if(i===2){ place="🥉 3rd"; rowClass="bronze"; }
+      // convert to array and sort descending by numeric value
+      const sorted = Object.entries(scores)
+        .filter(([cls]) => classes.includes(cls)) // keep only known classes
+        .sort((a,b) => Number(b[1]) - Number(a[1]));
 
-    lb.innerHTML += `
-      <div class="class-row ${rowClass}">
-        <div class="left">
-          <div class="place">${place}</div>
-          <div>${cls}</div>
-        </div>
-        <div class="pts">${pts} pts</div>
-      </div>`;
-  });
-}
+      // render each row
+      sorted.forEach(([cls, pts], index) => {
+        const numPts = Number(pts) || 0;
+        let placeLabel = '';
+        let rowClass = '';
 
-// RTDB live updates
-rtdb.ref("scores").on("value", snap=>{
-  scores = snap.val() || {};
-  classes.forEach(c => { if(!scores[c]) scores[c]=0; });
-  render();
-});
-</script>
+        if(index === 0){ placeLabel = '🏆 1st'; rowClass = 'gold'; }
+        else if(index === 1){ placeLabel = '🥈 2nd'; rowClass = 'silver'; }
+        else if(index === 2){ placeLabel = '🥉 3rd'; rowClass = 'bronze'; }
+        else { placeLabel = (index+1) + '.'; }
 
+        const row = document.createElement('div');
+        row.className = 'class-row ' + rowClass;
+
+        const left = document.createElement('div');
+        left.className = 'left';
+        const placeSpan = document.createElement('div');
+        placeSpan.className = 'place';
+        placeSpan.textContent = placeLabel;
+        const nameSpan = document.createElement('div');
+        nameSpan.className = 'name';
+        nameSpan.textContent = cls;
+
+        left.appendChild(placeSpan);
+        left.appendChild(nameSpan);
+
+        const ptsSpan = document.createElement('div');
+        ptsSpan.className = 'pts';
+        ptsSpan.textContent = `${numPts} pts`;
+
+        row.appendChild(left);
+        row.appendChild(ptsSpan);
+        lb.appendChild(row);
+      });
+
+      // if no data yet, show placeholders in defined class order
+      if(sorted.length === 0){
+        classes.forEach((c, i) => {
+          const r = document.createElement('div');
+          r.className = 'class-row';
+          r.innerHTML = `<div class="left"><div class="place">${i+1}.</div><div class="name">${c}</div></div><div class="pts">0 pts</div>`;
+          lb.appendChild(r);
+        });
+      }
+    }
+
+    // subscribe to Firebase scores (live updates)
+    db.ref('scores').on('value', snapshot => {
+      const data = snapshot.val();
+      scores = data || {};
+      // make sure every class exists
+      classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
+      renderLeaderboard();
+    }, err => {
+      console.error("Firebase read failed:", err);
+    });
+
+    // small accessibility: allow Enter in input to submit
+    document.addEventListener('keydown', (e) => {
+      const active = document.activeElement;
+      if(e.key === 'Enter' && active && active.id === 'points-input'){
+        updatePoints();
+      }
+    });
+  </script>
 </body>
 </html>
-
