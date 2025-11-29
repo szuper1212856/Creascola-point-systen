@@ -4,284 +4,188 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Creascola Credit Leaderboard</title>
-  <link rel="icon" href="data:," />
+
   <style>
     :root{
-      --bg1:#0a0f1a;
-      --bg2:#1c2a48;
-      --card:#222;
-      --accent:#00f6ff;
-      --accent-2:#00c8d6;
+      --bg1:#0a0f1a; --bg2:#1c2a48; --card:#222;
+      --accent:#00f6ff; --accent2:#00c8d6;
     }
     body{
-      margin:0;
-      font-family: "Segoe UI", Tahoma, sans-serif;
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
-      color:#fff;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:20px;
-      min-height:100vh;
-      box-sizing:border-box;
+      margin:0; font-family:Segoe UI, sans-serif;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:white; padding:20px; display:flex;
+      flex-direction:column; align-items:center;
     }
-
-    h1{
-      margin:18px 0;
-      font-size:clamp(1.8rem,5vw,3rem);
-      color:var(--accent);
-      text-shadow:0 0 14px rgba(0,246,255,0.15);
-    }
-
+    h1{ color:var(--accent); text-shadow:0 0 14px #00f7; }
     .leaderboard{
-      width:100%;
-      max-width:760px;
-      background:rgba(34,34,34,0.92);
-      border-radius:18px;
-      padding:20px;
-      box-shadow:0 8px 30px rgba(0,246,255,0.06);
-      box-sizing:border-box;
+      width:100%; max-width:760px;
+      background:#222d; padding:20px;
+      border-radius:16px;
     }
-
     .class-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:12px 14px;
-      border-bottom:1px solid rgba(255,255,255,0.04);
-      font-size:clamp(1rem,2.4vw,1.3rem);
-      gap:8px;
+      display:flex; justify-content:space-between;
+      padding:12px 14px; border-bottom:1px solid #fff1;
     }
-
-    .class-row .left{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .class-row .place{
-      font-weight:700;
-      min-width:90px;
-      text-align:left;
-    }
-
-    .class-row .name{
-      font-weight:600;
-      letter-spacing:0.6px;
-    }
-
-    .class-row .pts{
-      font-weight:700;
-      min-width:120px;
-      text-align:right;
-    }
-
-    .gold{
-      border-left:4px solid #ffd700;
-    }
-    .silver{
-      border-left:4px solid #c0c0c0;
-    }
-    .bronze{
-      border-left:4px solid #cd7f32;
-    }
-
+    .left{ display:flex; gap:10px; }
+    .place{ width:70px; font-weight:bold; }
+    .pts{ width:120px; text-align:right; font-weight:bold; }
+    .gold{ border-left:4px solid gold; }
+    .silver{ border-left:4px solid silver; }
+    .bronze{ border-left:4px solid #cd7f32; }
     #login-icon{
-      position:fixed;
-      top:14px;
-      right:14px;
-      font-size:1.9rem;
-      background:transparent;
-      border:none;
-      color:var(--accent);
-      cursor:pointer;
-      z-index:999;
+      position:fixed; right:15px; top:15px;
+      font-size:2rem; background:none; color:var(--accent);
+      border:none; cursor:pointer;
     }
-
     #login-area{
-      display:none;
-      position:fixed;
-      top:64px;
-      right:14px;
-      background:var(--card);
-      padding:14px;
+      display:none; position:fixed; right:15px; top:70px;
+      background:#222; padding:15px; width:300px;
       border-radius:12px;
-      box-shadow:0 8px 26px rgba(0,0,0,0.6);
-      width:320px;
-      max-width:90%;
-      z-index:998;
     }
-
-    #login-area input, #points-area input, #points-area select{
-      width:92%;
-      padding:10px;
-      margin:8px 0;
-      border-radius:8px;
-      border:none;
-      text-align:center;
-      font-size:1rem;
-      box-sizing:border-box;
+    #login-area input{
+      width:90%; padding:10px; margin:7px 0;
+      border-radius:8px; border:none;
     }
-
-    #points-area{
-      margin:18px auto 12px;
-      display:none;
-      max-width:520px;
-      text-align:center;
+    #points-area{ display:none; margin-top:15px; }
+    #points-area input, #points-area select{
+      width:90%; padding:10px; margin:7px 0;
+      border-radius:8px; border:none;
     }
-
     button{
-      background:var(--accent);
-      border:none;
-      padding:10px 16px;
-      border-radius:10px;
-      color:#000;
-      font-weight:700;
-      cursor:pointer;
-      width:82%;
-      max-width:260px;
+      background:var(--accent); border:none;
+      padding:10px 16px; border-radius:10px;
+      cursor:pointer; font-weight:bold;
     }
-    button:hover{
-      background:var(--accent-2);
-    }
-
-    @media (max-width:520px){
-      .class-row{ padding:10px; font-size:1rem; }
-      .class-row .place{ min-width:72px; font-size:0.95rem; }
-      .class-row .pts{ min-width:96px; font-size:0.95rem; }
-      #login-area{ right:8px; top:60px; width:92%; }
-    }
+    button:hover{ background:var(--accent2); }
   </style>
 </head>
 <body>
-  <h1>🏆 Creascola Credit Leaderboard</h1>
 
-  <button id="login-icon" onclick="toggleLogin()">🔑</button>
+<h1>🏆 Creascola Credit Leaderboard</h1>
 
-  <div id="login-area">
-    <h3 style="margin:0 0 8px 0;color:var(--accent)">Login</h3>
-    <input id="username" type="text" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <div style="display:flex;justify-content:center">
-      <button onclick="login()">Login</button>
-    </div>
-    <p id="login-status" style="margin:6px 0 0 0;font-size:0.95rem"></p>
-  </div>
+<button id="login-icon" onclick="toggleLogin()">🔑</button>
 
-  <div id="points-area">
-    <h3>Add or Remove Points</h3>
-    <select id="class-select">
-      <option value="7A">7A</option>
-      <option value="6B">6B</option>
-      <option value="6A">6A</option>
-      <option value="5A">5A</option>
-      <option value="5B">5B</option>
-      <option value="8A">8A</option>
-    </select>
-    <input id="points-input" type="text" placeholder="Enter points (e.g. 5 or -2)">
-    <div style="display:flex;justify-content:center">
-      <button onclick="updatePoints()">Update</button>
-    </div>
-  </div>
+<div id="login-area">
+  <h3>Admin Login</h3>
+  <input id="username" placeholder="Username">
+  <input id="password" placeholder="Password" type="password">
+  <button onclick="login()">Login</button>
+  <p id="login-status"></p>
+</div>
 
-  <div class="leaderboard" id="leaderboard"></div>
+<div id="points-area">
+  <h3>Add / Remove Points</h3>
+  <select id="class-select">
+    <option>7A</option><option>6B</option><option>6A</option>
+    <option>5A</option><option>5B</option><option>8A</option>
+  </select>
+  <input id="points-input" placeholder="Points (ex: 5 or -2)">
+  <button onclick="updatePoints()">Update Points</button>
+</div>
 
-  <!-- Firebase v8 -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="firebase-config.js"></script>
+<div class="leaderboard" id="leaderboard"></div>
 
-  <script>
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-    const classes = ["7A","6B","6A","5A","5B","8A"];
-    let scores = {};
-    let validUsers = {}; // <-- now EMPTY, secure
-    let loggedIn = false;
+<!-- YOUR firebase-config.js -->
+<script src="firebase-config.js"></script>
 
-    function toggleLogin(){
-      const area = document.getElementById('login-area');
-      area.style.display = area.style.display === "block" ? "none" : "block";
+<script>
+firebase.initializeApp(firebaseConfig);
+const rtdb = firebase.database();      // For scores
+const fs = firebase.firestore();       // For admin login
+
+const classes = ["7A","6B","6A","5A","5B","8A"];
+let scores = {};
+let loggedIn = false;
+
+// Toggle login popup
+function toggleLogin(){
+  const a = document.getElementById("login-area");
+  a.style.display = a.style.display === "block" ? "none" : "block";
+}
+
+// SECURE Firestore Login
+async function login(){
+  const user = document.getElementById("username").value.trim();
+  const pass = document.getElementById("password").value.trim();
+  const status = document.getElementById("login-status");
+
+  try{
+    const doc = await fs.collection("validUsers").doc(user).get();
+    if(!doc.exists){ status.textContent = "❌ Invalid login"; return; }
+
+    const realPass = doc.data().password;
+    if(pass !== realPass){
+      status.textContent = "❌ Wrong password";
+      return;
     }
 
-    function login(){
-      const user = document.getElementById('username').value.trim();
-      const pass = document.getElementById('password').value.trim();
-      const status = document.getElementById('login-status');
+    loggedIn = true;
+    status.textContent = "✅ Logged in!";
+    document.getElementById("points-area").style.display = "block";
+    document.getElementById("login-area").style.display = "none";
 
-      db.ref("admins").once("value").then(snapshot => {
-        const admins = snapshot.val() || {};
+  } catch(e){
+    console.error(e);
+    status.textContent = "⚠️ Error connecting to server";
+  }
+}
 
-        if(admins[user] && admins[user] === pass){
-          loggedIn = true;
-          status.textContent = "✅ Logged in as " + user;
-          document.getElementById("points-area").style.display = "block";
-          document.getElementById("login-area").style.display = "none";
-        } else {
-          status.textContent = "❌ Wrong username or password";
-        }
-      });
-    }
+// Update points
+function updatePoints(){
+  if(!loggedIn) return alert("Login required!");
 
-    function updatePoints(){
-      if(!loggedIn){
-        alert("Please log in first.");
-        return;
-      }
+  const c = document.getElementById("class-select").value;
+  const raw = document.getElementById("points-input").value.trim();
 
-      const cls = document.getElementById('class-select').value;
-      const raw = document.getElementById('points-input').value.trim();
+  if(!/^-?\d+$/.test(raw)) return alert("Enter a valid number");
 
-      if(!/^[-+]?\d+$/.test(raw)){
-        alert("Invalid number.");
-        return;
-      }
+  scores[c] = (Number(scores[c]) || 0) + Number(raw);
+  if(scores[c] < 0) scores[c] = 0;
 
-      const pts = parseInt(raw, 10);
-      if(!scores[cls]) scores[cls] = 0;
-      scores[cls] = Math.max(0, scores[cls] + pts);
+  rtdb.ref("scores").set(scores);
+  document.getElementById("points-input").value = "";
+}
 
-      db.ref("scores").set(scores);
+// Show leaderboard
+function render(){
+  const lb = document.getElementById("leaderboard");
+  lb.innerHTML = "<h3>Leaderboard</h3>";
 
-      document.getElementById('points-input').value = "";
-    }
+  const sorted = Object.entries(scores)
+    .sort((a,b)=>b[1]-a[1]);
 
-    function renderLeaderboard(){
-      const lb = document.getElementById("leaderboard");
-      lb.innerHTML = "<h3>Leaderboard</h3>";
+  sorted.forEach(([cls,pts],i)=>{
+    let place = (i+1)+".";
+    let rowClass = "";
 
-      const sorted = Object.entries(scores)
-        .sort((a,b) => b[1] - a[1]);
+    if(i===0){ place="🏆 1st"; rowClass="gold"; }
+    if(i===1){ place="🥈 2nd"; rowClass="silver"; }
+    if(i===2){ place="🥉 3rd"; rowClass="bronze"; }
 
-      sorted.forEach(([cls, pts], index) => {
-        let place = "";
-        let color = "";
-        if(index === 0){ place="🏆 1st"; color="gold"; }
-        else if(index === 1){ place="🥈 2nd"; color="silver"; }
-        else if(index === 2){ place="🥉 3rd"; color="bronze"; }
-        else place = (index+1) + ".";
+    lb.innerHTML += `
+      <div class="class-row ${rowClass}">
+        <div class="left">
+          <div class="place">${place}</div>
+          <div>${cls}</div>
+        </div>
+        <div class="pts">${pts} pts</div>
+      </div>`;
+  });
+}
 
-        lb.innerHTML += `
-          <div class="class-row ${color}">
-            <div class="left">
-              <div class="place">${place}</div>
-              <div class="name">${cls}</div>
-            </div>
-            <div class="pts">${pts} pts</div>
-          </div>
-        `;
-      });
-    }
+// RTDB live updates
+rtdb.ref("scores").on("value", snap=>{
+  scores = snap.val() || {};
+  classes.forEach(c => { if(!scores[c]) scores[c]=0; });
+  render();
+});
+</script>
 
-    db.ref("scores").on("value", snap => {
-      scores = snap.val() || {};
-      classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
-      renderLeaderboard();
-    });
-  </script>
 </body>
 </html>
+
