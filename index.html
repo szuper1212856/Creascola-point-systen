@@ -104,6 +104,9 @@
       color:var(--accent);
       cursor:pointer;
       z-index:999;
+      width:auto;
+      max-width:none;
+      padding:4px 8px;
     }
 
     #login-area{
@@ -152,6 +155,13 @@
     }
     button:hover{ background:var(--accent-2) }
 
+    #logout-btn{
+      margin-top:10px;
+      background:#ff4444;
+      color:#fff;
+    }
+    #logout-btn:hover{ background:#cc0000; }
+
     /* small screens spacing */
     @media (max-width:520px){
       .class-row{ padding:10px; font-size:1rem; }
@@ -187,8 +197,9 @@
       <option value="8A">8A</option>
     </select><br/>
     <input id="points-input" type="text" placeholder="Enter points (e.g. 5 or -2)" />
-    <div style="display:flex;justify-content:center">
+    <div style="display:flex;justify-content:center;flex-direction:column;align-items:center;gap:8px;">
       <button onclick="updatePoints()">Update Points</button>
+      <button id="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
 
@@ -197,50 +208,76 @@
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <!-- Your firebase-config.js should define: const firebaseConfig = { ... } -->
   <script src="firebase-config.js"></script>
 
   <script>
-    // initialize firebase (firebaseConfig must be in firebase-config.js)
+    // initialize firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const auth = firebase.auth();
 
     // classes (order here doesn't matter; sorting is automatic)
     const classes = ["7A","6B","6A","5A","5B","8A"];
     let scores = {};
-    // allowed admin users (keep credentials safe!)
-    const validUsers = {
-      "jenei_zsolt": "CC_admin",
-      "kele_istvan": "CC_admin"
-    };
-    let loggedIn = false;
+
+    // The email domain used for all admin accounts in Firebase Auth
+    const EMAIL_DOMAIN = "@creascola.hu";
 
     // UI helpers
     function toggleLogin(){
       const area = document.getElementById('login-area');
-      area.style.display = (area.style.display === 'none' || area.style.display === '') ? 'block' : 'none';
-      area.setAttribute('aria-hidden', area.style.display === 'none');
+      const isHidden = area.style.display === 'none' || area.style.display === '';
+      area.style.display = isHidden ? 'block' : 'none';
+      area.setAttribute('aria-hidden', !isHidden);
     }
 
     function login(){
-      const user = document.getElementById('username').value.trim();
+      const username = document.getElementById('username').value.trim().toLowerCase();
       const pass = document.getElementById('password').value;
       const status = document.getElementById('login-status');
 
-      if(validUsers[user] && validUsers[user] === pass){
-        loggedIn = true;
-        status.textContent = "✅ Logged in as " + user;
-        document.getElementById('points-area').style.display = 'block';
-        document.getElementById('login-area').style.display = 'none';
-      } else {
-        status.textContent = "❌ Wrong username or password";
+      if(!username || !pass){
+        status.textContent = "❌ Please enter username and password.";
+        return;
       }
+
+      // Build the Firebase email from the username
+      const email = username + EMAIL_DOMAIN;
+      status.textContent = "⏳ Logging in...";
+
+      auth.signInWithEmailAndPassword(email, pass)
+        .then(() => {
+          // onAuthStateChanged handles the rest
+          document.getElementById('login-area').style.display = 'none';
+          document.getElementById('username').value = '';
+          document.getElementById('password').value = '';
+        })
+        .catch(err => {
+          console.error("Login error:", err.code);
+          status.textContent = "❌ Wrong username or password.";
+        });
     }
+
+    function logout(){
+      auth.signOut().catch(err => console.error("Logout error:", err));
+    }
+
+    // React to auth state changes
+    auth.onAuthStateChanged(user => {
+      if(user){
+        document.getElementById('points-area').style.display = 'block';
+      } else {
+        document.getElementById('points-area').style.display = 'none';
+        document.getElementById('login-status').textContent = '';
+      }
+    });
 
     // update points (supports negative numbers like "-2")
     function updatePoints(){
-      if(!loggedIn){
+      if(!auth.currentUser){
         alert("Please log in first.");
         return;
       }
@@ -248,7 +285,6 @@
       const selected = document.getElementById('class-select').value;
       const raw = document.getElementById('points-input').value.trim();
 
-      // allow negative values with optional + or - sign and digits
       if(!/^[-+]?\d+$/.test(raw)){
         alert("Please enter a valid integer (e.g. 5 or -2).");
         return;
@@ -259,7 +295,6 @@
       scores[selected] = Number(scores[selected]) + points;
       if(scores[selected] < 0) scores[selected] = 0;
 
-      // write update to Firebase
       db.ref('scores').set(scores).catch(err => {
         console.error("Firebase write failed:", err);
         alert("Failed to update scores. Check console.");
@@ -273,17 +308,14 @@
       const lb = document.getElementById('leaderboard');
       lb.innerHTML = '<h3 style="margin-top:0">Leaderboard</h3>';
 
-      // ensure all classes exist with numeric scores
       classes.forEach(c => {
         if(scores[c] === undefined) scores[c] = 0;
       });
 
-      // convert to array and sort descending by numeric value
       const sorted = Object.entries(scores)
-        .filter(([cls]) => classes.includes(cls)) // keep only known classes
+        .filter(([cls]) => classes.includes(cls))
         .sort((a,b) => Number(b[1]) - Number(a[1]));
 
-      // render each row
       sorted.forEach(([cls, pts], index) => {
         const numPts = Number(pts) || 0;
         let placeLabel = '';
@@ -318,7 +350,6 @@
         lb.appendChild(row);
       });
 
-      // if no data yet, show placeholders in defined class order
       if(sorted.length === 0){
         classes.forEach((c, i) => {
           const r = document.createElement('div');
@@ -333,18 +364,21 @@
     db.ref('scores').on('value', snapshot => {
       const data = snapshot.val();
       scores = data || {};
-      // make sure every class exists
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
       renderLeaderboard();
     }, err => {
       console.error("Firebase read failed:", err);
     });
 
-    // small accessibility: allow Enter in input to submit
+    // allow Enter in password field to submit
     document.addEventListener('keydown', (e) => {
       const active = document.activeElement;
-      if(e.key === 'Enter' && active && active.id === 'points-input'){
-        updatePoints();
+      if(e.key === 'Enter'){
+        if(active && (active.id === 'username' || active.id === 'password')){
+          login();
+        } else if(active && active.id === 'points-input'){
+          updatePoints();
+        }
       }
     });
   </script>
