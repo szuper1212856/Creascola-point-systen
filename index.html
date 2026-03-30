@@ -234,32 +234,26 @@
       area.setAttribute('aria-hidden', !isHidden);
     }
 
-    function login(){
-      const username = document.getElementById('username').value.trim().toLowerCase();
-      const pass = document.getElementById('password').value;
-      const status = document.getElementById('login-status');
+ function login(){
+  const username = document.getElementById('username').value.trim().toLowerCase();
+  const pass = document.getElementById('password').value;
+  const status = document.getElementById('login-status');
 
-      if(!username || !pass){
-        status.textContent = "❌ Please enter username and password.";
-        return;
-      }
+  const email = username + EMAIL_DOMAIN;
+  console.log("Attempting login with email:", email);
+  console.log("Password length:", pass.length);
 
-      // Build the Firebase email from the username
-      const email = username + EMAIL_DOMAIN;
-      status.textContent = "⏳ Logging in...";
-
-      auth.signInWithEmailAndPassword(email, pass)
-        .then(() => {
-          // onAuthStateChanged handles the rest
-          document.getElementById('login-area').style.display = 'none';
-          document.getElementById('username').value = '';
-          document.getElementById('password').value = '';
-        })
-        .catch(err => {
-          console.error("Login error:", err.code);
-          status.textContent = "❌ Wrong username or password.";
-        });
-    }
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(() => {
+      document.getElementById('login-area').style.display = 'none';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    })
+    .catch(err => {
+      console.error("Login error:", err.code, err.message);
+      status.textContent = "❌ Wrong username or password.";
+    });
+}
 
     function logout(){
       auth.signOut().catch(err => console.error("Logout error:", err));
