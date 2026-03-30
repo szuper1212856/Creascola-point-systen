@@ -1,5 +1,5 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyB7U-dQWlhnsb7JN7QoDGzTB4EyfPcCrDU",
+  apiKey: "AIzaSyBxJnZn77x2LUPORIW8nxvQqLE2Qg95aUs",
   authDomain: "creascola-leaderboard.firebaseapp.com",
   databaseURL: "https://creascola-leaderboard-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "creascola-leaderboard",
