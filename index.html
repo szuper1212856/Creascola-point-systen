@@ -25,14 +25,12 @@
       min-height:100vh;
       box-sizing:border-box;
     }
-
     h1{
       margin:18px 0;
       font-size:clamp(1.8rem,5vw,3rem);
       color:var(--accent);
       text-shadow:0 0 14px rgba(0,246,255,0.15);
     }
-
     .leaderboard{
       width:100%;
       max-width:760px;
@@ -42,7 +40,6 @@
       box-shadow:0 8px 30px rgba(0,246,255,0.06);
       box-sizing:border-box;
     }
-
     .class-row{
       display:flex;
       justify-content:space-between;
@@ -52,7 +49,6 @@
       font-size:clamp(1rem,2.4vw,1.3rem);
       gap:8px;
     }
-
     .class-row .left{
       display:flex;
       align-items:center;
@@ -61,169 +57,89 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
+    .class-row .place{ font-weight:700; min-width:90px; text-align:left; }
+    .class-row .name{ font-weight:600; letter-spacing:0.6px; }
+    .class-row .pts{ font-weight:700; min-width:120px; text-align:right; font-variant-numeric:tabular-nums; }
 
-    .class-row .place{
-      font-weight:700;
-      min-width:90px;
-      text-align:left;
-    }
+    .gold{   box-shadow:inset 0 0 18px rgba(255,215,0,0.06),   0 6px 18px rgba(255,215,0,0.04);   border-left:4px solid #ffd700; }
+    .silver{ box-shadow:inset 0 0 18px rgba(192,192,192,0.06), 0 6px 18px rgba(192,192,192,0.03); border-left:4px solid #c0c0c0; }
+    .bronze{ box-shadow:inset 0 0 18px rgba(205,127,50,0.05),  0 6px 18px rgba(205,127,50,0.03);  border-left:4px solid #cd7f32; }
 
-    .class-row .name{
-      font-weight:600;
-      letter-spacing:0.6px;
-    }
-
-    .class-row .pts{
-      font-weight:700;
-      min-width:120px;
-      text-align:right;
-    }
-
-    /* Top3 highlights */
-    .gold{
-      box-shadow: inset 0 0 18px rgba(255,215,0,0.06), 0 6px 18px rgba(255,215,0,0.04);
-      border-left:4px solid #ffd700;
-    }
-    .silver{
-      box-shadow: inset 0 0 18px rgba(192,192,192,0.06), 0 6px 18px rgba(192,192,192,0.03);
-      border-left:4px solid #c0c0c0;
-    }
-    .bronze{
-      box-shadow: inset 0 0 18px rgba(205,127,50,0.05), 0 6px 18px rgba(205,127,50,0.03);
-      border-left:4px solid #cd7f32;
-    }
-
-    /* login icon & panel */
     #login-icon{
-      position:fixed;
-      top:14px;
-      right:14px;
-      font-size:1.9rem;
-      background:transparent;
-      border:none;
-      color:var(--accent);
-      cursor:pointer;
-      z-index:999;
-      width:auto;
-      max-width:none;
-      padding:4px 8px;
+      position:fixed; top:14px; right:14px; font-size:1.9rem;
+      background:transparent; border:none; color:var(--accent);
+      cursor:pointer; z-index:999; width:auto; max-width:none; padding:4px 8px;
     }
-
     #login-area{
-      display:none;
-      position:fixed;
-      top:64px;
-      right:14px;
-      background:var(--card);
-      padding:14px;
-      border-radius:12px;
-      box-shadow:0 8px 26px rgba(0,0,0,0.6);
-      width:320px;
-      max-width:90%;
-      z-index:998;
+      display:none; position:fixed; top:64px; right:14px;
+      background:var(--card); padding:14px; border-radius:12px;
+      box-shadow:0 8px 26px rgba(0,0,0,0.6); width:320px; max-width:90%; z-index:998;
     }
-
     #login-area input, #points-area input, #points-area select{
-      width:92%;
-      padding:10px;
-      margin:8px 0;
-      border-radius:8px;
-      border:none;
-      text-align:center;
-      font-size:1rem;
-      box-sizing:border-box;
+      width:92%; padding:10px; margin:8px 0; border-radius:8px;
+      border:none; text-align:center; font-size:1rem; box-sizing:border-box;
     }
-
-    #points-area{
-      margin:18px auto 12px;
-      display:block;
-      max-width:520px;
-      text-align:center;
-    }
+    #points-area{ margin:18px auto 12px; display:block; max-width:520px; text-align:center; }
 
     button{
-      background:var(--accent);
-      border:none;
-      padding:10px 16px;
-      border-radius:10px;
-      color:#000;
-      font-weight:700;
-      cursor:pointer;
-      transition:all .15s ease;
-      width:82%;
-      max-width:260px;
+      background:var(--accent); border:none; padding:10px 16px; border-radius:10px;
+      color:#000; font-weight:700; cursor:pointer; transition:all .15s ease;
+      width:82%; max-width:260px;
     }
-    button:hover{ background:var(--accent-2) }
-
-    #logout-btn{
-      margin-top:10px;
-      background:#ff4444;
-      color:#fff;
-    }
+    button:hover{ background:var(--accent-2); }
+    #logout-btn{ margin-top:10px; background:#ff4444; color:#fff; }
     #logout-btn:hover{ background:#cc0000; }
+    #undo-btn{ margin-top:10px; background:#ff9800; color:#000; }
+    #undo-btn:hover{ background:#e65100; color:#fff; }
+    #undo-btn:disabled{ background:#444; color:#777; cursor:not-allowed; }
 
-    /* position change indicator */
-    .trend{
-      font-size:1.1rem;
-      font-weight:700;
-      min-width:28px;
-      text-align:center;
-    }
+    .trend{ font-size:1.1rem; font-weight:700; min-width:28px; text-align:center; }
     .trend.up{   color:#00e676; }
     .trend.down{ color:#ff1744; }
     .trend.same{ color:#888;    }
 
-    /* help button */
+    /* history */
+    #history-box{
+      width:100%; max-width:760px; background:rgba(34,34,34,0.85);
+      border-radius:18px; padding:18px 20px;
+      box-shadow:0 8px 30px rgba(0,246,255,0.04);
+      box-sizing:border-box; margin-top:18px;
+    }
+    #history-box h3{ margin:0 0 12px 0; color:var(--accent); font-size:1rem; letter-spacing:0.5px; }
+    .history-entry{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:7px 4px; border-bottom:1px solid rgba(255,255,255,0.04);
+      font-size:0.9rem; gap:8px;
+      opacity:0; animation:fadeIn 0.4s forwards;
+    }
+    .history-entry:last-child{ border-bottom:none; }
+    .history-entry .h-class{ font-weight:700; color:#fff; min-width:36px; }
+    .history-entry .h-change{ font-weight:700; min-width:56px; }
+    .history-entry .h-change.pos{ color:#00e676; }
+    .history-entry .h-change.neg{ color:#ff1744; }
+    .history-entry .h-time{ color:#888; font-size:0.82rem; text-align:right; }
+    @keyframes fadeIn{
+      from{ opacity:0; transform:translateY(-6px); }
+      to{   opacity:1; transform:translateY(0); }
+    }
+
+    /* help */
     #help-btn{
-      position:fixed;
-      bottom:18px;
-      right:18px;
-      width:42px;
-      height:42px;
-      border-radius:50%;
-      background:var(--accent);
-      color:#000;
-      font-size:1.3rem;
-      font-weight:700;
-      border:none;
-      cursor:pointer;
-      z-index:999;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow:0 4px 14px rgba(0,246,255,0.3);
-      max-width:42px;
-      padding:0;
+      position:fixed; bottom:18px; right:18px; width:42px; height:42px;
+      border-radius:50%; background:var(--accent); color:#000; font-size:1.3rem;
+      font-weight:700; border:none; cursor:pointer; z-index:999;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 4px 14px rgba(0,246,255,0.3); max-width:42px; padding:0;
     }
     #help-btn:hover{ background:var(--accent-2); }
-
     #help-modal{
-      display:none;
-      position:fixed;
-      bottom:72px;
-      right:18px;
-      background:var(--card);
-      border-radius:14px;
-      padding:16px 20px;
-      box-shadow:0 8px 26px rgba(0,0,0,0.6);
-      z-index:998;
-      width:240px;
-      max-width:88vw;
+      display:none; position:fixed; bottom:72px; right:18px;
+      background:var(--card); border-radius:14px; padding:16px 20px;
+      box-shadow:0 8px 26px rgba(0,0,0,0.6); z-index:998; width:240px; max-width:88vw;
     }
-    #help-modal h4{
-      margin:0 0 10px 0;
-      color:var(--accent);
-      font-size:1rem;
-    }
-    #help-modal .help-row{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      margin:8px 0;
-      font-size:0.95rem;
-    }
+    #help-modal h4{ margin:0 0 10px 0; color:var(--accent); font-size:1rem; }
+    #help-modal .help-row{ display:flex; align-items:center; gap:10px; margin:8px 0; font-size:0.95rem; }
 
-    /* small screens spacing */
     @media (max-width:520px){
       .class-row{ padding:10px; font-size:1rem; }
       .class-row .place{ min-width:72px; font-size:0.95rem; }
@@ -260,44 +176,47 @@
     <input id="points-input" type="text" placeholder="Enter points (e.g. 5 or -2)" />
     <div style="display:flex;justify-content:center;flex-direction:column;align-items:center;gap:8px;">
       <button onclick="updatePoints()">Update Points</button>
+      <button id="undo-btn" onclick="undoLast()" disabled>↩ Undo Last</button>
       <button id="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
 
   <div class="leaderboard" id="leaderboard" aria-live="polite"></div>
 
-  <!-- Help button -->
+  <div id="history-box" style="display:none;">
+    <h3>📋 Recent Changes</h3>
+    <div id="history-list"></div>
+  </div>
+
   <button id="help-btn" onclick="toggleHelp()" aria-label="Help">?</button>
   <div id="help-modal" aria-hidden="true">
-    <h4> What do the symbols mean?</h4>
+    <h4>📖 What do the symbols mean?</h4>
     <div class="help-row"><span style="color:#00e676;font-size:1.3rem">▲</span> The class moved up in the rankings</div>
     <div class="help-row"><span style="color:#ff1744;font-size:1.3rem">▼</span> The class moved down in the rankings</div>
     <div class="help-row"><span style="color:#888;font-size:1.3rem">—</span> No change in position</div>
   </div>
 
-  <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
-  <!-- Your firebase-config.js should define: const firebaseConfig = { ... } -->
   <script src="firebase-config.js"></script>
 
   <script>
-    // initialize firebase
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const db   = firebase.database();
     const auth = firebase.auth();
 
-    // classes (order here doesn't matter; sorting is automatic)
-    const classes = ["7A","6B","6A","5A","5B","8A"];
-    let scores = {};
-    let previousPositions = {}; // persisted in Firebase
-
-    // The email domain used for all admin accounts in Firebase Auth
+    const classes      = ["7A","6B","6A","5A","5B","8A"];
     const EMAIL_DOMAIN = "@creascola.hu";
+    const HISTORY_LIMIT = 10;
 
-    // helper: build position map from scores {className: rankIndex}
+    let scores           = {};
+    let previousPositions = {};
+    let history          = [];
+    let lastSnapshot     = null;
+    let displayedScores  = {}; // tracks currently shown values for animation
+
+    // ── helpers ───────────────────────────────────────────────
     function buildPositions(scoresObj){
       const sorted = Object.entries(scoresObj)
         .filter(([cls]) => classes.includes(cls))
@@ -307,31 +226,40 @@
       return pos;
     }
 
-    // UI helpers
+    function formatTime(ts){
+      if(!ts) return '';
+      const d = new Date(ts);
+      const pad = n => String(n).padStart(2,'0');
+      return `${pad(d.getHours())}:${pad(d.getMinutes())} · ${pad(d.getDate())}/${pad(d.getMonth()+1)}`;
+    }
+
+    function animateCounter(el, from, to, duration){
+      if(from === to){ el.textContent = to + ' pts'; return; }
+      const start = performance.now();
+      (function step(now){
+        const p    = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - p, 3); // ease-out cubic
+        el.textContent = Math.round(from + (to - from) * ease) + ' pts';
+        if(p < 1) requestAnimationFrame(step);
+      })(start);
+    }
+
+    // ── auth ──────────────────────────────────────────────────
     function toggleLogin(){
       const area = document.getElementById('login-area');
-      const isHidden = area.style.display === 'none' || area.style.display === '';
-      area.style.display = isHidden ? 'block' : 'none';
-      area.setAttribute('aria-hidden', !isHidden);
+      const hidden = area.style.display === 'none' || area.style.display === '';
+      area.style.display = hidden ? 'block' : 'none';
+      area.setAttribute('aria-hidden', !hidden);
     }
 
     function login(){
       const username = document.getElementById('username').value.trim().toLowerCase();
-      const pass = document.getElementById('password').value;
-      const status = document.getElementById('login-status');
-
-      if(!username || !pass){
-        status.textContent = "❌ Please enter username and password.";
-        return;
-      }
-
-      // Build the Firebase email from the username
-      const email = username + EMAIL_DOMAIN;
+      const pass     = document.getElementById('password').value;
+      const status   = document.getElementById('login-status');
+      if(!username || !pass){ status.textContent = "❌ Please enter username and password."; return; }
       status.textContent = "⏳ Logging in...";
-
-      auth.signInWithEmailAndPassword(email, pass)
+      auth.signInWithEmailAndPassword(username + EMAIL_DOMAIN, pass)
         .then(() => {
-          // onAuthStateChanged handles the rest
           document.getElementById('login-area').style.display = 'none';
           document.getElementById('username').value = '';
           document.getElementById('password').value = '';
@@ -342,64 +270,64 @@
         });
     }
 
-    function logout(){
-      auth.signOut().catch(err => console.error("Logout error:", err));
-    }
+    function logout(){ auth.signOut(); }
 
-    // React to auth state changes
     auth.onAuthStateChanged(user => {
-      if(user){
-        document.getElementById('points-area').style.display = 'block';
-      } else {
-        document.getElementById('points-area').style.display = 'none';
-        document.getElementById('login-status').textContent = '';
-      }
+      document.getElementById('points-area').style.display = user ? 'block' : 'none';
+      if(!user) document.getElementById('login-status').textContent = '';
     });
 
-    // update points (supports negative numbers like "-2")
+    // ── update points ─────────────────────────────────────────
     function updatePoints(){
-      if(!auth.currentUser){
-        alert("Please log in first.");
-        return;
-      }
-
+      if(!auth.currentUser){ alert("Please log in first."); return; }
       const selected = document.getElementById('class-select').value;
-      const raw = document.getElementById('points-input').value.trim();
+      const raw      = document.getElementById('points-input').value.trim();
+      if(!/^[-+]?\d+$/.test(raw)){ alert("Please enter a valid integer (e.g. 5 or -2)."); return; }
 
-      if(!/^[-+]?\d+$/.test(raw)){
-        alert("Please enter a valid integer (e.g. 5 or -2).");
-        return;
-      }
+      const points       = parseInt(raw, 10);
+      const undoSnapshot = JSON.parse(JSON.stringify(scores));
+      const prevPositions = buildPositions(scores);
 
-      const points = parseInt(raw, 10);
-      if(!scores[selected]) scores[selected] = 0;
+      const newScores = JSON.parse(JSON.stringify(scores));
+      if(!newScores[selected]) newScores[selected] = 0;
+      newScores[selected] = Math.max(0, Number(newScores[selected]) + points);
 
-      // save current positions as "previous" before updating
-      const currentPositions = buildPositions(scores);
+      const newHistory = [{
+        cls:    selected,
+        change: points,
+        before: Number(scores[selected] || 0),
+        after:  newScores[selected],
+        ts:     Date.now()
+      }, ...history].slice(0, HISTORY_LIMIT);
 
-      scores[selected] = Number(scores[selected]) + points;
-      if(scores[selected] < 0) scores[selected] = 0;
-
-      // write scores and previousPositions to Firebase atomically
       db.ref().update({
-        scores: scores,
-        previousPositions: currentPositions
-      }).catch(err => {
-        console.error("Firebase write failed:", err);
-        alert("Failed to update scores. Check console.");
-      });
+        scores:            newScores,
+        previousPositions: prevPositions,
+        history:           newHistory,
+        undoSnapshot:      undoSnapshot
+      }).catch(err => { console.error("Write failed:", err); alert("Failed to save. Check console."); });
 
       document.getElementById('points-input').value = '';
     }
 
-    // render sorted leaderboard with trophy icons for top3
+    // ── undo ──────────────────────────────────────────────────
+    function undoLast(){
+      if(!auth.currentUser || !lastSnapshot) return;
+      if(!confirm("Undo the last points change?")) return;
+      const revertedHistory = history.slice(1);
+      db.ref().update({
+        scores:            lastSnapshot,
+        previousPositions: buildPositions(lastSnapshot),
+        history:           revertedHistory.length ? revertedHistory : null,
+        undoSnapshot:      null
+      }).catch(err => { console.error("Undo failed:", err); alert("Undo failed."); });
+    }
+
+    // ── render leaderboard ────────────────────────────────────
     function renderLeaderboard(){
       const lb = document.getElementById('leaderboard');
       lb.innerHTML = '<h3 style="margin-top:0">Leaderboard</h3>';
-
-      classes.forEach(c => {
-        if(scores[c] === undefined) scores[c] = 0;
-      });
+      classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
 
       const sorted = Object.entries(scores)
         .filter(([cls]) => classes.includes(cls))
@@ -407,47 +335,52 @@
 
       sorted.forEach(([cls, pts], index) => {
         const numPts = Number(pts) || 0;
-        let placeLabel = '';
-        let rowClass = '';
+        let placeLabel = '', rowClass = '';
+        if(index === 0)      { placeLabel = '🏆 1st'; rowClass = 'gold';   }
+        else if(index === 1) { placeLabel = '🥈 2nd'; rowClass = 'silver'; }
+        else if(index === 2) { placeLabel = '🥉 3rd'; rowClass = 'bronze'; }
+        else                 { placeLabel = (index+1) + '.'; }
 
-        if(index === 0){ placeLabel = '🏆 1st'; rowClass = 'gold'; }
-        else if(index === 1){ placeLabel = '🥈 2nd'; rowClass = 'silver'; }
-        else if(index === 2){ placeLabel = '🥉 3rd'; rowClass = 'bronze'; }
-        else { placeLabel = (index+1) + '.'; }
-
-        // trend indicator
-        let trendSymbol = '—';
-        let trendClass = 'same';
-        if(previousPositions && previousPositions[cls] !== undefined){
+        let trendSymbol = '—', trendClass = 'same';
+        if(previousPositions[cls] !== undefined){
           const prev = previousPositions[cls];
-          if(index < prev){ trendSymbol = '▲'; trendClass = 'up'; }
-          else if(index > prev){ trendSymbol = '▼'; trendClass = 'down'; }
+          if(index < prev)      { trendSymbol = '▲'; trendClass = 'up'; }
+          else if(index > prev) { trendSymbol = '▼'; trendClass = 'down'; }
         }
 
-        const row = document.createElement('div');
-        row.className = 'class-row ' + rowClass;
+        const row       = document.createElement('div');
+        row.className   = 'class-row ' + rowClass;
 
-        const left = document.createElement('div');
-        left.className = 'left';
+        const left      = document.createElement('div');
+        left.className  = 'left';
+
         const placeSpan = document.createElement('div');
-        placeSpan.className = 'place';
+        placeSpan.className   = 'place';
         placeSpan.textContent = placeLabel;
-        const nameSpan = document.createElement('div');
-        nameSpan.className = 'name';
-        nameSpan.textContent = cls;
 
-        // trend span
+        const nameSpan  = document.createElement('div');
+        nameSpan.className    = 'name';
+        nameSpan.textContent  = cls;
+
         const trendSpan = document.createElement('div');
-        trendSpan.className = 'trend ' + trendClass;
+        trendSpan.className   = 'trend ' + trendClass;
         trendSpan.textContent = trendSymbol;
 
         left.appendChild(placeSpan);
         left.appendChild(nameSpan);
         left.appendChild(trendSpan);
 
-        const ptsSpan = document.createElement('div');
+        const ptsSpan   = document.createElement('div');
         ptsSpan.className = 'pts';
-        ptsSpan.textContent = `${numPts} pts`;
+
+        // animate from previous displayed value
+        const prevVal = displayedScores[cls];
+        if(prevVal !== undefined && prevVal !== numPts){
+          animateCounter(ptsSpan, prevVal, numPts, 800);
+        } else {
+          ptsSpan.textContent = numPts + ' pts';
+        }
+        displayedScores[cls] = numPts;
 
         row.appendChild(left);
         row.appendChild(ptsSpan);
@@ -464,49 +397,72 @@
       }
     }
 
-    // subscribe to scores (live updates)
-    db.ref('scores').on('value', snapshot => {
-      scores = snapshot.val() || {};
-      classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
-      renderLeaderboard();
-    }, err => {
-      console.error("Firebase read failed:", err);
-    });
-
-    // subscribe to previousPositions
-    db.ref('previousPositions').on('value', snapshot => {
-      previousPositions = snapshot.val() || {};
-      renderLeaderboard();
-    }, err => {
-      console.error("Firebase previousPositions read failed:", err);
-    });
-
-    // help modal toggle
-    function toggleHelp(){
-      const modal = document.getElementById('help-modal');
-      const isHidden = modal.style.display === 'none' || modal.style.display === '';
-      modal.style.display = isHidden ? 'block' : 'none';
-      modal.setAttribute('aria-hidden', !isHidden);
+    // ── render history ────────────────────────────────────────
+    function renderHistory(){
+      const box  = document.getElementById('history-box');
+      const list = document.getElementById('history-list');
+      if(!history || history.length === 0){ box.style.display = 'none'; return; }
+      box.style.display = 'block';
+      list.innerHTML = '';
+      history.forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'history-entry';
+        const sign        = entry.change > 0 ? '+' : '';
+        const changeClass = entry.change >= 0 ? 'pos' : 'neg';
+        div.innerHTML = `
+          <span class="h-class">${entry.cls}</span>
+          <span class="h-change ${changeClass}">${sign}${entry.change} pts</span>
+          <span style="color:#aaa;font-size:0.88rem">${entry.before} → ${entry.after} pts</span>
+          <span class="h-time">${formatTime(entry.ts)}</span>
+        `;
+        list.appendChild(div);
+      });
     }
 
-    // close help modal if clicking outside
-    document.addEventListener('click', (e) => {
+    // ── Firebase listeners ────────────────────────────────────
+    db.ref('scores').on('value', snap => {
+      scores = snap.val() || {};
+      classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
+      renderLeaderboard();
+    }, err => console.error("Firebase read failed:", err));
+
+    db.ref('previousPositions').on('value', snap => {
+      previousPositions = snap.val() || {};
+      renderLeaderboard();
+    }, err => console.error("previousPositions read failed:", err));
+
+    db.ref('history').on('value', snap => {
+      history = snap.val() || [];
+      renderHistory();
+    }, err => console.error("history read failed:", err));
+
+    db.ref('undoSnapshot').on('value', snap => {
+      lastSnapshot = snap.val() || null;
+      const btn = document.getElementById('undo-btn');
+      if(btn) btn.disabled = !lastSnapshot;
+    }, err => console.error("undoSnapshot read failed:", err));
+
+    // ── help ──────────────────────────────────────────────────
+    function toggleHelp(){
+      const modal  = document.getElementById('help-modal');
+      const hidden = modal.style.display === 'none' || modal.style.display === '';
+      modal.style.display = hidden ? 'block' : 'none';
+      modal.setAttribute('aria-hidden', !hidden);
+    }
+
+    document.addEventListener('click', e => {
       const modal = document.getElementById('help-modal');
-      const btn = document.getElementById('help-btn');
-      if(modal.style.display === 'block' && !modal.contains(e.target) && e.target !== btn){
+      const btn   = document.getElementById('help-btn');
+      if(modal.style.display === 'block' && !modal.contains(e.target) && e.target !== btn)
         modal.style.display = 'none';
-      }
     });
 
-    // allow Enter in password field to submit
-    document.addEventListener('keydown', (e) => {
-      const active = document.activeElement;
+    // ── keyboard ──────────────────────────────────────────────
+    document.addEventListener('keydown', e => {
+      const a = document.activeElement;
       if(e.key === 'Enter'){
-        if(active && (active.id === 'username' || active.id === 'password')){
-          login();
-        } else if(active && active.id === 'points-input'){
-          updatePoints();
-        }
+        if(a && (a.id === 'username' || a.id === 'password')) login();
+        else if(a && a.id === 'points-input') updatePoints();
       }
     });
   </script>
