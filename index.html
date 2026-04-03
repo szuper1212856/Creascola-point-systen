@@ -323,7 +323,7 @@
       }).catch(err => { console.error("Undo failed:", err); alert("Undo failed."); });
     }
 
-    // ── render leaderboard (FLIP animation for position changes) ─
+    // ── render leaderboard (true FLIP — rows stay in DOM) ───────
     function renderLeaderboard(){
       const lb = document.getElementById('leaderboard');
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
@@ -332,29 +332,31 @@
         .filter(([cls]) => classes.includes(cls))
         .sort((a,b) => Number(b[1]) - Number(a[1]));
 
-      // STEP 1: record current positions of existing rows (FIRST)
+      // ensure header exists
+      if(!lb.querySelector('h3')){
+        const h = document.createElement('h3');
+        h.style.marginTop = '0';
+        h.textContent = 'Leaderboard';
+        lb.prepend(h);
+      }
+
+      // ensure a row exists for every class (create once, reuse always)
+      classes.forEach(cls => {
+        if(!lb.querySelector(`.class-row[data-cls="${cls}"]`)){
+          const row = document.createElement('div');
+          row.dataset.cls = cls;
+          row.className = 'class-row';
+          lb.appendChild(row);
+        }
+      });
+
+      // STEP 1 — record where every row is RIGHT NOW (before reorder)
       const firstRects = {};
       lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
         firstRects[row.dataset.cls] = row.getBoundingClientRect();
       });
 
-      // STEP 2: rebuild rows in new order
-      // keep existing row elements if possible, create new ones if needed
-      const existingRows = {};
-      lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
-        existingRows[row.dataset.cls] = row;
-      });
-
-      // clear everything except the header
-      const header = lb.querySelector('h3') || (() => {
-        const h = document.createElement('h3');
-        h.style.marginTop = '0';
-        h.textContent = 'Leaderboard';
-        return h;
-      })();
-      lb.innerHTML = '';
-      lb.appendChild(header);
-
+      // STEP 2 — update content & reorder rows in DOM (appendChild moves existing nodes)
       sorted.forEach(([cls, pts], index) => {
         const numPts = Number(pts) || 0;
         let placeLabel = '', rowClass = '';
@@ -370,37 +372,32 @@
           else if(index > prev) { trendSymbol = '▼'; trendClass = 'down'; }
         }
 
-        // reuse existing row or build new one
-        let row = existingRows[cls];
-        if(!row){
-          row = document.createElement('div');
-          row.dataset.cls = cls;
-        }
+        const row = lb.querySelector(`.class-row[data-cls="${cls}"]`);
         row.className = 'class-row ' + rowClass;
-        row.style.transform = '';
-        row.style.transition = '';
 
-        const left = document.createElement('div');
-        left.className = 'left';
+        // update inner content
+        let left = row.querySelector('.left');
+        if(!left){
+          left = document.createElement('div');
+          left.className = 'left';
+          row.appendChild(left);
+        }
 
-        const placeSpan = document.createElement('div');
-        placeSpan.className   = 'place';
+        let placeSpan = left.querySelector('.place');
+        if(!placeSpan){ placeSpan = document.createElement('div'); placeSpan.className = 'place'; left.appendChild(placeSpan); }
         placeSpan.textContent = placeLabel;
 
-        const nameSpan = document.createElement('div');
-        nameSpan.className   = 'name';
+        let nameSpan = left.querySelector('.name');
+        if(!nameSpan){ nameSpan = document.createElement('div'); nameSpan.className = 'name'; left.appendChild(nameSpan); }
         nameSpan.textContent = cls;
 
-        const trendSpan = document.createElement('div');
+        let trendSpan = left.querySelector('.trend');
+        if(!trendSpan){ trendSpan = document.createElement('div'); left.appendChild(trendSpan); }
         trendSpan.className   = 'trend ' + trendClass;
         trendSpan.textContent = trendSymbol;
 
-        left.appendChild(placeSpan);
-        left.appendChild(nameSpan);
-        left.appendChild(trendSpan);
-
-        const ptsSpan = document.createElement('div');
-        ptsSpan.className = 'pts';
+        let ptsSpan = row.querySelector('.pts');
+        if(!ptsSpan){ ptsSpan = document.createElement('div'); ptsSpan.className = 'pts'; row.appendChild(ptsSpan); }
 
         const prevVal = displayedScores[cls];
         if(prevVal === undefined){
@@ -412,38 +409,28 @@
         }
         displayedScores[cls] = numPts;
 
-        row.innerHTML = '';
-        row.appendChild(left);
-        row.appendChild(ptsSpan);
+        // move row to correct position (appendChild moves if already in DOM)
         lb.appendChild(row);
       });
 
-      if(sorted.length === 0){
-        classes.forEach((c, i) => {
-          const r = document.createElement('div');
-          r.className = 'class-row';
-          r.innerHTML = `<div class="left"><div class="place">${i+1}.</div><div class="name">${c}</div></div><div class="pts">0 pts</div>`;
-          lb.appendChild(r);
-        });
-        return;
-      }
-
-      // STEP 3: FLIP — measure new positions (LAST) and invert + play
+      // STEP 3 — FLIP: measure new positions, invert, then play to final
       requestAnimationFrame(() => {
         lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
-          const cls  = row.dataset.cls;
+          const cls   = row.dataset.cls;
           const first = firstRects[cls];
-          if(!first) return; // new row, no animation needed
+          if(!first) return;
           const last = row.getBoundingClientRect();
           const dy   = first.top - last.top;
-          if(Math.abs(dy) < 1) return; // no movement
-          // invert
-          row.style.transform  = `translateY(${dy}px)`;
+          if(Math.abs(dy) < 1) return;
+          // snap back to old position instantly
           row.style.transition = 'none';
-          // play
+          row.style.transform  = `translateY(${dy}px)`;
+          // then animate to new position
           requestAnimationFrame(() => {
-            row.style.transition = 'transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-            row.style.transform  = 'translateY(0)';
+            requestAnimationFrame(() => {
+              row.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+              row.style.transform  = 'translateY(0)';
+            });
           });
         });
       });
