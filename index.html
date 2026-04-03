@@ -373,9 +373,11 @@
         const ptsSpan   = document.createElement('div');
         ptsSpan.className = 'pts';
 
-        // animate from previous displayed value
+        // animate from 0 on first load, from old value on live updates
         const prevVal = displayedScores[cls];
-        if(prevVal !== undefined && prevVal !== numPts){
+        if(prevVal === undefined){
+          animateCounter(ptsSpan, 0, numPts, 1200);
+        } else if(prevVal !== numPts){
           animateCounter(ptsSpan, prevVal, numPts, 800);
         } else {
           ptsSpan.textContent = numPts + ' pts';
