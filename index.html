@@ -323,15 +323,37 @@
       }).catch(err => { console.error("Undo failed:", err); alert("Undo failed."); });
     }
 
-    // ── render leaderboard ────────────────────────────────────
+    // ── render leaderboard (FLIP animation for position changes) ─
     function renderLeaderboard(){
       const lb = document.getElementById('leaderboard');
-      lb.innerHTML = '<h3 style="margin-top:0">Leaderboard</h3>';
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
 
       const sorted = Object.entries(scores)
         .filter(([cls]) => classes.includes(cls))
         .sort((a,b) => Number(b[1]) - Number(a[1]));
+
+      // STEP 1: record current positions of existing rows (FIRST)
+      const firstRects = {};
+      lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
+        firstRects[row.dataset.cls] = row.getBoundingClientRect();
+      });
+
+      // STEP 2: rebuild rows in new order
+      // keep existing row elements if possible, create new ones if needed
+      const existingRows = {};
+      lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
+        existingRows[row.dataset.cls] = row;
+      });
+
+      // clear everything except the header
+      const header = lb.querySelector('h3') || (() => {
+        const h = document.createElement('h3');
+        h.style.marginTop = '0';
+        h.textContent = 'Leaderboard';
+        return h;
+      })();
+      lb.innerHTML = '';
+      lb.appendChild(header);
 
       sorted.forEach(([cls, pts], index) => {
         const numPts = Number(pts) || 0;
@@ -348,19 +370,26 @@
           else if(index > prev) { trendSymbol = '▼'; trendClass = 'down'; }
         }
 
-        const row       = document.createElement('div');
-        row.className   = 'class-row ' + rowClass;
+        // reuse existing row or build new one
+        let row = existingRows[cls];
+        if(!row){
+          row = document.createElement('div');
+          row.dataset.cls = cls;
+        }
+        row.className = 'class-row ' + rowClass;
+        row.style.transform = '';
+        row.style.transition = '';
 
-        const left      = document.createElement('div');
-        left.className  = 'left';
+        const left = document.createElement('div');
+        left.className = 'left';
 
         const placeSpan = document.createElement('div');
         placeSpan.className   = 'place';
         placeSpan.textContent = placeLabel;
 
-        const nameSpan  = document.createElement('div');
-        nameSpan.className    = 'name';
-        nameSpan.textContent  = cls;
+        const nameSpan = document.createElement('div');
+        nameSpan.className   = 'name';
+        nameSpan.textContent = cls;
 
         const trendSpan = document.createElement('div');
         trendSpan.className   = 'trend ' + trendClass;
@@ -370,10 +399,9 @@
         left.appendChild(nameSpan);
         left.appendChild(trendSpan);
 
-        const ptsSpan   = document.createElement('div');
+        const ptsSpan = document.createElement('div');
         ptsSpan.className = 'pts';
 
-        // animate from 0 on first load, from old value on live updates
         const prevVal = displayedScores[cls];
         if(prevVal === undefined){
           animateCounter(ptsSpan, 0, numPts, 1200);
@@ -384,6 +412,7 @@
         }
         displayedScores[cls] = numPts;
 
+        row.innerHTML = '';
         row.appendChild(left);
         row.appendChild(ptsSpan);
         lb.appendChild(row);
@@ -396,7 +425,28 @@
           r.innerHTML = `<div class="left"><div class="place">${i+1}.</div><div class="name">${c}</div></div><div class="pts">0 pts</div>`;
           lb.appendChild(r);
         });
+        return;
       }
+
+      // STEP 3: FLIP — measure new positions (LAST) and invert + play
+      requestAnimationFrame(() => {
+        lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
+          const cls  = row.dataset.cls;
+          const first = firstRects[cls];
+          if(!first) return; // new row, no animation needed
+          const last = row.getBoundingClientRect();
+          const dy   = first.top - last.top;
+          if(Math.abs(dy) < 1) return; // no movement
+          // invert
+          row.style.transform  = `translateY(${dy}px)`;
+          row.style.transition = 'none';
+          // play
+          requestAnimationFrame(() => {
+            row.style.transition = 'transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            row.style.transform  = 'translateY(0)';
+          });
+        });
+      });
     }
 
     // ── render history ────────────────────────────────────────
