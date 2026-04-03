@@ -162,6 +162,67 @@
     }
     #logout-btn:hover{ background:#cc0000; }
 
+    /* position change indicator */
+    .trend{
+      font-size:1.1rem;
+      font-weight:700;
+      min-width:28px;
+      text-align:center;
+    }
+    .trend.up{   color:#00e676; }
+    .trend.down{ color:#ff1744; }
+    .trend.same{ color:#888;    }
+
+    /* help button */
+    #help-btn{
+      position:fixed;
+      bottom:18px;
+      right:18px;
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      background:var(--accent);
+      color:#000;
+      font-size:1.3rem;
+      font-weight:700;
+      border:none;
+      cursor:pointer;
+      z-index:999;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 4px 14px rgba(0,246,255,0.3);
+      max-width:42px;
+      padding:0;
+    }
+    #help-btn:hover{ background:var(--accent-2); }
+
+    #help-modal{
+      display:none;
+      position:fixed;
+      bottom:72px;
+      right:18px;
+      background:var(--card);
+      border-radius:14px;
+      padding:16px 20px;
+      box-shadow:0 8px 26px rgba(0,0,0,0.6);
+      z-index:998;
+      width:240px;
+      max-width:88vw;
+    }
+    #help-modal h4{
+      margin:0 0 10px 0;
+      color:var(--accent);
+      font-size:1rem;
+    }
+    #help-modal .help-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:8px 0;
+      font-size:0.95rem;
+    }
+
     /* small screens spacing */
     @media (max-width:520px){
       .class-row{ padding:10px; font-size:1rem; }
@@ -205,6 +266,15 @@
 
   <div class="leaderboard" id="leaderboard" aria-live="polite"></div>
 
+  <!-- Help button -->
+  <button id="help-btn" onclick="toggleHelp()" aria-label="Help">?</button>
+  <div id="help-modal" aria-hidden="true">
+    <h4>📖 What do the symbols mean?</h4>
+    <div class="help-row"><span style="color:#00e676;font-size:1.3rem">▲</span> The class moved up in the rankings</div>
+    <div class="help-row"><span style="color:#ff1744;font-size:1.3rem">▼</span> The class moved down in the rankings</div>
+    <div class="help-row"><span style="color:#888;font-size:1.3rem">—</span> No change in position</div>
+  </div>
+
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -222,9 +292,20 @@
     // classes (order here doesn't matter; sorting is automatic)
     const classes = ["7A","6B","6A","5A","5B","8A"];
     let scores = {};
+    let previousPositions = {}; // persisted in Firebase
 
     // The email domain used for all admin accounts in Firebase Auth
     const EMAIL_DOMAIN = "@creascola.hu";
+
+    // helper: build position map from scores {className: rankIndex}
+    function buildPositions(scoresObj){
+      const sorted = Object.entries(scoresObj)
+        .filter(([cls]) => classes.includes(cls))
+        .sort((a,b) => Number(b[1]) - Number(a[1]));
+      const pos = {};
+      sorted.forEach(([cls], i) => pos[cls] = i);
+      return pos;
+    }
 
     // UI helpers
     function toggleLogin(){
@@ -234,26 +315,32 @@
       area.setAttribute('aria-hidden', !isHidden);
     }
 
- function login(){
-  const username = document.getElementById('username').value.trim().toLowerCase();
-  const pass = document.getElementById('password').value;
-  const status = document.getElementById('login-status');
+    function login(){
+      const username = document.getElementById('username').value.trim().toLowerCase();
+      const pass = document.getElementById('password').value;
+      const status = document.getElementById('login-status');
 
-  const email = username + EMAIL_DOMAIN;
-  console.log("Attempting login with email:", email);
-  console.log("Password length:", pass.length);
+      if(!username || !pass){
+        status.textContent = "❌ Please enter username and password.";
+        return;
+      }
 
-  auth.signInWithEmailAndPassword(email, pass)
-    .then(() => {
-      document.getElementById('login-area').style.display = 'none';
-      document.getElementById('username').value = '';
-      document.getElementById('password').value = '';
-    })
-    .catch(err => {
-      console.error("Login error:", err.code, err.message);
-      status.textContent = "❌ Wrong username or password.";
-    });
-}
+      // Build the Firebase email from the username
+      const email = username + EMAIL_DOMAIN;
+      status.textContent = "⏳ Logging in...";
+
+      auth.signInWithEmailAndPassword(email, pass)
+        .then(() => {
+          // onAuthStateChanged handles the rest
+          document.getElementById('login-area').style.display = 'none';
+          document.getElementById('username').value = '';
+          document.getElementById('password').value = '';
+        })
+        .catch(err => {
+          console.error("Login error:", err.code);
+          status.textContent = "❌ Wrong username or password.";
+        });
+    }
 
     function logout(){
       auth.signOut().catch(err => console.error("Logout error:", err));
@@ -269,7 +356,6 @@
       }
     });
 
-    // update points (supports negative numbers like "-2")
     function updatePoints(){
       if(!auth.currentUser){
         alert("Please log in first.");
@@ -286,10 +372,17 @@
 
       const points = parseInt(raw, 10);
       if(!scores[selected]) scores[selected] = 0;
+
+      // save current positions as "previous" before updating
+      const currentPositions = buildPositions(scores);
+
       scores[selected] = Number(scores[selected]) + points;
       if(scores[selected] < 0) scores[selected] = 0;
-
-      db.ref('scores').set(scores).catch(err => {
+      
+      db.ref().update({
+        scores: scores,
+        previousPositions: currentPositions
+      }).catch(err => {
         console.error("Firebase write failed:", err);
         alert("Failed to update scores. Check console.");
       });
@@ -320,6 +413,15 @@
         else if(index === 2){ placeLabel = '🥉 3rd'; rowClass = 'bronze'; }
         else { placeLabel = (index+1) + '.'; }
 
+        // trend indicator
+        let trendSymbol = '—';
+        let trendClass = 'same';
+        if(previousPositions && previousPositions[cls] !== undefined){
+          const prev = previousPositions[cls];
+          if(index < prev){ trendSymbol = '▲'; trendClass = 'up'; }
+          else if(index > prev){ trendSymbol = '▼'; trendClass = 'down'; }
+        }
+
         const row = document.createElement('div');
         row.className = 'class-row ' + rowClass;
 
@@ -332,8 +434,13 @@
         nameSpan.className = 'name';
         nameSpan.textContent = cls;
 
+        const trendSpan = document.createElement('div');
+        trendSpan.className = 'trend ' + trendClass;
+        trendSpan.textContent = trendSymbol;
+
         left.appendChild(placeSpan);
         left.appendChild(nameSpan);
+        left.appendChild(trendSpan);
 
         const ptsSpan = document.createElement('div');
         ptsSpan.className = 'pts';
@@ -354,17 +461,31 @@
       }
     }
 
-    // subscribe to Firebase scores (live updates)
-    db.ref('scores').on('value', snapshot => {
-      const data = snapshot.val();
-      scores = data || {};
+
+    db.ref().on('value', snapshot => {
+      const data = snapshot.val() || {};
+      scores = data.scores || {};
+      previousPositions = data.previousPositions || {};
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
       renderLeaderboard();
     }, err => {
       console.error("Firebase read failed:", err);
     });
 
-    // allow Enter in password field to submit
+    function toggleHelp(){
+      const modal = document.getElementById('help-modal');
+      const isHidden = modal.style.display === 'none' || modal.style.display === '';
+      modal.style.display = isHidden ? 'block' : 'none';
+      modal.setAttribute('aria-hidden', !isHidden);
+    }
+    document.addEventListener('click', (e) => {
+      const modal = document.getElementById('help-modal');
+      const btn = document.getElementById('help-btn');
+      if(modal.style.display === 'block' && !modal.contains(e.target) && e.target !== btn){
+        modal.style.display = 'none';
+      }
+    });
+
     document.addEventListener('keydown', (e) => {
       const active = document.activeElement;
       if(e.key === 'Enter'){
