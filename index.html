@@ -143,6 +143,32 @@
     #reset-btn{ margin-top:10px; background:#8b0000; color:#fff; }
     #reset-btn:hover{ background:#cc0000; }
 
+    /* reset confirmation modal */
+    #reset-modal{
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.75); z-index:1000;
+      align-items:center; justify-content:center;
+    }
+    #reset-modal-box{
+      background:#1a1a2e; border:1px solid rgba(255,255,255,0.1);
+      border-radius:16px; padding:28px 24px; width:320px; max-width:90vw;
+      text-align:center; box-shadow:0 12px 40px rgba(0,0,0,0.8);
+    }
+    #reset-modal-box h3{ margin:0 0 6px 0; color:#ff4444; font-size:1.1rem; }
+    #reset-modal-box p{ margin:0 0 16px 0; color:#aaa; font-size:0.9rem; line-height:1.4; }
+    #reset-password-input{
+      width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.15);
+      background:#111; color:#fff; font-size:1rem; text-align:center;
+      box-sizing:border-box; margin-bottom:8px;
+    }
+    #reset-error{ color:#ff6b6b; font-size:0.88rem; min-height:1.2em; margin-bottom:10px; }
+    .reset-modal-btns{ display:flex; gap:10px; justify-content:center; }
+    .reset-modal-btns button{ margin-top:0; }
+    #reset-confirm-btn{ background:#cc0000; color:#fff; flex:1; }
+    #reset-confirm-btn:hover{ background:#ff0000; }
+    #reset-cancel-btn{ background:#444; color:#fff; flex:1; }
+    #reset-cancel-btn:hover{ background:#666; }
+
     #confetti-canvas{
       position:fixed; top:0; left:0; width:100%; height:100%;
       pointer-events:none; z-index:9999;
@@ -193,14 +219,28 @@
   <div class="leaderboard" id="leaderboard" aria-live="polite"></div>
 
   <div id="history-box" style="display:none;">
-    <h3> Recent Changes</h3>
+    <h3>📋 Recent Changes</h3>
     <div id="history-list"></div>
+  </div>
+
+  <!-- reset confirmation modal -->
+  <div id="reset-modal">
+    <div id="reset-modal-box">
+      <h3>⚠️ Reset All Scores</h3>
+      <p>This will set every class back to 0 and clear all history. Enter your password to confirm.</p>
+      <input id="reset-password-input" type="password" placeholder="Your password" autocomplete="off" />
+      <div id="reset-error"></div>
+      <div class="reset-modal-btns">
+        <button id="reset-cancel-btn" onclick="closeResetModal()">Cancel</button>
+        <button id="reset-confirm-btn" onclick="confirmReset()">Reset</button>
+      </div>
+    </div>
   </div>
 
   <canvas id="confetti-canvas"></canvas>
   <button id="help-btn" onclick="toggleHelp()" aria-label="Help">?</button>
   <div id="help-modal" aria-hidden="true">
-    <h4> What do the symbols mean?</h4>
+    <h4>📖 What do the symbols mean?</h4>
     <div class="help-row"><span style="color:#00e676;font-size:1.3rem">▲</span> The class moved up in the rankings</div>
     <div class="help-row"><span style="color:#ff1744;font-size:1.3rem">▼</span> The class moved down in the rankings</div>
     <div class="help-row"><span style="color:#888;font-size:1.3rem">—</span> No change in position</div>
@@ -471,17 +511,43 @@
     // ── reset scores ─────────────────────────────────────────
     function resetScores(){
       if(!auth.currentUser){ alert("Please log in first."); return; }
-      if(!confirm("Reset ALL scores to 0? This cannot be undone!")) return;
-      if(!confirm("Are you absolutely sure? All points will be lost.")) return;
-      const zeroed = {};
-      classes.forEach(c => zeroed[c] = 0);
-      db.ref().update({
-        scores:            zeroed,
-        previousPositions: null,
-        history:           null,
-        undoSnapshot:      null,
-        leaderHistory:     null
-      }).catch(err => { console.error("Reset failed:", err); alert("Reset failed."); });
+      // show custom password confirmation modal
+      document.getElementById('reset-modal').style.display = 'flex';
+      document.getElementById('reset-password-input').value = '';
+      document.getElementById('reset-error').textContent = '';
+      setTimeout(() => document.getElementById('reset-password-input').focus(), 50);
+    }
+
+    function confirmReset(){
+      const pass = document.getElementById('reset-password-input').value;
+      const error = document.getElementById('reset-error');
+      if(!pass){ error.textContent = '❌ Please enter your password.'; return; }
+      error.textContent = '⏳ Verifying...';
+
+      // re-authenticate with Firebase to verify password
+      const user = auth.currentUser;
+      const credential = firebase.auth.EmailAuthProvider.credential(user.email, pass);
+      user.reauthenticateWithCredential(credential)
+        .then(() => {
+          closeResetModal();
+          const zeroed = {};
+          classes.forEach(c => zeroed[c] = 0);
+          db.ref().update({
+            scores:            zeroed,
+            previousPositions: null,
+            history:           null,
+            undoSnapshot:      null,
+            leaderHistory:     null
+          }).catch(err => { console.error("Reset failed:", err); alert("Reset failed."); });
+        })
+        .catch(err => {
+          console.error("Re-auth failed:", err.code);
+          error.textContent = '❌ Wrong password.';
+        });
+    }
+
+    function closeResetModal(){
+      document.getElementById('reset-modal').style.display = 'none';
     }
 
     // ── confetti ──────────────────────────────────────────────
@@ -605,7 +671,9 @@
       if(e.key === 'Enter'){
         if(a && (a.id === 'username' || a.id === 'password')) login();
         else if(a && a.id === 'points-input') updatePoints();
+        else if(a && a.id === 'reset-password-input') confirmReset();
       }
+      if(e.key === 'Escape') closeResetModal();
     });
   </script>
 </body>
