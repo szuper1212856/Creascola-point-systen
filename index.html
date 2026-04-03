@@ -269,7 +269,7 @@
   <!-- Help button -->
   <button id="help-btn" onclick="toggleHelp()" aria-label="Help">?</button>
   <div id="help-modal" aria-hidden="true">
-    <h4> What do the symbols mean?</h4>
+    <h4>📖 What do the symbols mean?</h4>
     <div class="help-row"><span style="color:#00e676;font-size:1.3rem">▲</span> The class moved up in the rankings</div>
     <div class="help-row"><span style="color:#ff1744;font-size:1.3rem">▼</span> The class moved down in the rankings</div>
     <div class="help-row"><span style="color:#888;font-size:1.3rem">—</span> No change in position</div>
@@ -356,6 +356,7 @@
       }
     });
 
+    // update points (supports negative numbers like "-2")
     function updatePoints(){
       if(!auth.currentUser){
         alert("Please log in first.");
@@ -378,7 +379,8 @@
 
       scores[selected] = Number(scores[selected]) + points;
       if(scores[selected] < 0) scores[selected] = 0;
-      
+
+      // write scores and previousPositions to Firebase atomically
       db.ref().update({
         scores: scores,
         previousPositions: currentPositions
@@ -434,6 +436,7 @@
         nameSpan.className = 'name';
         nameSpan.textContent = cls;
 
+        // trend span
         const trendSpan = document.createElement('div');
         trendSpan.className = 'trend ' + trendClass;
         trendSpan.textContent = trendSymbol;
@@ -461,23 +464,32 @@
       }
     }
 
-
-    db.ref().on('value', snapshot => {
-      const data = snapshot.val() || {};
-      scores = data.scores || {};
-      previousPositions = data.previousPositions || {};
+    // subscribe to scores (live updates)
+    db.ref('scores').on('value', snapshot => {
+      scores = snapshot.val() || {};
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
       renderLeaderboard();
     }, err => {
       console.error("Firebase read failed:", err);
     });
 
+    // subscribe to previousPositions
+    db.ref('previousPositions').on('value', snapshot => {
+      previousPositions = snapshot.val() || {};
+      renderLeaderboard();
+    }, err => {
+      console.error("Firebase previousPositions read failed:", err);
+    });
+
+    // help modal toggle
     function toggleHelp(){
       const modal = document.getElementById('help-modal');
       const isHidden = modal.style.display === 'none' || modal.style.display === '';
       modal.style.display = isHidden ? 'block' : 'none';
       modal.setAttribute('aria-hidden', !isHidden);
     }
+
+    // close help modal if clicking outside
     document.addEventListener('click', (e) => {
       const modal = document.getElementById('help-modal');
       const btn = document.getElementById('help-btn');
@@ -486,6 +498,7 @@
       }
     });
 
+    // allow Enter in password field to submit
     document.addEventListener('keydown', (e) => {
       const active = document.activeElement;
       if(e.key === 'Enter'){
