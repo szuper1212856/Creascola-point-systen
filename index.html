@@ -143,6 +143,32 @@
     #reset-btn{ margin-top:10px; background:#8b0000; color:#fff; }
     #reset-btn:hover{ background:#cc0000; }
 
+    /* test mode */
+    #test-banner{
+      display:none;
+      width:100%; max-width:760px;
+      background:repeating-linear-gradient(
+        45deg, rgba(255,152,0,0.12), rgba(255,152,0,0.12) 10px,
+        rgba(255,152,0,0.06) 10px, rgba(255,152,0,0.06) 20px
+      );
+      border:1px solid rgba(255,152,0,0.4);
+      border-radius:12px;
+      padding:10px 18px;
+      margin-bottom:12px;
+      font-size:0.88rem;
+      color:#ff9800;
+      font-weight:600;
+      text-align:center;
+      letter-spacing:0.03em;
+    }
+    .test-mode-label{
+      display:none;
+      font-size:0.72rem;
+      color:#ff9800;
+      margin-top:4px;
+      letter-spacing:0.04em;
+    }
+
     /* reset confirmation modal */
     #reset-modal{
       display:none; position:fixed; inset:0;
@@ -210,12 +236,14 @@
     <input id="points-input" type="text" placeholder="Enter points (e.g. 5 or -2)" />
     <div style="display:flex;justify-content:center;flex-direction:column;align-items:center;gap:8px;">
       <button onclick="updatePoints()">Update Points</button>
+      <div class="test-mode-label" id="test-mode-label">🧪 Simulated — nothing will be saved</div>
       <button id="undo-btn" onclick="undoLast()" disabled>↩ Undo Last</button>
       <button id="reset-btn" onclick="resetScores()">🗑 Reset All Scores</button>
       <button id="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
 
+  <div id="test-banner">🧪 TEST MODE ACTIVE — Changes are simulated and will NOT be saved to Firebase</div>
   <div class="leaderboard" id="leaderboard" aria-live="polite"></div>
 
   <div id="history-box" style="display:none;">
@@ -257,7 +285,10 @@
     const auth = firebase.auth();
 
     const classes      = ["7A","6B","6A","5A","5B","8A"];
-    const EMAIL_DOMAIN = "@creascola.hu";
+    const EMAIL_DOMAIN  = "@creascola.hu";
+    const TEST_USER     = "kiss_balazs";
+    let   testMode      = false;
+    let   testScores    = null; // local copy for simulation
     const HISTORY_LIMIT = 10;
 
     let scores           = {};
@@ -332,9 +363,23 @@
 
     auth.onAuthStateChanged(user => {
       document.getElementById('points-area').style.display = user ? 'block' : 'none';
-      if(!user){
-        document.getElementById('login-status').textContent = '';
-        document.getElementById('history-box').style.display = 'none';
+      if(user){
+        const username = user.email.replace(EMAIL_DOMAIN, '');
+        testMode = (username === TEST_USER);
+        document.getElementById('test-banner').style.display      = testMode ? 'block' : 'none';
+        document.getElementById('test-mode-label').style.display  = testMode ? 'block' : 'none';
+        document.getElementById('reset-btn').style.display        = testMode ? 'none'  : 'block';
+        if(testMode){
+          // clone real scores for local simulation
+          testScores = JSON.parse(JSON.stringify(scores));
+        }
+      } else {
+        testMode   = false;
+        testScores = null;
+        document.getElementById('test-banner').style.display     = 'none';
+        document.getElementById('test-mode-label').style.display = 'none';
+        document.getElementById('login-status').textContent      = '';
+        document.getElementById('history-box').style.display     = 'none';
       }
     });
 
@@ -383,6 +428,7 @@
 
     // ── undo ──────────────────────────────────────────────────
     function undoLast(){
+      if(testMode){ alert("Undo is disabled in test mode."); return; }
       if(!auth.currentUser || !lastSnapshot) return;
       if(!confirm("Undo the last points change?")) return;
       const revertedHistory = history.slice(1);
