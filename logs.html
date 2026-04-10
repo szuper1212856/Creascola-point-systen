@@ -241,6 +241,38 @@
       font-size:0.85rem;
       letter-spacing:0.1em;
     }
+    /* help button */
+    #help-btn{
+      position:fixed; bottom:18px; right:18px; width:42px; height:42px;
+      border-radius:50%; background:var(--accent); color:#000; font-size:1.3rem;
+      font-weight:700; border:none; cursor:pointer; z-index:999;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 4px 14px rgba(0,246,255,0.3); padding:0;
+      font-family:'JetBrains Mono', monospace;
+    }
+    #help-btn:hover{ background:#00c8d6; }
+
+    #help-modal{
+      display:none; position:fixed; bottom:72px; right:18px;
+      background:#0f1624; border:1px solid rgba(0,246,255,0.2);
+      border-radius:14px; padding:20px 22px;
+      box-shadow:0 8px 26px rgba(0,0,0,0.7); z-index:998;
+      width:280px; max-width:88vw;
+    }
+    #help-modal h4{
+      margin:0 0 12px 0; color:var(--accent);
+      font-family:'Syne', sans-serif; font-size:1rem; font-weight:800;
+    }
+    #help-modal .help-section{ margin-bottom:14px; }
+    #help-modal .help-section h5{
+      color:#b388ff; font-size:0.78rem; letter-spacing:0.08em;
+      margin-bottom:6px; font-family:'Syne', sans-serif;
+    }
+    #help-modal .help-row{
+      display:flex; align-items:flex-start; gap:8px;
+      margin:5px 0; font-size:0.8rem; color:#8090a0; line-height:1.4;
+    }
+    #help-modal .help-row span:first-child{ flex-shrink:0; }
   </style>
 </head>
 <body>
@@ -281,6 +313,28 @@
   </div>
 
 </div>
+
+  <!-- help button -->
+  <button id="help-btn" onclick="toggleHelp()" aria-label="Help">?</button>
+  <div id="help-modal" aria-hidden="true">
+    <h4>📖 About This Page</h4>
+
+    <div class="help-section">
+      <h5>FOR ADMINS</h5>
+      <div class="help-row"><span>🟢</span><span>Login — someone logged into the admin panel</span></div>
+      <div class="help-row"><span>🔴</span><span>Logout — someone logged out</span></div>
+      <div class="help-row"><span>🔵</span><span>Points — a class had points added or removed</span></div>
+      <div class="help-row"><span>⚠️</span><span>Reset — all scores were wiped</span></div>
+      <div class="help-row"><span>🔍</span><span>Use the filter buttons to show only specific event types</span></div>
+    </div>
+
+    <div class="help-section">
+      <h5>FOR STUDENTS</h5>
+      <div class="help-row"><span>📋</span><span>This page shows a full history of every change made to the leaderboard</span></div>
+      <div class="help-row"><span>🕐</span><span>Each entry shows exactly when it happened and from which device</span></div>
+      <div class="help-row"><span>🔒</span><span>You need an admin account to access this page</span></div>
+    </div>
+  </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -438,6 +492,21 @@
       list.appendChild(div);
     });
   }
+
+  // ── help ──────────────────────────────────────────────────
+  function toggleHelp(){
+    const modal  = document.getElementById('help-modal');
+    const hidden = modal.style.display === 'none' || modal.style.display === '';
+    modal.style.display = hidden ? 'block' : 'none';
+    modal.setAttribute('aria-hidden', !hidden);
+  }
+
+  document.addEventListener('click', e => {
+    const modal = document.getElementById('help-modal');
+    const btn   = document.getElementById('help-btn');
+    if(modal.style.display === 'block' && !modal.contains(e.target) && e.target !== btn)
+      modal.style.display = 'none';
+  });
 </script>
 </body>
 </html>
