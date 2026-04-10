@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Creascola · Activity Logs</title>
+  <link rel="icon" href="data:," />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg:#080c14;
+      --surface:#0f1624;
+      --border:rgba(255,255,255,0.06);
+      --accent:#00f6ff;
+      --accent-dim:rgba(0,246,255,0.12);
+      --green:#00e676;
+      --orange:#ff9800;
+      --red:#ff4444;
+      --purple:#b388ff;
+      --text:#e0e8f0;
+      --muted:#556070;
+    }
+
+    *{ box-sizing:border-box; margin:0; padding:0; }
+
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:'JetBrains Mono', monospace;
+      min-height:100vh;
+      padding:0;
+    }
+
+    /* grid noise texture overlay */
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background-image:
+        linear-gradient(rgba(0,246,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,246,255,0.015) 1px, transparent 1px);
+      background-size:40px 40px;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .page{ position:relative; z-index:1; max-width:900px; margin:0 auto; padding:40px 24px 80px; }
+
+    /* header */
+    .header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:40px;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+    .header-left h1{
+      font-family:'Syne', sans-serif;
+      font-size:clamp(1.6rem,4vw,2.4rem);
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:-0.02em;
+      text-shadow:0 0 30px rgba(0,246,255,0.3);
+    }
+    .header-left p{
+      color:var(--muted);
+      font-size:0.78rem;
+      margin-top:4px;
+      letter-spacing:0.05em;
+    }
+    .back-btn{
+      background:var(--surface);
+      border:1px solid var(--border);
+      color:var(--accent);
+      padding:8px 16px;
+      border-radius:8px;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.82rem;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      transition:all .15s;
+    }
+    .back-btn:hover{ background:var(--accent-dim); border-color:var(--accent); }
+
+    /* login panel */
+    #login-panel{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:40px 32px;
+      max-width:380px;
+      margin:80px auto 0;
+      text-align:center;
+    }
+    #login-panel h2{
+      font-family:'Syne', sans-serif;
+      font-weight:800;
+      color:var(--accent);
+      margin-bottom:8px;
+      font-size:1.4rem;
+    }
+    #login-panel p{ color:var(--muted); font-size:0.8rem; margin-bottom:24px; }
+    #login-panel input{
+      width:100%; padding:12px 14px; border-radius:8px;
+      border:1px solid var(--border); background:#0a0f1a;
+      color:var(--text); font-family:'JetBrains Mono', monospace;
+      font-size:0.9rem; margin-bottom:12px; text-align:center;
+    }
+    #login-panel input:focus{ outline:none; border-color:var(--accent); }
+    #login-btn{
+      width:100%; padding:12px; border-radius:8px;
+      background:var(--accent); border:none; color:#000;
+      font-family:'Syne', sans-serif; font-weight:800;
+      font-size:1rem; cursor:pointer; transition:all .15s;
+    }
+    #login-btn:hover{ background:#00c8d6; }
+    #login-error{ color:var(--red); font-size:0.8rem; margin-top:10px; min-height:1.2em; }
+
+    /* stats bar */
+    .stats-bar{
+      display:flex;
+      gap:12px;
+      margin-bottom:24px;
+      flex-wrap:wrap;
+    }
+    .stat{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:12px 18px;
+      flex:1;
+      min-width:120px;
+    }
+    .stat-val{
+      font-family:'Syne', sans-serif;
+      font-size:1.6rem;
+      font-weight:800;
+      color:var(--accent);
+      line-height:1;
+    }
+    .stat-label{ color:var(--muted); font-size:0.72rem; margin-top:4px; letter-spacing:0.05em; }
+
+    /* filter bar */
+    .filter-bar{
+      display:flex;
+      gap:8px;
+      margin-bottom:20px;
+      flex-wrap:wrap;
+    }
+    .filter-btn{
+      padding:6px 14px;
+      border-radius:20px;
+      border:1px solid var(--border);
+      background:transparent;
+      color:var(--muted);
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.78rem;
+      cursor:pointer;
+      transition:all .15s;
+    }
+    .filter-btn:hover{ border-color:var(--accent); color:var(--accent); }
+    .filter-btn.active{ background:var(--accent-dim); border-color:var(--accent); color:var(--accent); }
+
+    /* log entries */
+    .log-list{ display:flex; flex-direction:column; gap:6px; }
+
+    .log-entry{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:12px 16px;
+      display:grid;
+      grid-template-columns: auto 1fr auto;
+      align-items:center;
+      gap:14px;
+      opacity:0;
+      animation:slideIn 0.3s forwards;
+      transition:border-color .15s;
+    }
+    .log-entry:hover{ border-color:rgba(0,246,255,0.2); }
+
+    @keyframes slideIn{
+      from{ opacity:0; transform:translateY(-4px); }
+      to{   opacity:1; transform:translateY(0); }
+    }
+
+    .log-badge{
+      width:34px; height:34px;
+      border-radius:8px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1rem; flex-shrink:0;
+    }
+    .badge-login{   background:rgba(0,230,118,0.12);  }
+    .badge-logout{  background:rgba(255,68,68,0.12);   }
+    .badge-points{  background:rgba(0,246,255,0.10);   }
+    .badge-reset{   background:rgba(255,152,0,0.12);   }
+
+    .log-body{}
+    .log-main{
+      font-size:0.88rem;
+      font-weight:600;
+      color:var(--text);
+      line-height:1.3;
+    }
+    .log-sub{
+      font-size:0.75rem;
+      color:var(--muted);
+      margin-top:3px;
+    }
+    .log-sub .device{ color:#7986cb; }
+
+    .log-time{
+      text-align:right;
+      font-size:0.75rem;
+      color:var(--muted);
+      white-space:nowrap;
+      flex-shrink:0;
+    }
+    .log-time .time-main{ color:var(--text); font-size:0.82rem; }
+    .log-time .time-date{ margin-top:2px; }
+
+    .pts-pos{ color:var(--green); }
+    .pts-neg{ color:var(--red); }
+
+    .empty-state{
+      text-align:center;
+      padding:60px 20px;
+      color:var(--muted);
+      font-size:0.9rem;
+    }
+    .empty-state span{ display:block; font-size:2.5rem; margin-bottom:12px; }
+
+    #loading{
+      text-align:center;
+      padding:60px;
+      color:var(--muted);
+      font-size:0.85rem;
+      letter-spacing:0.1em;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- login panel (shown before auth) -->
+  <div id="login-panel">
+    <h2>🔐 Admin Access</h2>
+    <p>This page is restricted to admins only.</p>
+    <input id="l-user" type="text" placeholder="Username" autocomplete="off" />
+    <input id="l-pass" type="password" placeholder="Password" autocomplete="off" />
+    <button id="login-btn" onclick="doLogin()">Access Logs</button>
+    <div id="login-error"></div>
+  </div>
+
+  <!-- main content (shown after auth) -->
+  <div id="main-content" style="display:none;">
+    <div class="header">
+      <div class="header-left">
+        <h1>⬡ Activity Logs</h1>
+        <p id="log-meta">CREASCOLA LEADERBOARD · ADMIN PANEL</p>
+      </div>
+      <a href="index.html" class="back-btn">← Back to Leaderboard</a>
+    </div>
+
+    <div class="stats-bar" id="stats-bar"></div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+      <button class="filter-btn" onclick="setFilter('login', this)">🟢 Logins</button>
+      <button class="filter-btn" onclick="setFilter('logout', this)">🔴 Logouts</button>
+      <button class="filter-btn" onclick="setFilter('points', this)">🔵 Points</button>
+      <button class="filter-btn" onclick="setFilter('reset', this)">🟠 Resets</button>
+    </div>
+
+    <div id="loading">Loading logs...</div>
+    <div class="log-list" id="log-list" style="display:none;"></div>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  firebase.initializeApp(firebaseConfig);
+  const db   = firebase.database();
+  const auth = firebase.auth();
+  const EMAIL_DOMAIN = '@creascola.hu';
+
+  let allLogs    = [];
+  let activeFilter = 'all';
+
+  // ── auth ────────────────────────────────────────────────────
+  function doLogin(){
+    const username = document.getElementById('l-user').value.trim().toLowerCase();
+    const pass     = document.getElementById('l-pass').value;
+    const error    = document.getElementById('login-error');
+    if(!username || !pass){ error.textContent = '❌ Enter username and password.'; return; }
+    error.textContent = '⏳ Verifying...';
+    auth.signInWithEmailAndPassword(username + EMAIL_DOMAIN, pass)
+      .catch(err => { error.textContent = '❌ Wrong username or password.'; });
+  }
+
+  auth.onAuthStateChanged(user => {
+    if(user){
+      document.getElementById('login-panel').style.display  = 'none';
+      document.getElementById('main-content').style.display = 'block';
+      loadLogs();
+    } else {
+      document.getElementById('login-panel').style.display  = 'block';
+      document.getElementById('main-content').style.display = 'none';
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Enter'){
+      const a = document.activeElement;
+      if(a && (a.id === 'l-user' || a.id === 'l-pass')) doLogin();
+    }
+  });
+
+  // ── load logs ───────────────────────────────────────────────
+  function loadLogs(){
+    db.ref('logs').on('value', snap => {
+      allLogs = snap.val() ? Object.values(snap.val()) : [];
+      allLogs.sort((a,b) => b.time - a.time);
+      renderStats();
+      renderLogs();
+    });
+  }
+
+  // ── stats ───────────────────────────────────────────────────
+  function renderStats(){
+    const logins  = allLogs.filter(l => l.action === 'login').length;
+    const points  = allLogs.filter(l => l.action === 'points').length;
+    const resets  = allLogs.filter(l => l.action === 'reset').length;
+    const users   = [...new Set(allLogs.map(l => l.user))].length;
+
+    document.getElementById('stats-bar').innerHTML = `
+      <div class="stat"><div class="stat-val">${allLogs.length}</div><div class="stat-label">TOTAL EVENTS</div></div>
+      <div class="stat"><div class="stat-val">${logins}</div><div class="stat-label">LOGINS</div></div>
+      <div class="stat"><div class="stat-val">${points}</div><div class="stat-label">POINT CHANGES</div></div>
+      <div class="stat"><div class="stat-val">${users}</div><div class="stat-label">UNIQUE USERS</div></div>
+      ${resets > 0 ? `<div class="stat"><div class="stat-val" style="color:var(--orange)">${resets}</div><div class="stat-label">RESETS</div></div>` : ''}
+    `;
+  }
+
+  // ── filter ──────────────────────────────────────────────────
+  function setFilter(filter, btn){
+    activeFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderLogs();
+  }
+
+  // ── render ──────────────────────────────────────────────────
+  function formatTime(ts){
+    if(!ts) return '—';
+    const d   = new Date(ts);
+    const pad = n => String(n).padStart(2,'0');
+    const time = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    const date = `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+    return { time, date };
+  }
+
+  function timeAgo(ts){
+    const diff = Date.now() - ts;
+    const m = Math.floor(diff / 60000);
+    const h = Math.floor(diff / 3600000);
+    const d = Math.floor(diff / 86400000);
+    if(m < 1)  return 'just now';
+    if(m < 60) return `${m}m ago`;
+    if(h < 24) return `${h}h ago`;
+    return `${d}d ago`;
+  }
+
+  function renderLogs(){
+    const list    = document.getElementById('log-list');
+    const loading = document.getElementById('loading');
+    const filtered = activeFilter === 'all' ? allLogs : allLogs.filter(l => l.action === activeFilter);
+
+    loading.style.display = 'none';
+    list.style.display    = 'flex';
+    list.innerHTML        = '';
+
+    if(filtered.length === 0){
+      list.innerHTML = `<div class="empty-state"><span>📭</span>No ${activeFilter === 'all' ? '' : activeFilter + ' '}logs yet.</div>`;
+      return;
+    }
+
+    filtered.forEach((log, i) => {
+      const div  = document.createElement('div');
+      div.className = 'log-entry';
+      div.style.animationDelay = Math.min(i * 30, 300) + 'ms';
+
+      const t = formatTime(log.time);
+
+      // badge
+      const badges = { login:'🟢', logout:'🔴', points:'🔵', reset:'⚠️' };
+      const badgeClass = { login:'badge-login', logout:'badge-logout', points:'badge-points', reset:'badge-reset' };
+      const badge = `<div class="log-badge ${badgeClass[log.action] || ''}">${badges[log.action] || '⚪'}</div>`;
+
+      // main text
+      let main = '', sub = '';
+      if(log.action === 'login'){
+        main = `<span style="color:var(--green)">${log.user}</span> logged in`;
+      } else if(log.action === 'logout'){
+        main = `<span style="color:var(--red)">${log.user}</span> logged out`;
+      } else if(log.action === 'points'){
+        const sign      = log.change > 0 ? '+' : '';
+        const cls       = log.change > 0 ? 'pts-pos' : 'pts-neg';
+        main = `<span style="color:var(--accent)">${log.user}</span> updated <strong>${log.class}</strong>: <span class="${cls}">${sign}${log.change} pts</span>`;
+        sub  = `${log.before} → ${log.after} pts`;
+      } else if(log.action === 'reset'){
+        main = `<span style="color:var(--orange)">${log.user}</span> reset all scores`;
+      }
+
+      const device = log.device ? `<span class="device">${log.device}</span>` : '';
+      if(device) sub = sub ? sub + ' · ' + device : device;
+
+      div.innerHTML = `
+        ${badge}
+        <div class="log-body">
+          <div class="log-main">${main}</div>
+          ${sub ? `<div class="log-sub">${sub}</div>` : ''}
+        </div>
+        <div class="log-time">
+          <div class="time-main">${t.time}</div>
+          <div class="time-date">${t.date}</div>
+          <div style="margin-top:3px;color:#445">${timeAgo(log.time)}</div>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+</script>
+</body>
+</html>
