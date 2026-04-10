@@ -527,13 +527,29 @@
     }
 
     // ── activity logger ──────────────────────────────────────
+    function getDeviceInfo(){
+      const ua = navigator.userAgent;
+      let device = 'Desktop';
+      if(/Android/i.test(ua))       device = 'Android';
+      else if(/iPhone/i.test(ua))   device = 'iPhone';
+      else if(/iPad/i.test(ua))     device = 'iPad';
+      else if(/Macintosh/i.test(ua)) device = 'Mac';
+      else if(/Windows/i.test(ua))  device = 'Windows';
+      else if(/Linux/i.test(ua))    device = 'Linux';
+      let browser = 'Unknown';
+      if(/Edg\//i.test(ua))         browser = 'Edge';
+      else if(/Chrome/i.test(ua))   browser = 'Chrome';
+      else if(/Firefox/i.test(ua))  browser = 'Firefox';
+      else if(/Safari/i.test(ua))   browser = 'Safari';
+      return device + ' · ' + browser;
+    }
+
     function writeLog(entry){
       const logsRef = db.ref('logs');
       logsRef.once('value').then(snap => {
         let logs = snap.val() ? Object.values(snap.val()) : [];
-        logs.unshift({ ...entry, time: Date.now() });
-        logs = logs.slice(0, 100); // keep last 100
-        // convert back to object with numeric keys
+        logs.unshift({ ...entry, time: Date.now(), device: getDeviceInfo() });
+        logs = logs.slice(0, 100);
         const logsObj = {};
         logs.forEach((l, i) => logsObj[i] = l);
         logsRef.set(logsObj);
