@@ -332,7 +332,10 @@
 
     auth.onAuthStateChanged(user => {
       document.getElementById('points-area').style.display = user ? 'block' : 'none';
-      if(!user) document.getElementById('login-status').textContent = '';
+      if(!user){
+        document.getElementById('login-status').textContent = '';
+        document.getElementById('history-box').style.display = 'none';
+      }
     });
 
     // ── update points ─────────────────────────────────────────
@@ -508,7 +511,7 @@
     function renderHistory(){
       const box  = document.getElementById('history-box');
       const list = document.getElementById('history-list');
-      if(!history || history.length === 0){ box.style.display = 'none'; return; }
+      if(!auth.currentUser || !history || history.length === 0){ box.style.display = 'none'; return; }
       box.style.display = 'block';
       list.innerHTML = '';
       history.forEach(entry => {
