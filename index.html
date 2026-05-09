@@ -98,6 +98,7 @@
     .trend.down{ color:#ff1744; }
     .trend.same{ color:#888;    }
 
+    /* history */
     #history-box{
       width:100%; max-width:760px; background:rgba(34,34,34,0.85);
       border-radius:18px; padding:18px 20px;
@@ -122,6 +123,7 @@
       to{   opacity:1; transform:translateY(0); }
     }
 
+    /* help */
     #help-btn{
       position:fixed; bottom:18px; right:18px; width:42px; height:42px;
       border-radius:50%; background:var(--accent); color:#000; font-size:1.3rem;
@@ -141,7 +143,9 @@
     #reset-btn{ margin-top:10px; background:#8b0000; color:#fff; }
     #reset-btn:hover{ background:#cc0000; }
 
+    /* michael jackson portal - styles handled inline */
 
+    /* test mode */
     #test-banner{
       display:none;
       width:100%; max-width:760px;
@@ -167,6 +171,7 @@
       letter-spacing:0.04em;
     }
 
+    /* reset confirmation modal */
     #reset-modal{
       display:none; position:fixed; inset:0;
       background:rgba(0,0,0,0.75); z-index:1000;
@@ -241,6 +246,7 @@
     </div>
   </div>
 
+  <!-- michael jackson modal -->
   <div id="mj-modal" style="display:none;">
     <h2>🎤 You don't have access... but enjoy this!</h2>
     <div class="mj-iframe">
@@ -257,6 +263,7 @@
     <div id="history-list"></div>
   </div>
 
+  <!-- reset confirmation modal -->
   <div id="reset-modal">
     <div id="reset-modal-box">
       <h3>⚠️ Reset All Scores</h3>
@@ -294,16 +301,16 @@
     const TEST_USER     = "balazs_kiss";
     const MJ_USER       = "micheal_jackson";
     let   testMode      = false;
-    let   testScores    = null; 
+    let   testScores    = null; // local copy for simulation
     const HISTORY_LIMIT = 10;
 
     let scores           = {};
     let previousPositions = {};
     let history          = [];
     let lastSnapshot     = null;
-    let displayedScores  = {}; 
+    let displayedScores  = {}; // tracks currently shown values for animation
 
-
+    // ── helpers ───────────────────────────────────────────────
     function buildPositions(scoresObj){
       const sorted = Object.entries(scoresObj)
         .filter(([cls]) => classes.includes(cls))
@@ -325,13 +332,13 @@
       const start = performance.now();
       (function step(now){
         const p    = Math.min((now - start) / duration, 1);
-        const ease = 1 - Math.pow(1 - p, 3); 
+        const ease = 1 - Math.pow(1 - p, 3); // ease-out cubic
         el.textContent = Math.round(from + (to - from) * ease) + ' pts';
         if(p < 1) requestAnimationFrame(step);
       })(start);
     }
 
-
+    // ── auth ──────────────────────────────────────────────────
     function toggleLogin(){
       const area = document.getElementById('login-area');
       const hidden = area.style.display === 'none' || area.style.display === '';
@@ -358,7 +365,7 @@
         });
     }
 
-
+    // ── Michael Jackson Portal ───────────────────────────────
     const MJ_EPISODES = [
       { title: "ÖsszeFűzés",        id: "ONMH9u9tCcg" },
       { title: "Táncolás a Hóban",  id: "VMryMZyw9cc"  },
@@ -369,13 +376,13 @@
 
     let mjWatched      = new Set();
     let mjUsesLeft     = 0;
-    let mjBonusEp      = null; 
+    let mjBonusEp      = null; // which ep is being watched for bonus
     let mjCurrentEp    = null;
     const MJ_WEEKLY_KEY = 'mj_week_uses';
     const MJ_WATCHED_KEY = 'mj_watched';
 
     function getMjWeekKey(){
-
+      // returns a string like "2024-W15" for current week
       const now  = new Date();
       const jan1 = new Date(now.getFullYear(), 0, 1);
       const week = Math.ceil(((now - jan1) / 86400000 + jan1.getDay() + 1) / 7);
@@ -383,19 +390,19 @@
     }
 
     function mjInit(){
-
+      // load watched episodes from localStorage
       try {
         const saved = JSON.parse(localStorage.getItem(MJ_WATCHED_KEY) || '[]');
         mjWatched = new Set(saved);
       } catch(e){ mjWatched = new Set(); }
 
-
+      // load weekly uses (reset if new week)
       try {
         const stored = JSON.parse(localStorage.getItem(MJ_WEEKLY_KEY) || '{}');
         if(stored.week === getMjWeekKey()){
           mjUsesLeft = stored.uses;
         } else {
-
+          // new week — reset to base allowance based on episodes watched
           mjUsesLeft = mjBaseUses();
           mjSaveUses();
         }
@@ -453,7 +460,7 @@
       mjWatched.add(mjCurrentEp.id);
       mjSaveWatched();
 
-
+      // if this was a bonus watch, grant +5 uses
       if(mjBonusEp === mjCurrentEp.id){
         mjUsesLeft += 5;
         mjSaveUses();
@@ -521,7 +528,7 @@
     }
 
     function mjWatchBonus(){
-
+      // pick a random unwatched ep, or random any ep if all watched
       const unwatched = MJ_EPISODES.filter(ep => !mjWatched.has(ep.id));
       const pool      = unwatched.length > 0 ? unwatched : MJ_EPISODES;
       const ep        = pool[Math.floor(Math.random() * pool.length)];
@@ -561,6 +568,7 @@
         return;
       }
 
+      // write to Firebase (real write, not test mode)
       if(!scores[selected]) scores[selected] = 0;
       const before   = Number(scores[selected]);
       const newScore = Math.max(0, before + points);
@@ -597,7 +605,7 @@
 
     function mjLogout(){
       document.getElementById('mj-modal').style.display = 'none';
-      
+      // clear iframe src to stop video
       const iframe = document.getElementById('mj-main-iframe');
       if(iframe) iframe.src = '';
       auth.signOut();
@@ -643,6 +651,7 @@
       }
     });
 
+    // ── update points ─────────────────────────────────────────
     function updatePoints(){
       if(!auth.currentUser){ alert("Please log in first."); return; }
       const selected = document.getElementById('class-select').value;
@@ -685,6 +694,7 @@
       document.getElementById('points-input').value = '';
     }
 
+    // ── undo ──────────────────────────────────────────────────
     function undoLast(){
       if(testMode){ alert("Undo is disabled in test mode."); return; }
       if(!auth.currentUser || !lastSnapshot) return;
@@ -698,6 +708,7 @@
       }).catch(err => { console.error("Undo failed:", err); alert("Undo failed."); });
     }
 
+    // ── render leaderboard (true FLIP — rows stay in DOM) ───────
     function renderLeaderboard(){
       const lb = document.getElementById('leaderboard');
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
@@ -706,6 +717,7 @@
         .filter(([cls]) => classes.includes(cls))
         .sort((a,b) => Number(b[1]) - Number(a[1]));
 
+      // ensure header exists
       if(!lb.querySelector('h3')){
         const h = document.createElement('h3');
         h.style.marginTop = '0';
@@ -713,6 +725,7 @@
         lb.prepend(h);
       }
 
+      // ensure a row exists for every class (create once, reuse always)
       classes.forEach(cls => {
         if(!lb.querySelector(`.class-row[data-cls="${cls}"]`)){
           const row = document.createElement('div');
@@ -722,12 +735,13 @@
         }
       });
 
+      // STEP 1 — record where every row is RIGHT NOW (before reorder)
       const firstRects = {};
       lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
         firstRects[row.dataset.cls] = row.getBoundingClientRect();
       });
 
-
+      // STEP 2 — update content & reorder rows in DOM (appendChild moves existing nodes)
       sorted.forEach(([cls, pts], index) => {
         const numPts = Number(pts) || 0;
         let placeLabel = '', rowClass = '';
@@ -746,7 +760,7 @@
         const row = lb.querySelector(`.class-row[data-cls="${cls}"]`);
         row.className = 'class-row ' + rowClass;
 
-
+        // update inner content
         let left = row.querySelector('.left');
         if(!left){
           left = document.createElement('div');
@@ -780,11 +794,11 @@
         }
         displayedScores[cls] = numPts;
 
-
+        // move row to correct position (appendChild moves if already in DOM)
         lb.appendChild(row);
       });
 
-
+      // STEP 3 — FLIP: measure new positions, invert, then play to final
       requestAnimationFrame(() => {
         lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
           const cls   = row.dataset.cls;
@@ -793,10 +807,10 @@
           const last = row.getBoundingClientRect();
           const dy   = first.top - last.top;
           if(Math.abs(dy) < 1) return;
-
+          // snap back to old position instantly
           row.style.transition = 'none';
           row.style.transform  = `translateY(${dy}px)`;
-
+          // then animate to new position
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               row.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
@@ -807,6 +821,7 @@
       });
     }
 
+    // ── render history ────────────────────────────────────────
     function renderHistory(){
       const box  = document.getElementById('history-box');
       const list = document.getElementById('history-list');
@@ -828,6 +843,7 @@
       });
     }
 
+    // ── activity logger ──────────────────────────────────────
     function getDeviceInfo(){
       const ua = navigator.userAgent;
       let device = 'Desktop';
@@ -857,6 +873,7 @@
       }).catch(err => console.error("Log write failed:", err));
     }
 
+    // ── reset scores ─────────────────────────────────────────
     function resetScores(){
       if(!auth.currentUser){ alert("Please log in first."); return; }
       // show custom password confirmation modal
@@ -872,6 +889,7 @@
       if(!pass){ error.textContent = '❌ Please enter your password.'; return; }
       error.textContent = '⏳ Verifying...';
 
+      // re-authenticate with Firebase to verify password
       const user = auth.currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(user.email, pass);
       user.reauthenticateWithCredential(credential)
@@ -897,6 +915,7 @@
       document.getElementById('reset-modal').style.display = 'none';
     }
 
+    // ── confetti ──────────────────────────────────────────────
     const canvas  = document.getElementById('confetti-canvas');
     const ctx     = canvas.getContext('2d');
     let confettiParticles = [];
@@ -955,6 +974,8 @@
       }
     }
 
+    // track which class the user has already seen leading
+    // stored in localStorage so it persists across page loads
     let seenLeader = localStorage.getItem('seenLeader') || null;
 
     function checkConfetti(){
@@ -970,6 +991,7 @@
       }
     }
 
+    // ── Firebase listeners ────────────────────────────────────
     db.ref('scores').on('value', snap => {
       scores = snap.val() || {};
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
