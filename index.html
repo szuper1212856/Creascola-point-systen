@@ -97,8 +97,7 @@
     .trend.up{   color:#00e676; }
     .trend.down{ color:#ff1744; }
     .trend.same{ color:#888;    }
-
-    /* history */
+    
     #history-box{
       width:100%; max-width:760px; background:rgba(34,34,34,0.85);
       border-radius:18px; padding:18px 20px;
@@ -123,7 +122,6 @@
       to{   opacity:1; transform:translateY(0); }
     }
 
-    /* help */
     #help-btn{
       position:fixed; bottom:18px; right:18px; width:42px; height:42px;
       border-radius:50%; background:var(--accent); color:#000; font-size:1.3rem;
@@ -143,7 +141,32 @@
     #reset-btn{ margin-top:10px; background:#8b0000; color:#fff; }
     #reset-btn:hover{ background:#cc0000; }
 
-    /* test mode */
+    #mj-modal{
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.95); z-index:2000;
+      align-items:center; justify-content:center;
+      flex-direction:column; gap:20px; text-align:center;
+    }
+    #mj-modal h2{
+      font-size:clamp(1.4rem,4vw,2.2rem);
+      color:#fff;
+      text-shadow:0 0 20px rgba(255,255,255,0.4);
+    }
+    #mj-modal .mj-iframe{
+      width:min(560px, 90vw);
+      aspect-ratio:16/9;
+      border-radius:14px;
+      border:2px solid rgba(255,255,255,0.15);
+      overflow:hidden;
+    }
+    #mj-modal .mj-iframe iframe{ width:100%; height:100%; border:none; }
+    #mj-logout{
+      background:transparent; border:1px solid rgba(255,255,255,0.2);
+      color:#aaa; font-size:0.8rem; padding:8px 20px;
+      border-radius:20px; cursor:pointer; width:auto; max-width:none;
+    }
+    #mj-logout:hover{ border-color:#fff; color:#fff; background:transparent; }
+
     #test-banner{
       display:none;
       width:100%; max-width:760px;
@@ -169,7 +192,6 @@
       letter-spacing:0.04em;
     }
 
-    /* reset confirmation modal */
     #reset-modal{
       display:none; position:fixed; inset:0;
       background:rgba(0,0,0,0.75); z-index:1000;
@@ -244,6 +266,14 @@
     </div>
   </div>
 
+  <div id="mj-modal" style="display:none;">
+    <h2>🎤 You don't have access... but enjoy this!</h2>
+    <div class="mj-iframe">
+      <iframe src="https://www.youtube.com/embed/ONMH9u9tCcg?si=AODkNhxLHKwBBzWM&autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <button id="mj-logout" onclick="mjLogout()">← Log out</button>
+  </div>
+
   <div id="test-banner">🧪 TEST MODE ACTIVE — Changes are simulated and will NOT be saved to Firebase</div>
   <div class="leaderboard" id="leaderboard" aria-live="polite"></div>
 
@@ -252,10 +282,9 @@
     <div id="history-list"></div>
   </div>
 
-  <!-- reset confirmation modal -->
   <div id="reset-modal">
     <div id="reset-modal-box">
-      <h3> Reset All Scores</h3>
+      <h3>⚠️ Reset All Scores</h3>
       <p>This will set every class back to 0 and clear all history. Enter your password to confirm.</p>
       <input id="reset-password-input" type="password" placeholder="Your password" autocomplete="off" />
       <div id="reset-error"></div>
@@ -269,7 +298,7 @@
   <canvas id="confetti-canvas"></canvas>
   <button id="help-btn" onclick="toggleHelp()" aria-label="Help">?</button>
   <div id="help-modal" aria-hidden="true">
-    <h4> What do the symbols mean?</h4>
+    <h4>📖 What do the symbols mean?</h4>
     <div class="help-row"><span style="color:#00e676;font-size:1.3rem">▲</span> The class moved up in the rankings</div>
     <div class="help-row"><span style="color:#ff1744;font-size:1.3rem">▼</span> The class moved down in the rankings</div>
     <div class="help-row"><span style="color:#888;font-size:1.3rem">—</span> No change in position</div>
@@ -288,6 +317,7 @@
     const classes      = ["7A","6B","6A","5A","5B","8A"];
     const EMAIL_DOMAIN  = "@creascola.hu";
     const TEST_USER     = "balazs_kiss";
+    const MJ_USER       = "micheal_jackson";
     let   testMode      = false;
     let   testScores    = null; // local copy for simulation
     const HISTORY_LIMIT = 10;
@@ -298,7 +328,6 @@
     let lastSnapshot     = null;
     let displayedScores  = {}; // tracks currently shown values for animation
 
-    // ── helpers ───────────────────────────────────────────────
     function buildPositions(scoresObj){
       const sorted = Object.entries(scoresObj)
         .filter(([cls]) => classes.includes(cls))
@@ -326,7 +355,6 @@
       })(start);
     }
 
-    // ── auth ──────────────────────────────────────────────────
     function toggleLogin(){
       const area = document.getElementById('login-area');
       const hidden = area.style.display === 'none' || area.style.display === '';
@@ -353,6 +381,12 @@
         });
     }
 
+    function mjLogout(){
+      
+      document.getElementById('mj-modal').style.display = 'none';
+      auth.signOut();
+    }
+
     function logout(){
       if(auth.currentUser){
         const email = auth.currentUser.email;
@@ -366,12 +400,19 @@
       document.getElementById('points-area').style.display = user ? 'block' : 'none';
       if(user){
         const username = user.email.replace(EMAIL_DOMAIN, '');
+
+        if(username === MJ_USER){
+          document.getElementById('mj-modal').style.display      = 'flex';
+          document.getElementById('points-area').style.display   = 'none';
+          return;
+        }
+
+        document.getElementById('mj-modal').style.display        = 'none';
         testMode = (username === TEST_USER);
-        document.getElementById('test-banner').style.display      = testMode ? 'block' : 'none';
-        document.getElementById('test-mode-label').style.display  = testMode ? 'block' : 'none';
-        document.getElementById('reset-btn').style.display        = testMode ? 'none'  : 'block';
+        document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
+        document.getElementById('test-mode-label').style.display = testMode ? 'block' : 'none';
+        document.getElementById('reset-btn').style.display       = testMode ? 'none'  : 'block';
         if(testMode){
-          // clone real scores for local simulation
           testScores = JSON.parse(JSON.stringify(scores));
         }
       } else {
@@ -384,7 +425,6 @@
       }
     });
 
-    // ── update points ─────────────────────────────────────────
     function updatePoints(){
       if(!auth.currentUser){ alert("Please log in first."); return; }
       const selected = document.getElementById('class-select').value;
@@ -427,7 +467,6 @@
       document.getElementById('points-input').value = '';
     }
 
-    // ── undo ──────────────────────────────────────────────────
     function undoLast(){
       if(testMode){ alert("Undo is disabled in test mode."); return; }
       if(!auth.currentUser || !lastSnapshot) return;
@@ -441,7 +480,6 @@
       }).catch(err => { console.error("Undo failed:", err); alert("Undo failed."); });
     }
 
-    // ── render leaderboard (true FLIP — rows stay in DOM) ───────
     function renderLeaderboard(){
       const lb = document.getElementById('leaderboard');
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
@@ -450,7 +488,6 @@
         .filter(([cls]) => classes.includes(cls))
         .sort((a,b) => Number(b[1]) - Number(a[1]));
 
-      // ensure header exists
       if(!lb.querySelector('h3')){
         const h = document.createElement('h3');
         h.style.marginTop = '0';
@@ -458,7 +495,6 @@
         lb.prepend(h);
       }
 
-      // ensure a row exists for every class (create once, reuse always)
       classes.forEach(cls => {
         if(!lb.querySelector(`.class-row[data-cls="${cls}"]`)){
           const row = document.createElement('div');
@@ -467,14 +503,12 @@
           lb.appendChild(row);
         }
       });
-
-      // STEP 1 — record where every row is RIGHT NOW (before reorder)
+      
       const firstRects = {};
       lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
         firstRects[row.dataset.cls] = row.getBoundingClientRect();
       });
 
-      // STEP 2 — update content & reorder rows in DOM (appendChild moves existing nodes)
       sorted.forEach(([cls, pts], index) => {
         const numPts = Number(pts) || 0;
         let placeLabel = '', rowClass = '';
@@ -493,7 +527,6 @@
         const row = lb.querySelector(`.class-row[data-cls="${cls}"]`);
         row.className = 'class-row ' + rowClass;
 
-        // update inner content
         let left = row.querySelector('.left');
         if(!left){
           left = document.createElement('div');
@@ -527,11 +560,9 @@
         }
         displayedScores[cls] = numPts;
 
-        // move row to correct position (appendChild moves if already in DOM)
         lb.appendChild(row);
       });
-
-      // STEP 3 — FLIP: measure new positions, invert, then play to final
+      
       requestAnimationFrame(() => {
         lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
           const cls   = row.dataset.cls;
@@ -554,7 +585,6 @@
       });
     }
 
-    // ── render history ────────────────────────────────────────
     function renderHistory(){
       const box  = document.getElementById('history-box');
       const list = document.getElementById('history-list');
@@ -576,7 +606,6 @@
       });
     }
 
-    // ── activity logger ──────────────────────────────────────
     function getDeviceInfo(){
       const ua = navigator.userAgent;
       let device = 'Desktop';
@@ -606,7 +635,6 @@
       }).catch(err => console.error("Log write failed:", err));
     }
 
-    // ── reset scores ─────────────────────────────────────────
     function resetScores(){
       if(!auth.currentUser){ alert("Please log in first."); return; }
       // show custom password confirmation modal
@@ -622,7 +650,6 @@
       if(!pass){ error.textContent = '❌ Please enter your password.'; return; }
       error.textContent = '⏳ Verifying...';
 
-      // re-authenticate with Firebase to verify password
       const user = auth.currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(user.email, pass);
       user.reauthenticateWithCredential(credential)
@@ -648,7 +675,6 @@
       document.getElementById('reset-modal').style.display = 'none';
     }
 
-    // ── confetti ──────────────────────────────────────────────
     const canvas  = document.getElementById('confetti-canvas');
     const ctx     = canvas.getContext('2d');
     let confettiParticles = [];
@@ -707,8 +733,6 @@
       }
     }
 
-    // track which class the user has already seen leading
-    // stored in localStorage so it persists across page loads
     let seenLeader = localStorage.getItem('seenLeader') || null;
 
     function checkConfetti(){
@@ -724,7 +748,6 @@
       }
     }
 
-    // ── Firebase listeners ────────────────────────────────────
     db.ref('scores').on('value', snap => {
       scores = snap.val() || {};
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
@@ -748,7 +771,6 @@
       if(btn) btn.disabled = !lastSnapshot;
     }, err => console.error("undoSnapshot read failed:", err));
 
-    // ── help ──────────────────────────────────────────────────
     function toggleHelp(){
       const modal  = document.getElementById('help-modal');
       const hidden = modal.style.display === 'none' || modal.style.display === '';
@@ -763,7 +785,6 @@
         modal.style.display = 'none';
     });
 
-    // ── keyboard ──────────────────────────────────────────────
     document.addEventListener('keydown', e => {
       const a = document.activeElement;
       if(e.key === 'Enter'){
