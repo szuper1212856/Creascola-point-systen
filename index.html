@@ -97,7 +97,7 @@
     .trend.up{   color:#00e676; }
     .trend.down{ color:#ff1744; }
     .trend.same{ color:#888;    }
-    
+
     #history-box{
       width:100%; max-width:760px; background:rgba(34,34,34,0.85);
       border-radius:18px; padding:18px 20px;
@@ -141,31 +141,6 @@
     #reset-btn{ margin-top:10px; background:#8b0000; color:#fff; }
     #reset-btn:hover{ background:#cc0000; }
 
-    #mj-modal{
-      display:none; position:fixed; inset:0;
-      background:rgba(0,0,0,0.95); z-index:2000;
-      align-items:center; justify-content:center;
-      flex-direction:column; gap:20px; text-align:center;
-    }
-    #mj-modal h2{
-      font-size:clamp(1.4rem,4vw,2.2rem);
-      color:#fff;
-      text-shadow:0 0 20px rgba(255,255,255,0.4);
-    }
-    #mj-modal .mj-iframe{
-      width:min(560px, 90vw);
-      aspect-ratio:16/9;
-      border-radius:14px;
-      border:2px solid rgba(255,255,255,0.15);
-      overflow:hidden;
-    }
-    #mj-modal .mj-iframe iframe{ width:100%; height:100%; border:none; }
-    #mj-logout{
-      background:transparent; border:1px solid rgba(255,255,255,0.2);
-      color:#aaa; font-size:0.8rem; padding:8px 20px;
-      border-radius:20px; cursor:pointer; width:auto; max-width:none;
-    }
-    #mj-logout:hover{ border-color:#fff; color:#fff; background:transparent; }
 
     #test-banner{
       display:none;
@@ -319,14 +294,15 @@
     const TEST_USER     = "balazs_kiss";
     const MJ_USER       = "micheal_jackson";
     let   testMode      = false;
-    let   testScores    = null; // local copy for simulation
+    let   testScores    = null; 
     const HISTORY_LIMIT = 10;
 
     let scores           = {};
     let previousPositions = {};
     let history          = [];
     let lastSnapshot     = null;
-    let displayedScores  = {}; // tracks currently shown values for animation
+    let displayedScores  = {}; 
+
 
     function buildPositions(scoresObj){
       const sorted = Object.entries(scoresObj)
@@ -349,11 +325,12 @@
       const start = performance.now();
       (function step(now){
         const p    = Math.min((now - start) / duration, 1);
-        const ease = 1 - Math.pow(1 - p, 3); // ease-out cubic
+        const ease = 1 - Math.pow(1 - p, 3); 
         el.textContent = Math.round(from + (to - from) * ease) + ' pts';
         if(p < 1) requestAnimationFrame(step);
       })(start);
     }
+
 
     function toggleLogin(){
       const area = document.getElementById('login-area');
@@ -381,9 +358,248 @@
         });
     }
 
+
+    const MJ_EPISODES = [
+      { title: "ÖsszeFűzés",        id: "ONMH9u9tCcg" },
+      { title: "Táncolás a Hóban",  id: "VMryMZyw9cc"  },
+      { title: "Tücsök hegedűje",   id: "uvCU4nvCPbs"  },
+      { title: "Erdei Tornaverseny",id: "QUzIf77JfHU"  },
+      { title: "Vidám mesék",       id: "RnOdcYQ-8f8"  }
+    ];
+
+    let mjWatched      = new Set();
+    let mjUsesLeft     = 0;
+    let mjBonusEp      = null; 
+    let mjCurrentEp    = null;
+    const MJ_WEEKLY_KEY = 'mj_week_uses';
+    const MJ_WATCHED_KEY = 'mj_watched';
+
+    function getMjWeekKey(){
+
+      const now  = new Date();
+      const jan1 = new Date(now.getFullYear(), 0, 1);
+      const week = Math.ceil(((now - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+      return `${now.getFullYear()}-W${week}`;
+    }
+
+    function mjInit(){
+
+      try {
+        const saved = JSON.parse(localStorage.getItem(MJ_WATCHED_KEY) || '[]');
+        mjWatched = new Set(saved);
+      } catch(e){ mjWatched = new Set(); }
+
+
+      try {
+        const stored = JSON.parse(localStorage.getItem(MJ_WEEKLY_KEY) || '{}');
+        if(stored.week === getMjWeekKey()){
+          mjUsesLeft = stored.uses;
+        } else {
+
+          mjUsesLeft = mjBaseUses();
+          mjSaveUses();
+        }
+      } catch(e){ mjUsesLeft = mjBaseUses(); }
+
+      mjRenderEpisodes();
+      mjUpdateAdminPanel();
+      mjUpdateProgress();
+    }
+
+    function mjBaseUses(){
+      return mjWatched.size >= 1 ? 5 : 0;
+    }
+
+    function mjSaveUses(){
+      localStorage.setItem(MJ_WEEKLY_KEY, JSON.stringify({ week: getMjWeekKey(), uses: mjUsesLeft }));
+    }
+
+    function mjSaveWatched(){
+      localStorage.setItem(MJ_WATCHED_KEY, JSON.stringify([...mjWatched]));
+    }
+
+    function mjRenderEpisodes(){
+      const list = document.getElementById('mj-episode-list');
+      if(!list) return;
+      list.innerHTML = '';
+      MJ_EPISODES.forEach((ep, i) => {
+        const watched = mjWatched.has(ep.id);
+        const div = document.createElement('div');
+        div.style.cssText = `display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;border:1px solid ${watched ? 'rgba(0,230,118,0.3)' : 'rgba(255,255,255,0.06)'};background:${watched ? 'rgba(0,230,118,0.06)' : 'rgba(255,255,255,0.02)'};transition:all .15s;`;
+        div.innerHTML = `
+          <span style="font-size:1.1rem;">${watched ? '✅' : '▶️'}</span>
+          <span style="flex:1;font-size:0.88rem;color:${watched ? '#00e676' : '#ccc'};">${ep.title}</span>
+          <span style="font-size:0.72rem;color:#445;">Ep ${i+1}</span>
+        `;
+        div.onclick = () => mjPlayEpisode(ep, i);
+        list.appendChild(div);
+      });
+    }
+
+    function mjPlayEpisode(ep, index){
+      mjCurrentEp = ep;
+      const box = document.getElementById('mj-player-box');
+      const iframe = document.getElementById('mj-main-iframe');
+      const title  = document.getElementById('mj-now-playing-title');
+      box.style.display    = 'block';
+      iframe.src           = `https://www.youtube.com/embed/${ep.id}?autoplay=1&rel=0`;
+      title.textContent    = ep.title;
+      document.getElementById('mj-mark-watched').style.display = mjWatched.has(ep.id) ? 'none' : 'block';
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function markWatched(){
+      if(!mjCurrentEp) return;
+      mjWatched.add(mjCurrentEp.id);
+      mjSaveWatched();
+
+
+      if(mjBonusEp === mjCurrentEp.id){
+        mjUsesLeft += 5;
+        mjSaveUses();
+        mjBonusEp = null;
+        document.getElementById('mj-error').textContent = '🎉 +5 bonus changes added!';
+        setTimeout(() => document.getElementById('mj-error').textContent = '', 3000);
+      }
+
+      document.getElementById('mj-mark-watched').style.display = 'none';
+      mjRenderEpisodes();
+      mjUpdateAdminPanel();
+      mjUpdateProgress();
+    }
+
+    function mjUpdateProgress(){
+      const count = mjWatched.size;
+      const pct   = (count / MJ_EPISODES.length) * 100;
+      const bar   = document.getElementById('mj-progress-bar');
+      const label = document.getElementById('mj-progress-label');
+      if(bar)   bar.style.width  = pct + '%';
+      if(label) label.textContent = `${count} / ${MJ_EPISODES.length} episodes watched`;
+    }
+
+    function mjGetMaxPoints(){
+      const w = mjWatched.size;
+      if(w >= 5) return 20;
+      if(w >= 4) return 10;
+      if(w >= 3) return 5;
+      if(w >= 2) return 5;
+      return 0;
+    }
+
+    function mjCanAdd(){ return mjWatched.size >= 2; }
+    function mjCanSubtract(){ return mjWatched.size >= 3; }
+
+    function mjUpdateAdminPanel(){
+      const panel     = document.getElementById('mj-admin-panel');
+      const status    = document.getElementById('mj-power-status');
+      const usesEl    = document.getElementById('mj-uses-left');
+      const usesBox   = document.getElementById('mj-actions-left');
+      const bonusBtn  = document.getElementById('mj-bonus-btn');
+      const w         = mjWatched.size;
+      const max       = mjGetMaxPoints();
+
+      if(w === 0){
+        panel.style.display  = 'none';
+        usesBox.style.display = 'none';
+        return;
+      }
+
+      panel.style.display   = 'block';
+      usesBox.style.display = 'flex';
+      if(usesEl) usesEl.textContent = mjUsesLeft;
+
+      let statusHtml = '';
+      if(w >= 1) statusHtml += `<div style="color:#00e676">✅ Can close the portal</div>`;
+      if(w >= 2) statusHtml += `<div style="color:#00e676">✅ Can add points (max +${max})</div>`;
+      if(w >= 3) statusHtml += `<div style="color:#ff9800">✅ Can remove points (max -${max})</div>`;
+      if(w >= 4) statusHtml += `<div style="color:#ff9800">✅ Up to ±10 pts per change</div>`;
+      if(w >= 5) statusHtml += `<div style="color:#ffd700">⭐ Full power! Up to ±20 pts</div>`;
+      statusHtml += `<div style="margin-top:8px;color:#556;">📅 ${mjUsesLeft} changes left this week</div>`;
+      if(status) status.innerHTML = statusHtml;
+
+      if(bonusBtn) bonusBtn.style.display = (mjUsesLeft <= 0 && w >= 1) ? 'block' : 'none';
+    }
+
+    function mjWatchBonus(){
+
+      const unwatched = MJ_EPISODES.filter(ep => !mjWatched.has(ep.id));
+      const pool      = unwatched.length > 0 ? unwatched : MJ_EPISODES;
+      const ep        = pool[Math.floor(Math.random() * pool.length)];
+      mjBonusEp       = ep.id;
+      mjPlayEpisode(ep, MJ_EPISODES.indexOf(ep));
+      document.getElementById('mj-error').textContent = '🎬 Watch this episode fully, then mark as watched for +5 changes!';
+    }
+
+    function mjUpdatePoints(){
+      const error    = document.getElementById('mj-error');
+      const selected = document.getElementById('mj-class-select').value;
+      const raw      = document.getElementById('mj-points-input').value.trim();
+      error.textContent = '';
+
+      if(mjUsesLeft <= 0){
+        error.textContent = '❌ No changes left this week! Watch an episode for more.';
+        return;
+      }
+      if(!/^[-+]?\d+$/.test(raw)){
+        error.textContent = '❌ Enter a valid number (e.g. 5 or -3)';
+        return;
+      }
+
+      const points = parseInt(raw, 10);
+      const max    = mjGetMaxPoints();
+
+      if(points > 0 && !mjCanAdd()){
+        error.textContent = '❌ Watch 2 episodes to unlock adding points!';
+        return;
+      }
+      if(points < 0 && !mjCanSubtract()){
+        error.textContent = '❌ Watch 3 episodes to unlock removing points!';
+        return;
+      }
+      if(Math.abs(points) > max){
+        error.textContent = `❌ Max ${max} points per change with your current level!`;
+        return;
+      }
+
+      if(!scores[selected]) scores[selected] = 0;
+      const before   = Number(scores[selected]);
+      const newScore = Math.max(0, before + points);
+      const newScores = JSON.parse(JSON.stringify(scores));
+      newScores[selected] = newScore;
+      const prevPos  = buildPositions(scores);
+      const newHist  = [{ cls: selected, change: points, before, after: newScore, ts: Date.now() }, ...history].slice(0, HISTORY_LIMIT);
+
+      db.ref().update({
+        scores:            newScores,
+        previousPositions: prevPos,
+        history:           newHist,
+        undoSnapshot:      JSON.parse(JSON.stringify(scores))
+      }).then(() => {
+        writeLog({ user: 'micheal_jackson', action: 'points', class: selected, change: points, before, after: newScore });
+        mjUsesLeft--;
+        mjSaveUses();
+        mjUpdateAdminPanel();
+        document.getElementById('mj-points-input').value = '';
+        error.style.color = '#00e676';
+        error.textContent = `✅ Done! ${mjUsesLeft} changes left this week.`;
+        setTimeout(() => { error.textContent = ''; error.style.color = '#ff4444'; }, 3000);
+      }).catch(err => {
+        error.textContent = '❌ Failed to save. Try again.';
+        console.error(err);
+      });
+    }
+
+    function toggleMjGuide(){
+      const guide  = document.getElementById('mj-guide');
+      const hidden = guide.style.display === 'none' || guide.style.display === '';
+      guide.style.display = hidden ? 'flex' : 'none';
+    }
+
     function mjLogout(){
-      
       document.getElementById('mj-modal').style.display = 'none';
+      
+      const iframe = document.getElementById('mj-main-iframe');
+      if(iframe) iframe.src = '';
       auth.signOut();
     }
 
@@ -401,9 +617,11 @@
       if(user){
         const username = user.email.replace(EMAIL_DOMAIN, '');
 
+        // michael jackson portal
         if(username === MJ_USER){
-          document.getElementById('mj-modal').style.display      = 'flex';
-          document.getElementById('points-area').style.display   = 'none';
+          document.getElementById('mj-modal').style.display    = 'flex';
+          document.getElementById('points-area').style.display = 'none';
+          mjInit();
           return;
         }
 
@@ -503,11 +721,12 @@
           lb.appendChild(row);
         }
       });
-      
+
       const firstRects = {};
       lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
         firstRects[row.dataset.cls] = row.getBoundingClientRect();
       });
+
 
       sorted.forEach(([cls, pts], index) => {
         const numPts = Number(pts) || 0;
@@ -526,6 +745,7 @@
 
         const row = lb.querySelector(`.class-row[data-cls="${cls}"]`);
         row.className = 'class-row ' + rowClass;
+
 
         let left = row.querySelector('.left');
         if(!left){
@@ -560,9 +780,11 @@
         }
         displayedScores[cls] = numPts;
 
+
         lb.appendChild(row);
       });
-      
+
+
       requestAnimationFrame(() => {
         lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
           const cls   = row.dataset.cls;
@@ -571,10 +793,10 @@
           const last = row.getBoundingClientRect();
           const dy   = first.top - last.top;
           if(Math.abs(dy) < 1) return;
-          // snap back to old position instantly
+
           row.style.transition = 'none';
           row.style.transform  = `translateY(${dy}px)`;
-          // then animate to new position
+
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               row.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
