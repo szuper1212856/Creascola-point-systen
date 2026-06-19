@@ -190,17 +190,18 @@
 
     /* effect overlays */
     #fx-broadcast{
-      display:none; position:fixed; inset:0; z-index:4000;
+      display:none; position:fixed; top:0; left:0; right:0; z-index:4000;
       align-items:center; justify-content:center; pointer-events:none;
-      text-align:center; padding:20px;
+      text-align:center; padding:18px 20px;
+      background:linear-gradient(180deg, rgba(0,0,0,0.75), transparent);
     }
     #fx-broadcast span{
-      font-family:'Segoe UI',sans-serif; font-weight:900;
-      font-size:clamp(2rem,10vw,7rem); color:#fff;
-      text-shadow:0 0 30px rgba(0,246,255,0.8), 0 0 60px rgba(0,246,255,0.5);
+      font-family:'Segoe UI',sans-serif; font-weight:800;
+      font-size:clamp(1.1rem,3.5vw,2rem); color:#fff;
+      text-shadow:0 0 16px rgba(0,246,255,0.7), 0 0 30px rgba(0,246,255,0.4);
       animation: fxPulse 1.2s ease-in-out infinite;
     }
-    @keyframes fxPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.06); } }
+    @keyframes fxPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.03); } }
 
     @keyframes fxShake{
       0%,100%{ transform:translate(0,0); }
@@ -416,7 +417,9 @@
       <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:10px;">
         <div style="background:rgba(255,0,100,0.06);border:1px solid rgba(255,0,100,0.15);border-radius:14px;padding:16px;">
           <div style="font-size:0.82rem;color:#ff4081;margin-bottom:10px;letter-spacing:0.05em;">🧠 FOR YOUR BRAINROT</div>
-          <div style="aspect-ratio:9/16;border-radius:10px;overflow:hidden;max-height:500px;">          </div>
+          <div style="aspect-ratio:9/16;border-radius:10px;overflow:hidden;max-height:500px;">
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/L_fcrOyoWZ8?si=D0hWdmHmTw-SO16d&autoplay=1&loop=1&playlist=L_fcrOyoWZ8&mute=0" title="Brainrot" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display:block;"></iframe>
+          </div>
           <div style="margin-top:10px;font-size:0.78rem;color:#ff4081;text-align:center;">Plays on loop 🔁</div>
         </div>
       </div>
@@ -501,7 +504,7 @@
 
     const classes      = ["7A","6B","6A","5A","5B","8A"];
     const EMAIL_DOMAIN  = "@creascola.hu";
-    const TEST_USER     = "lena_gombocz";
+    const TEST_USER     = "balazs_kiss";
     const MJ_USER       = "micheal_jackson";
     let   testMode      = false;
     let   testScores    = null; // local copy for simulation
@@ -645,6 +648,7 @@
       const iframe = document.getElementById('mj-main-iframe');
       const title  = document.getElementById('mj-now-playing-title');
       box.style.display    = 'block';
+      iframe.src           = `https://www.youtube.com/embed/${ep.id}?autoplay=1&rel=0`;
       title.textContent    = ep.title;
       document.getElementById('mj-mark-watched').style.display = mjWatched.has(ep.id) ? 'none' : 'block';
       box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -854,8 +858,15 @@
       const broadcastEl = document.getElementById('fx-broadcast');
       const broadcastTxt = document.getElementById('fx-broadcast-text');
       if(state.message && state.messageId){
-        broadcastTxt.textContent = state.message;
-        broadcastEl.style.display = 'flex';
+        if(state.messageId !== window._lastMessageId){
+          window._lastMessageId = state.messageId;
+          broadcastTxt.textContent = state.message;
+          broadcastEl.style.display = 'flex';
+          if(window._broadcastTimeout) clearTimeout(window._broadcastTimeout);
+          window._broadcastTimeout = setTimeout(() => {
+            broadcastEl.style.display = 'none';
+          }, 6000);
+        }
       } else {
         broadcastEl.style.display = 'none';
       }
