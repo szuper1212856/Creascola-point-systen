@@ -143,8 +143,6 @@
     #reset-btn{ margin-top:10px; background:#8b0000; color:#fff; }
     #reset-btn:hover{ background:#cc0000; }
 
-    /* michael jackson portal - styles handled inline */
-
     /* ── admin abuse panel effects ─────────────────────────── */
     #abuse-btn{
       margin-top:10px; background:#9c27b0; color:#fff;
@@ -502,19 +500,20 @@
     const db   = firebase.database();
     const auth = firebase.auth();
 
-    const classes      = ["7A","6B","6A","5A","5B","8A"];
+    const classes       = ["7A","6B","6A","5A","5B","8A"];
     const EMAIL_DOMAIN  = "@creascola.hu";
     const TEST_USER     = "balazs_kiss";
     const MJ_USER       = "micheal_jackson";
+    const ABUSE_USERS   = ["balazs_kiss", "lena_gombocz"]; // users who can access the Abuse Panel
     let   testMode      = false;
-    let   testScores    = null; // local copy for simulation
+    let   testScores    = null;
     const HISTORY_LIMIT = 10;
 
-    let scores           = {};
+    let scores            = {};
     let previousPositions = {};
-    let history          = [];
-    let lastSnapshot     = null;
-    let displayedScores  = {}; // tracks currently shown values for animation
+    let history           = [];
+    let lastSnapshot      = null;
+    let displayedScores   = {};
 
     function buildPositions(scoresObj){
       const sorted = Object.entries(scoresObj)
@@ -579,9 +578,9 @@
 
     let mjWatched      = new Set();
     let mjUsesLeft     = 0;
-    let mjBonusEp      = null; // which ep is being watched for bonus
+    let mjBonusEp      = null;
     let mjCurrentEp    = null;
-    const MJ_WEEKLY_KEY = 'mj_week_uses';
+    const MJ_WEEKLY_KEY  = 'mj_week_uses';
     const MJ_WATCHED_KEY = 'mj_watched';
 
     function getMjWeekKey(){
@@ -644,12 +643,12 @@
 
     function mjPlayEpisode(ep, index){
       mjCurrentEp = ep;
-      const box = document.getElementById('mj-player-box');
+      const box    = document.getElementById('mj-player-box');
       const iframe = document.getElementById('mj-main-iframe');
       const title  = document.getElementById('mj-now-playing-title');
-      box.style.display    = 'block';
-      iframe.src           = `https://www.youtube.com/embed/${ep.id}?autoplay=1&rel=0`;
-      title.textContent    = ep.title;
+      box.style.display = 'block';
+      iframe.src        = `https://www.youtube.com/embed/${ep.id}?autoplay=1&rel=0`;
+      title.textContent = ep.title;
       document.getElementById('mj-mark-watched').style.display = mjWatched.has(ep.id) ? 'none' : 'block';
       box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -678,7 +677,7 @@
       const pct   = (count / MJ_EPISODES.length) * 100;
       const bar   = document.getElementById('mj-progress-bar');
       const label = document.getElementById('mj-progress-label');
-      if(bar)   bar.style.width  = pct + '%';
+      if(bar)   bar.style.width   = pct + '%';
       if(label) label.textContent = `${count} / ${MJ_EPISODES.length} episodes watched`;
     }
 
@@ -695,16 +694,16 @@
     function mjCanSubtract(){ return mjWatched.size >= 3; }
 
     function mjUpdateAdminPanel(){
-      const panel     = document.getElementById('mj-admin-panel');
-      const status    = document.getElementById('mj-power-status');
-      const usesEl    = document.getElementById('mj-uses-left');
-      const usesBox   = document.getElementById('mj-actions-left');
-      const bonusBtn  = document.getElementById('mj-bonus-btn');
-      const w         = mjWatched.size;
-      const max       = mjGetMaxPoints();
+      const panel    = document.getElementById('mj-admin-panel');
+      const status   = document.getElementById('mj-power-status');
+      const usesEl   = document.getElementById('mj-uses-left');
+      const usesBox  = document.getElementById('mj-actions-left');
+      const bonusBtn = document.getElementById('mj-bonus-btn');
+      const w        = mjWatched.size;
+      const max      = mjGetMaxPoints();
 
       if(w === 0){
-        panel.style.display  = 'none';
+        panel.style.display   = 'none';
         usesBox.style.display = 'none';
         return;
       }
@@ -766,8 +765,8 @@
       }
 
       if(!scores[selected]) scores[selected] = 0;
-      const before   = Number(scores[selected]);
-      const newScore = Math.max(0, before + points);
+      const before    = Number(scores[selected]);
+      const newScore  = Math.max(0, before + points);
       const newScores = JSON.parse(JSON.stringify(scores));
       newScores[selected] = newScore;
       const prevPos  = buildPositions(scores);
@@ -855,7 +854,7 @@
       if(sToggle) sToggle.classList.toggle('on', !!state.shake);
       abuseState = { disco: !!state.disco, rainbow: !!state.rainbow, shake: !!state.shake };
 
-      const broadcastEl = document.getElementById('fx-broadcast');
+      const broadcastEl  = document.getElementById('fx-broadcast');
       const broadcastTxt = document.getElementById('fx-broadcast-text');
       if(state.message && state.messageId){
         if(state.messageId !== window._lastMessageId){
@@ -892,47 +891,49 @@
 
     function logout(){
       if(auth.currentUser){
-        const email = auth.currentUser.email;
+        const email    = auth.currentUser.email;
         const username = email.replace(EMAIL_DOMAIN, '');
         writeLog({ user: username, action: 'logout' });
       }
       auth.signOut();
     }
 
-auth.onAuthStateChanged(user => {
-  document.getElementById('points-area').style.display = user ? 'block' : 'none';
-  if(user){
-    const username = user.email.replace(EMAIL_DOMAIN, '');
+    auth.onAuthStateChanged(user => {
+      document.getElementById('points-area').style.display = user ? 'block' : 'none';
+      if(user){
+        const username = user.email.replace(EMAIL_DOMAIN, '');
 
-    document.getElementById('mj-modal').style.display        = 'none';
-    testMode = (username === TEST_USER);
-    document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
-    document.getElementById('test-mode-label').style.display = testMode ? 'block' : 'none';
-    document.getElementById('reset-btn').style.display       = testMode ? 'none'  : 'block';
+        document.getElementById('mj-modal').style.display        = 'none';
+        testMode = (username === TEST_USER);
+        document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
+        document.getElementById('test-mode-label').style.display = testMode ? 'block' : 'none';
+        document.getElementById('reset-btn').style.display       = testMode ? 'none'  : 'block';
 
-    const canAbuse = testMode || username === 'lena_gombocz';
-    document.getElementById('abuse-btn').style.display = canAbuse ? 'block' : 'none';
+        // Abuse Panel is available to test user AND lena_gombocz
+        const canAbuse = testMode || ABUSE_USERS.includes(username);
+        document.getElementById('abuse-btn').style.display = canAbuse ? 'block' : 'none';
 
-    if(testMode){
-      testScores = JSON.parse(JSON.stringify(scores));
-    }
-  } else {
-    testMode   = false;
-    testScores = null;
-    document.getElementById('test-banner').style.display     = 'none';
-    document.getElementById('test-mode-label').style.display = 'none';
-    document.getElementById('login-status').textContent      = '';
-    document.getElementById('history-box').style.display     = 'none';
-  }
-});
+        if(testMode){
+          testScores = JSON.parse(JSON.stringify(scores));
+        }
+      } else {
+        testMode   = false;
+        testScores = null;
+        document.getElementById('test-banner').style.display     = 'none';
+        document.getElementById('test-mode-label').style.display = 'none';
+        document.getElementById('login-status').textContent      = '';
+        document.getElementById('history-box').style.display     = 'none';
+      }
+    });
+
     function updatePoints(){
       if(!auth.currentUser){ alert("Please log in first."); return; }
       const selected = document.getElementById('class-select').value;
       const raw      = document.getElementById('points-input').value.trim();
       if(!/^[-+]?\d+$/.test(raw)){ alert("Please enter a valid integer (e.g. 5 or -2)."); return; }
 
-      const points       = parseInt(raw, 10);
-      const undoSnapshot = JSON.parse(JSON.stringify(scores));
+      const points        = parseInt(raw, 10);
+      const undoSnapshot  = JSON.parse(JSON.stringify(scores));
       const prevPositions = buildPositions(scores);
 
       const newScores = JSON.parse(JSON.stringify(scores));
@@ -1107,17 +1108,17 @@ auth.onAuthStateChanged(user => {
     function getDeviceInfo(){
       const ua = navigator.userAgent;
       let device = 'Desktop';
-      if(/Android/i.test(ua))       device = 'Android';
-      else if(/iPhone/i.test(ua))   device = 'iPhone';
-      else if(/iPad/i.test(ua))     device = 'iPad';
+      if(/Android/i.test(ua))        device = 'Android';
+      else if(/iPhone/i.test(ua))    device = 'iPhone';
+      else if(/iPad/i.test(ua))      device = 'iPad';
       else if(/Macintosh/i.test(ua)) device = 'Mac';
-      else if(/Windows/i.test(ua))  device = 'Windows';
-      else if(/Linux/i.test(ua))    device = 'Linux';
+      else if(/Windows/i.test(ua))   device = 'Windows';
+      else if(/Linux/i.test(ua))     device = 'Linux';
       let browser = 'Unknown';
-      if(/Edg\//i.test(ua))         browser = 'Edge';
-      else if(/Chrome/i.test(ua))   browser = 'Chrome';
-      else if(/Firefox/i.test(ua))  browser = 'Firefox';
-      else if(/Safari/i.test(ua))   browser = 'Safari';
+      if(/Edg\//i.test(ua))          browser = 'Edge';
+      else if(/Chrome/i.test(ua))    browser = 'Chrome';
+      else if(/Firefox/i.test(ua))   browser = 'Firefox';
+      else if(/Safari/i.test(ua))    browser = 'Safari';
       return device + ' · ' + browser;
     }
 
@@ -1142,12 +1143,12 @@ auth.onAuthStateChanged(user => {
     }
 
     function confirmReset(){
-      const pass = document.getElementById('reset-password-input').value;
+      const pass  = document.getElementById('reset-password-input').value;
       const error = document.getElementById('reset-error');
       if(!pass){ error.textContent = '❌ Please enter your password.'; return; }
       error.textContent = '⏳ Verifying...';
 
-      const user = auth.currentUser;
+      const user       = auth.currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(user.email, pass);
       user.reauthenticateWithCredential(credential)
         .then(() => {
