@@ -145,6 +145,90 @@
 
     /* michael jackson portal - styles handled inline */
 
+    /* ── admin abuse panel effects ─────────────────────────── */
+    #abuse-btn{
+      margin-top:10px; background:#9c27b0; color:#fff;
+    }
+    #abuse-btn:hover{ background:#7b1fa2; }
+
+    #abuse-panel{
+      display:none; position:fixed; inset:0; z-index:5000;
+      background:rgba(0,0,0,0.85); align-items:center; justify-content:center;
+    }
+    #abuse-box{
+      background:#14101e; border:1px solid rgba(156,39,176,0.4);
+      border-radius:18px; padding:26px; width:380px; max-width:90vw;
+      max-height:85vh; overflow-y:auto;
+    }
+    #abuse-box h3{
+      color:#ce93d8; margin:0 0 4px 0; font-size:1.2rem;
+      text-shadow:0 0 14px rgba(156,39,176,0.5);
+    }
+    #abuse-box .abuse-sub{ color:#777; font-size:0.78rem; margin-bottom:18px; }
+    .abuse-section{ margin-bottom:18px; }
+    .abuse-section label{ display:block; color:#999; font-size:0.78rem; margin-bottom:8px; letter-spacing:0.04em; }
+    .abuse-row{ display:flex; gap:8px; flex-wrap:wrap; }
+    .abuse-toggle{
+      flex:1; min-width:100px; padding:10px 8px; border-radius:10px;
+      border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03);
+      color:#ccc; font-size:0.8rem; cursor:pointer; text-align:center;
+      transition:all .15s; width:auto; max-width:none;
+    }
+    .abuse-toggle:hover{ border-color:#ce93d8; }
+    .abuse-toggle.on{ background:rgba(156,39,176,0.25); border-color:#ce93d8; color:#fff; box-shadow:0 0 14px rgba(156,39,176,0.3); }
+    #abuse-message-input{
+      width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);
+      background:#0a0810; color:#fff; font-size:0.9rem; box-sizing:border-box; margin-bottom:8px; text-align:center;
+    }
+    #abuse-clear-btn{
+      width:100%; max-width:none; background:#444; color:#fff; margin-top:6px;
+    }
+    #abuse-close-btn{
+      width:100%; max-width:none; background:transparent; border:1px solid rgba(255,255,255,0.15);
+      color:#888; margin-top:14px;
+    }
+
+    /* effect overlays */
+    #fx-broadcast{
+      display:none; position:fixed; inset:0; z-index:4000;
+      align-items:center; justify-content:center; pointer-events:none;
+      text-align:center; padding:20px;
+    }
+    #fx-broadcast span{
+      font-family:'Segoe UI',sans-serif; font-weight:900;
+      font-size:clamp(2rem,10vw,7rem); color:#fff;
+      text-shadow:0 0 30px rgba(0,246,255,0.8), 0 0 60px rgba(0,246,255,0.5);
+      animation: fxPulse 1.2s ease-in-out infinite;
+    }
+    @keyframes fxPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.06); } }
+
+    @keyframes fxShake{
+      0%,100%{ transform:translate(0,0); }
+      10%{ transform:translate(-8px,4px); }
+      20%{ transform:translate(7px,-5px); }
+      30%{ transform:translate(-6px,6px); }
+      40%{ transform:translate(8px,-3px); }
+      50%{ transform:translate(-5px,5px); }
+      60%{ transform:translate(6px,-6px); }
+      70%{ transform:translate(-7px,3px); }
+      80%{ transform:translate(5px,-4px); }
+      90%{ transform:translate(-4px,5px); }
+    }
+    body.fx-shake{ animation: fxShake 0.4s ease-in-out infinite; }
+
+    @keyframes fxRainbowBg{
+      0%{ filter:hue-rotate(0deg); }
+      100%{ filter:hue-rotate(360deg); }
+    }
+    body.fx-rainbow{ animation: fxRainbowBg 3s linear infinite; }
+
+    body.fx-disco #leaderboard, body.fx-disco h1{ }
+    @keyframes fxStrobe{
+      0%,100%{ filter:brightness(1); }
+      50%{ filter:brightness(1.8) saturate(2); }
+    }
+    body.fx-disco{ animation: fxStrobe 0.25s ease-in-out infinite; }
+
     /* test mode */
     #test-banner{
       display:none;
@@ -242,16 +326,139 @@
       <button id="undo-btn" onclick="undoLast()" disabled>↩ Undo Last</button>
       <button id="reset-btn" onclick="resetScores()">🗑 Reset All Scores</button>
       <button onclick="window.location.href='logs.html'" style="margin-top:10px;background:#1a237e;color:#fff;">📋 Access Logs</button>
+      <button id="abuse-btn" onclick="openAbusePanel()">🎛 Admin Abuse Panel</button>
       <button id="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
 
-  <!-- michael jackson modal -->
-  <div id="mj-modal" style="display:none;">
-    <h2>🎤 You don't have access... but enjoy this!</h2>
-    <div class="mj-iframe">
+  <div id="mj-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:#050810;flex-direction:column;align-items:center;overflow-y:auto;">
+
+    <div id="mj-topbar" style="width:100%;max-width:1200px;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-family:'Segoe UI',sans-serif;font-size:1.4rem;font-weight:800;color:#00f6ff;">🎤 Micheal's Portal</div>
+        <div style="font-size:0.78rem;color:#556;margin-top:2px;">Watch episodes to unlock powers</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <div id="mj-actions-left" style="background:rgba(0,246,255,0.1);border:1px solid rgba(0,246,255,0.3);border-radius:8px;padding:6px 14px;font-size:0.82rem;color:#00f6ff;display:none;">
+          ⚡ <span id="mj-uses-left">0</span> changes left this week
+        </div>
+        <button onclick="window.location.href='logs.html'" style="background:rgba(26,35,126,0.3);border:1px solid rgba(26,35,126,0.6);color:#7986cb;font-size:0.78rem;padding:7px 16px;border-radius:20px;cursor:pointer;width:auto;max-width:none;">📋 Logs</button>
+        <button onclick="openAbusePanel()" style="background:rgba(156,39,176,0.15);border:1px solid rgba(156,39,176,0.4);color:#ce93d8;font-size:0.78rem;padding:7px 16px;border-radius:20px;cursor:pointer;width:auto;max-width:none;">🎛 Abuse Panel</button>
+        <button onclick="mjLogout()" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:#888;font-size:0.78rem;padding:7px 16px;border-radius:20px;cursor:pointer;width:auto;max-width:none;">← Log out</button>
+        <button onclick="toggleMjGuide()" style="background:rgba(0,246,255,0.1);border:1px solid rgba(0,246,255,0.3);color:#00f6ff;font-size:0.78rem;padding:7px 16px;border-radius:20px;cursor:pointer;width:auto;max-width:none;">📖 Guide</button>
+      </div>
     </div>
-    <button id="mj-logout" onclick="mjLogout()">← Log out</button>
+
+    <div id="mj-guide" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:3000;align-items:center;justify-content:center;">
+      <div style="background:#0f1624;border:1px solid rgba(0,246,255,0.2);border-radius:18px;padding:28px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;">
+        <h3 style="color:#00f6ff;margin:0 0 16px 0;font-size:1.2rem;">📖 How Micheal's Portal Works</h3>
+        <div style="font-size:0.85rem;color:#aaa;line-height:1.7;">
+          <p style="margin:0 0 12px 0;">Watch episodes to unlock admin powers. Each episode you finish grants more abilities!</p>
+          <table style="width:100%;border-collapse:collapse;">
+            <tr style="color:#00f6ff;font-size:0.78rem;"><th style="text-align:left;padding:6px 0;">Episodes Watched</th><th style="text-align:left;padding:6px 0;">Unlocked Power</th></tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.06);"><td style="padding:8px 0;">1 episode</td><td style="padding:8px 0;color:#aaa;">Can close the portal ✅</td></tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.06);"><td style="padding:8px 0;">2 episodes</td><td style="padding:8px 0;color:#00e676;">Add points (max +5)</td></tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.06);"><td style="padding:8px 0;">3 episodes</td><td style="padding:8px 0;color:#ff4444;">Remove points (max -5)</td></tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.06);"><td style="padding:8px 0;">4 episodes</td><td style="padding:8px 0;color:#ff9800;">Add or remove up to ±10 pts</td></tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.06);"><td style="padding:8px 0;">All 5 episodes</td><td style="padding:8px 0;color:#ffd700;">Full power, up to ±20 pts</td></tr>
+          </table>
+          <p style="margin:14px 0 8px 0;color:#00f6ff;">⏱ Weekly Limit</p>
+          <p style="margin:0 0 8px 0;">You get <strong>5 changes per week</strong>. Resets every Monday.</p>
+          <p style="margin:0 0 8px 0;">Need more? Watch an extra episode for <strong>+5 bonus changes</strong>!</p>
+          <p style="margin:14px 0 8px 0;color:#00f6ff;">📺 Episodes</p>
+          <p style="margin:0;">The left side has episodes to watch. The right side is... for your Brainrot 🧠</p>
+        </div>
+        <button onclick="toggleMjGuide()" style="margin-top:20px;background:#00f6ff;color:#000;border:none;padding:10px 24px;border-radius:10px;font-weight:700;cursor:pointer;width:100%;max-width:none;">Got it!</button>
+      </div>
+    </div>
+
+    <div style="width:100%;max-width:1200px;padding:0 24px 24px;display:flex;gap:20px;flex-wrap:wrap;flex:1;">
+
+      <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:16px;">
+
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;">
+          <div style="font-size:0.82rem;color:#556;margin-bottom:10px;letter-spacing:0.05em;">📺 EPISODES</div>
+          <div id="mj-episode-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+        </div>
+
+        <div id="mj-player-box" style="display:none;background:rgba(255,255,255,0.04);border:1px solid rgba(0,246,255,0.15);border-radius:14px;padding:16px;">
+          <div style="font-size:0.78rem;color:#00f6ff;margin-bottom:10px;letter-spacing:0.05em;">▶ NOW PLAYING</div>
+          <div style="aspect-ratio:16/9;border-radius:10px;overflow:hidden;">
+            <iframe id="mj-main-iframe" width="100%" height="100%" src="" title="Episode" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display:block;"></iframe>
+          </div>
+          <div id="mj-now-playing-title" style="margin-top:10px;font-size:0.88rem;font-weight:600;color:#fff;"></div>
+          <button id="mj-mark-watched" onclick="markWatched()" style="margin-top:10px;background:rgba(0,230,118,0.15);border:1px solid rgba(0,230,118,0.3);color:#00e676;font-size:0.8rem;padding:8px 16px;border-radius:8px;cursor:pointer;width:auto;max-width:none;">✅ Mark as Watched</button>
+        </div>
+
+        <div id="mj-admin-panel" style="display:none;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;">
+          <div style="font-size:0.82rem;color:#556;margin-bottom:12px;letter-spacing:0.05em;">⚡ YOUR POWERS</div>
+          <div id="mj-power-status" style="font-size:0.82rem;color:#aaa;margin-bottom:12px;line-height:1.5;"></div>
+          <select id="mj-class-select" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:#0a0f1a;color:#fff;font-size:0.9rem;margin-bottom:10px;">
+            <option value="7A">7A</option><option value="6B">6B</option><option value="6A">6A</option>
+            <option value="5A">5A</option><option value="5B">5B</option><option value="8A">8A</option>
+          </select>
+          <input id="mj-points-input" type="text" placeholder="Enter points (e.g. 5 or -3)" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:#0a0f1a;color:#fff;font-size:0.9rem;margin-bottom:10px;text-align:center;box-sizing:border-box;" />
+          <button onclick="mjUpdatePoints()" style="background:#00f6ff;color:#000;border:none;padding:10px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;max-width:none;">Update Points</button>
+          <div id="mj-error" style="color:#ff4444;font-size:0.8rem;margin-top:8px;min-height:1.2em;"></div>
+          <button id="mj-bonus-btn" onclick="mjWatchBonus()" style="display:none;margin-top:10px;background:rgba(255,152,0,0.15);border:1px solid rgba(255,152,0,0.3);color:#ff9800;font-size:0.78rem;padding:8px 14px;border-radius:8px;cursor:pointer;width:auto;max-width:none;">🎬 Watch an episode for +5 more changes</button>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;">
+          <div style="font-size:0.82rem;color:#556;margin-bottom:10px;letter-spacing:0.05em;">🏆 UNLOCK PROGRESS</div>
+          <div id="mj-progress-bar-wrap" style="background:rgba(255,255,255,0.06);border-radius:20px;height:10px;overflow:hidden;margin-bottom:8px;">
+            <div id="mj-progress-bar" style="height:100%;background:linear-gradient(90deg,#00f6ff,#b388ff);border-radius:20px;transition:width 0.5s ease;width:0%;"></div>
+          </div>
+          <div id="mj-progress-label" style="font-size:0.78rem;color:#556;">0 / 5 episodes watched</div>
+        </div>
+
+      </div>
+
+      <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:10px;">
+        <div style="background:rgba(255,0,100,0.06);border:1px solid rgba(255,0,100,0.15);border-radius:14px;padding:16px;">
+          <div style="font-size:0.82rem;color:#ff4081;margin-bottom:10px;letter-spacing:0.05em;">🧠 FOR YOUR BRAINROT</div>
+          <div style="aspect-ratio:9/16;border-radius:10px;overflow:hidden;max-height:500px;">
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/L_fcrOyoWZ8?si=D0hWdmHmTw-SO16d&autoplay=1&loop=1&playlist=L_fcrOyoWZ8&mute=0" title="Brainrot" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display:block;"></iframe>
+          </div>
+          <div style="margin-top:10px;font-size:0.78rem;color:#ff4081;text-align:center;">Plays on loop 🔁</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="fx-broadcast"><span id="fx-broadcast-text"></span></div>
+
+  <div id="abuse-panel">
+    <div id="abuse-box">
+      <h3>🎛 Admin Abuse Panel</h3>
+      <div class="abuse-sub">Effects are visible to EVERYONE viewing the site, live.</div>
+
+      <div class="abuse-section">
+        <label>🎉 FUN MODES</label>
+        <div class="abuse-row">
+          <button class="abuse-toggle" id="toggle-disco" onclick="toggleFx('disco')">🪩 Disco Strobe</button>
+          <button class="abuse-toggle" id="toggle-rainbow" onclick="toggleFx('rainbow')">🌈 Rainbow Mode</button>
+          <button class="abuse-toggle" id="toggle-shake" onclick="toggleFx('shake')">📳 Screen Shake</button>
+        </div>
+      </div>
+
+      <div class="abuse-section">
+        <label>📢 BROADCAST MESSAGE</label>
+        <input id="abuse-message-input" type="text" placeholder="Type a huge message..." maxlength="60" />
+        <button onclick="sendBroadcast()" style="width:100%;max-width:none;background:#00f6ff;color:#000;">Send to Everyone</button>
+      </div>
+
+      <div class="abuse-section">
+        <label>🎊 ONE-TIME BLASTS</label>
+        <div class="abuse-row">
+          <button class="abuse-toggle" onclick="triggerConfettiBlast()">🎉 Confetti Blast</button>
+          <button class="abuse-toggle" onclick="triggerFlash()">⚡ Flash Bang</button>
+        </div>
+      </div>
+
+      <button id="abuse-clear-btn" onclick="clearAllFx()">🧹 Clear All Effects</button>
+      <button id="abuse-close-btn" onclick="closeAbusePanel()">Close Panel</button>
+    </div>
   </div>
 
   <div id="test-banner">🧪 TEST MODE ACTIVE — Changes are simulated and will NOT be saved to Firebase</div>
@@ -262,7 +469,6 @@
     <div id="history-list"></div>
   </div>
 
-  <!-- reset confirmation modal -->
   <div id="reset-modal">
     <div id="reset-modal-box">
       <h3>⚠️ Reset All Scores</h3>
@@ -309,7 +515,6 @@
     let lastSnapshot     = null;
     let displayedScores  = {}; // tracks currently shown values for animation
 
-    // ── helpers ───────────────────────────────────────────────
     function buildPositions(scoresObj){
       const sorted = Object.entries(scoresObj)
         .filter(([cls]) => classes.includes(cls))
@@ -337,7 +542,6 @@
       })(start);
     }
 
-    // ── auth ──────────────────────────────────────────────────
     function toggleLogin(){
       const area = document.getElementById('login-area');
       const hidden = area.style.display === 'none' || area.style.display === '';
@@ -364,7 +568,6 @@
         });
     }
 
-    // ── Michael Jackson Portal ───────────────────────────────
     const MJ_EPISODES = [
       { title: "ÖsszeFűzés",        id: "ONMH9u9tCcg" },
       { title: "Táncolás a Hóban",  id: "VMryMZyw9cc"  },
@@ -381,7 +584,6 @@
     const MJ_WATCHED_KEY = 'mj_watched';
 
     function getMjWeekKey(){
-      // returns a string like "2024-W15" for current week
       const now  = new Date();
       const jan1 = new Date(now.getFullYear(), 0, 1);
       const week = Math.ceil(((now - jan1) / 86400000 + jan1.getDay() + 1) / 7);
@@ -389,19 +591,16 @@
     }
 
     function mjInit(){
-      // load watched episodes from localStorage
       try {
         const saved = JSON.parse(localStorage.getItem(MJ_WATCHED_KEY) || '[]');
         mjWatched = new Set(saved);
       } catch(e){ mjWatched = new Set(); }
 
-      // load weekly uses (reset if new week)
       try {
         const stored = JSON.parse(localStorage.getItem(MJ_WEEKLY_KEY) || '{}');
         if(stored.week === getMjWeekKey()){
           mjUsesLeft = stored.uses;
         } else {
-          // new week — reset to base allowance based on episodes watched
           mjUsesLeft = mjBaseUses();
           mjSaveUses();
         }
@@ -459,7 +658,6 @@
       mjWatched.add(mjCurrentEp.id);
       mjSaveWatched();
 
-      // if this was a bonus watch, grant +5 uses
       if(mjBonusEp === mjCurrentEp.id){
         mjUsesLeft += 5;
         mjSaveUses();
@@ -527,7 +725,6 @@
     }
 
     function mjWatchBonus(){
-      // pick a random unwatched ep, or random any ep if all watched
       const unwatched = MJ_EPISODES.filter(ep => !mjWatched.has(ep.id));
       const pool      = unwatched.length > 0 ? unwatched : MJ_EPISODES;
       const ep        = pool[Math.floor(Math.random() * pool.length)];
@@ -567,7 +764,6 @@
         return;
       }
 
-      // write to Firebase (real write, not test mode)
       if(!scores[selected]) scores[selected] = 0;
       const before   = Number(scores[selected]);
       const newScore = Math.max(0, before + points);
@@ -604,11 +800,87 @@
 
     function mjLogout(){
       document.getElementById('mj-modal').style.display = 'none';
-      // clear iframe src to stop video
       const iframe = document.getElementById('mj-main-iframe');
       if(iframe) iframe.src = '';
       auth.signOut();
     }
+
+    let abuseState = { disco:false, rainbow:false, shake:false, message:'', messageId:0 };
+
+    function openAbusePanel(){
+      document.getElementById('abuse-panel').style.display = 'flex';
+    }
+    function closeAbusePanel(){
+      document.getElementById('abuse-panel').style.display = 'none';
+    }
+
+    function toggleFx(name){
+      abuseState[name] = !abuseState[name];
+      db.ref('abuse').update({ [name]: abuseState[name] });
+      writeLog({ user: auth.currentUser ? auth.currentUser.email.replace(EMAIL_DOMAIN,'') : 'unknown', action: 'fx_' + name, state: abuseState[name] });
+    }
+
+    function sendBroadcast(){
+      const text = document.getElementById('abuse-message-input').value.trim();
+      if(!text) return;
+      db.ref('abuse').update({ message: text, messageId: Date.now() });
+      document.getElementById('abuse-message-input').value = '';
+    }
+
+    function triggerConfettiBlast(){
+      db.ref('abuse').update({ confettiBlastId: Date.now() });
+    }
+
+    function triggerFlash(){
+      db.ref('abuse').update({ flashId: Date.now() });
+    }
+
+    function clearAllFx(){
+      db.ref('abuse').set({ disco:false, rainbow:false, shake:false, message:'', messageId:0, confettiBlastId:0, flashId:0 });
+    }
+
+    db.ref('abuse').on('value', snap => {
+      const state = snap.val() || {};
+
+      document.body.classList.toggle('fx-disco',   !!state.disco);
+      document.body.classList.toggle('fx-rainbow', !!state.rainbow);
+      document.body.classList.toggle('fx-shake',   !!state.shake);
+
+      const dToggle = document.getElementById('toggle-disco');
+      const rToggle = document.getElementById('toggle-rainbow');
+      const sToggle = document.getElementById('toggle-shake');
+      if(dToggle) dToggle.classList.toggle('on', !!state.disco);
+      if(rToggle) rToggle.classList.toggle('on', !!state.rainbow);
+      if(sToggle) sToggle.classList.toggle('on', !!state.shake);
+      abuseState = { disco: !!state.disco, rainbow: !!state.rainbow, shake: !!state.shake };
+
+      const broadcastEl = document.getElementById('fx-broadcast');
+      const broadcastTxt = document.getElementById('fx-broadcast-text');
+      if(state.message && state.messageId){
+        broadcastTxt.textContent = state.message;
+        broadcastEl.style.display = 'flex';
+      } else {
+        broadcastEl.style.display = 'none';
+      }
+
+      if(state.confettiBlastId && state.confettiBlastId !== window._lastConfettiBlast){
+        window._lastConfettiBlast = state.confettiBlastId;
+        launchConfetti();
+        launchConfetti();
+      }
+
+      if(state.flashId && state.flashId !== window._lastFlash){
+        window._lastFlash = state.flashId;
+        const flash = document.createElement('div');
+        flash.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:6000;pointer-events:none;animation:flashFade 0.4s ease-out forwards;';
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 400);
+      }
+    });
+
+    const flashStyle = document.createElement('style');
+    flashStyle.textContent = '@keyframes flashFade{ from{opacity:1;} to{opacity:0;} }';
+    document.head.appendChild(flashStyle);
 
     function logout(){
       if(auth.currentUser){
@@ -624,7 +896,6 @@
       if(user){
         const username = user.email.replace(EMAIL_DOMAIN, '');
 
-        // michael jackson portal
         if(username === MJ_USER){
           document.getElementById('mj-modal').style.display    = 'flex';
           document.getElementById('points-area').style.display = 'none';
@@ -637,6 +908,7 @@
         document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
         document.getElementById('test-mode-label').style.display = testMode ? 'block' : 'none';
         document.getElementById('reset-btn').style.display       = testMode ? 'none'  : 'block';
+        document.getElementById('abuse-btn').style.display       = testMode ? 'block' : 'none';
         if(testMode){
           testScores = JSON.parse(JSON.stringify(scores));
         }
@@ -650,7 +922,6 @@
       }
     });
 
-    // ── update points ─────────────────────────────────────────
     function updatePoints(){
       if(!auth.currentUser){ alert("Please log in first."); return; }
       const selected = document.getElementById('class-select').value;
@@ -693,7 +964,6 @@
       document.getElementById('points-input').value = '';
     }
 
-    // ── undo ──────────────────────────────────────────────────
     function undoLast(){
       if(testMode){ alert("Undo is disabled in test mode."); return; }
       if(!auth.currentUser || !lastSnapshot) return;
@@ -707,7 +977,6 @@
       }).catch(err => { console.error("Undo failed:", err); alert("Undo failed."); });
     }
 
-    // ── render leaderboard (true FLIP — rows stay in DOM) ───────
     function renderLeaderboard(){
       const lb = document.getElementById('leaderboard');
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
@@ -716,7 +985,6 @@
         .filter(([cls]) => classes.includes(cls))
         .sort((a,b) => Number(b[1]) - Number(a[1]));
 
-      // ensure header exists
       if(!lb.querySelector('h3')){
         const h = document.createElement('h3');
         h.style.marginTop = '0';
@@ -724,7 +992,6 @@
         lb.prepend(h);
       }
 
-      // ensure a row exists for every class (create once, reuse always)
       classes.forEach(cls => {
         if(!lb.querySelector(`.class-row[data-cls="${cls}"]`)){
           const row = document.createElement('div');
@@ -734,13 +1001,11 @@
         }
       });
 
-      // STEP 1 — record where every row is RIGHT NOW (before reorder)
       const firstRects = {};
       lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
         firstRects[row.dataset.cls] = row.getBoundingClientRect();
       });
 
-      // STEP 2 — update content & reorder rows in DOM (appendChild moves existing nodes)
       sorted.forEach(([cls, pts], index) => {
         const numPts = Number(pts) || 0;
         let placeLabel = '', rowClass = '';
@@ -759,7 +1024,6 @@
         const row = lb.querySelector(`.class-row[data-cls="${cls}"]`);
         row.className = 'class-row ' + rowClass;
 
-        // update inner content
         let left = row.querySelector('.left');
         if(!left){
           left = document.createElement('div');
@@ -793,11 +1057,9 @@
         }
         displayedScores[cls] = numPts;
 
-        // move row to correct position (appendChild moves if already in DOM)
         lb.appendChild(row);
       });
 
-      // STEP 3 — FLIP: measure new positions, invert, then play to final
       requestAnimationFrame(() => {
         lb.querySelectorAll('.class-row[data-cls]').forEach(row => {
           const cls   = row.dataset.cls;
@@ -806,10 +1068,8 @@
           const last = row.getBoundingClientRect();
           const dy   = first.top - last.top;
           if(Math.abs(dy) < 1) return;
-          // snap back to old position instantly
           row.style.transition = 'none';
           row.style.transform  = `translateY(${dy}px)`;
-          // then animate to new position
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               row.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
@@ -820,7 +1080,6 @@
       });
     }
 
-    // ── render history ────────────────────────────────────────
     function renderHistory(){
       const box  = document.getElementById('history-box');
       const list = document.getElementById('history-list');
@@ -842,7 +1101,6 @@
       });
     }
 
-    // ── activity logger ──────────────────────────────────────
     function getDeviceInfo(){
       const ua = navigator.userAgent;
       let device = 'Desktop';
@@ -872,10 +1130,8 @@
       }).catch(err => console.error("Log write failed:", err));
     }
 
-    // ── reset scores ─────────────────────────────────────────
     function resetScores(){
       if(!auth.currentUser){ alert("Please log in first."); return; }
-      // show custom password confirmation modal
       document.getElementById('reset-modal').style.display = 'flex';
       document.getElementById('reset-password-input').value = '';
       document.getElementById('reset-error').textContent = '';
@@ -888,7 +1144,6 @@
       if(!pass){ error.textContent = '❌ Please enter your password.'; return; }
       error.textContent = '⏳ Verifying...';
 
-      // re-authenticate with Firebase to verify password
       const user = auth.currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(user.email, pass);
       user.reauthenticateWithCredential(credential)
@@ -914,7 +1169,6 @@
       document.getElementById('reset-modal').style.display = 'none';
     }
 
-    // ── confetti ──────────────────────────────────────────────
     const canvas  = document.getElementById('confetti-canvas');
     const ctx     = canvas.getContext('2d');
     let confettiParticles = [];
@@ -973,8 +1227,6 @@
       }
     }
 
-    // track which class the user has already seen leading
-    // stored in localStorage so it persists across page loads
     let seenLeader = localStorage.getItem('seenLeader') || null;
 
     function checkConfetti(){
@@ -990,7 +1242,6 @@
       }
     }
 
-    // ── Firebase listeners ────────────────────────────────────
     db.ref('scores').on('value', snap => {
       scores = snap.val() || {};
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
