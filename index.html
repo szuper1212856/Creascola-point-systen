@@ -896,13 +896,6 @@
       if(user){
         const username = user.email.replace(EMAIL_DOMAIN, '');
 
-        if(username === MJ_USER){
-          document.getElementById('mj-modal').style.display    = 'flex';
-          document.getElementById('points-area').style.display = 'none';
-          mjInit();
-          return;
-        }
-
         document.getElementById('mj-modal').style.display        = 'none';
         testMode = (username === TEST_USER);
         document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
