@@ -537,7 +537,7 @@
       const start = performance.now();
       (function step(now){
         const p    = Math.min((now - start) / duration, 1);
-        const ease = 1 - Math.pow(1 - p, 3); // ease-out cubic
+        const ease = 1 - Math.pow(1 - p, 3);
         el.textContent = Math.round(from + (to - from) * ease) + ' pts';
         if(p < 1) requestAnimationFrame(step);
       })(start);
@@ -899,30 +899,32 @@
       auth.signOut();
     }
 
-    auth.onAuthStateChanged(user => {
-      document.getElementById('points-area').style.display = user ? 'block' : 'none';
-      if(user){
-        const username = user.email.replace(EMAIL_DOMAIN, '');
+auth.onAuthStateChanged(user => {
+  document.getElementById('points-area').style.display = user ? 'block' : 'none';
+  if(user){
+    const username = user.email.replace(EMAIL_DOMAIN, '');
 
-        document.getElementById('mj-modal').style.display        = 'none';
-        testMode = (username === TEST_USER);
-        document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
-        document.getElementById('test-mode-label').style.display = testMode ? 'block' : 'none';
-        document.getElementById('reset-btn').style.display       = testMode ? 'none'  : 'block';
-        document.getElementById('abuse-btn').style.display       = testMode ? 'block' : 'none';
-        if(testMode){
-          testScores = JSON.parse(JSON.stringify(scores));
-        }
-      } else {
-        testMode   = false;
-        testScores = null;
-        document.getElementById('test-banner').style.display     = 'none';
-        document.getElementById('test-mode-label').style.display = 'none';
-        document.getElementById('login-status').textContent      = '';
-        document.getElementById('history-box').style.display     = 'none';
-      }
-    });
+    document.getElementById('mj-modal').style.display        = 'none';
+    testMode = (username === TEST_USER);
+    document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
+    document.getElementById('test-mode-label').style.display = testMode ? 'block' : 'none';
+    document.getElementById('reset-btn').style.display       = testMode ? 'none'  : 'block';
 
+    const canAbuse = testMode || username === 'lena_gombocz';
+    document.getElementById('abuse-btn').style.display = canAbuse ? 'block' : 'none';
+
+    if(testMode){
+      testScores = JSON.parse(JSON.stringify(scores));
+    }
+  } else {
+    testMode   = false;
+    testScores = null;
+    document.getElementById('test-banner').style.display     = 'none';
+    document.getElementById('test-mode-label').style.display = 'none';
+    document.getElementById('login-status').textContent      = '';
+    document.getElementById('history-box').style.display     = 'none';
+  }
+});
     function updatePoints(){
       if(!auth.currentUser){ alert("Please log in first."); return; }
       const selected = document.getElementById('class-select').value;
