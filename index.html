@@ -1227,21 +1227,23 @@
 
     auth.onAuthStateChanged(user => {
       document.getElementById('points-area').style.display = user ? 'block' : 'none';
-      document.getElementById('global-stop-btn').style.display = user ? 'flex' : 'none';
       if(user){
         const username = user.email.replace(EMAIL_DOMAIN, '');
+        const hasAbuseAccess = (username === TEST_USER || username === "micheal_jackson" || username === "lena_gombocz");
 
         document.getElementById('mj-modal').style.display        = 'none';
         testMode = (username === TEST_USER);
         document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
         document.getElementById('test-mode-label').style.display = testMode ? 'block' : 'none';
         document.getElementById('reset-btn').style.display       = testMode ? 'none'  : 'block';
-        document.getElementById('abuse-btn').style.display       = (testMode || username === "micheal_jackson" || username === "lena_gombocz") ? 'block' : 'none';
+        document.getElementById('abuse-btn').style.display       = hasAbuseAccess ? 'block' : 'none';
+        document.getElementById('global-stop-btn').style.display = hasAbuseAccess ? 'flex'  : 'none';
         document.getElementById('logs-link-btn').style.display   = (username === "jenei_zsolt" || username === "kele_istvan") ? 'none' : 'block';
         if(testMode){
           testScores = JSON.parse(JSON.stringify(scores));
         }
       } else {
+        document.getElementById('global-stop-btn').style.display = 'none';
         testMode   = false;
         testScores = null;
         document.getElementById('test-banner').style.display     = 'none';
