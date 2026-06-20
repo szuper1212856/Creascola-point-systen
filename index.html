@@ -204,49 +204,58 @@
     @keyframes fxPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.03); } }
 
     @keyframes fxShake{
-      0%,100%{ transform:translate(0,0); }
-      10%{ transform:translate(-8px,4px); }
-      20%{ transform:translate(7px,-5px); }
-      30%{ transform:translate(-6px,6px); }
-      40%{ transform:translate(8px,-3px); }
-      50%{ transform:translate(-5px,5px); }
-      60%{ transform:translate(6px,-6px); }
-      70%{ transform:translate(-7px,3px); }
-      80%{ transform:translate(5px,-4px); }
-      90%{ transform:translate(-4px,5px); }
+      0%,100%{ transform:translate(0,0) rotate(0deg); }
+      10%{ transform:translate(-30px,18px) rotate(-3deg); }
+      20%{ transform:translate(28px,-22px) rotate(3deg); }
+      30%{ transform:translate(-26px,24px) rotate(-4deg); }
+      40%{ transform:translate(30px,-15px) rotate(4deg); }
+      50%{ transform:translate(-22px,22px) rotate(-3deg); }
+      60%{ transform:translate(26px,-26px) rotate(3deg); }
+      70%{ transform:translate(-28px,14px) rotate(-4deg); }
+      80%{ transform:translate(22px,-18px) rotate(4deg); }
+      90%{ transform:translate(-18px,20px) rotate(-2deg); }
     }
-    body.fx-shake{ animation: fxShake 0.4s ease-in-out infinite; }
+    body.fx-shake{ animation: fxShake 0.12s ease-in-out infinite; }
 
     @keyframes fxRainbowBg{
-      0%{ filter:hue-rotate(0deg); }
-      100%{ filter:hue-rotate(360deg); }
+      0%{ filter:hue-rotate(0deg) saturate(2.5); }
+      100%{ filter:hue-rotate(360deg) saturate(2.5); }
     }
-    body.fx-rainbow{ animation: fxRainbowBg 3s linear infinite; }
+    body.fx-rainbow{ animation: fxRainbowBg 0.6s linear infinite; }
 
-    body.fx-disco #leaderboard, body.fx-disco h1{ }
     @keyframes fxStrobe{
-      0%,100%{ filter:brightness(1); }
-      50%{ filter:brightness(1.8) saturate(2); }
+      0%,100%{ filter:brightness(1) saturate(1) hue-rotate(0deg); background-color:#ff0000; }
+      16%{   filter:brightness(2.4) saturate(4) hue-rotate(60deg);  background-color:#ff8800; }
+      33%{   filter:brightness(0.3) saturate(3) hue-rotate(120deg); background-color:#ffff00; }
+      50%{   filter:brightness(2.6) saturate(5) hue-rotate(180deg); background-color:#00ff00; }
+      66%{   filter:brightness(0.4) saturate(3) hue-rotate(240deg); background-color:#00ffff; }
+      83%{   filter:brightness(2.2) saturate(4) hue-rotate(300deg); background-color:#ff00ff; }
     }
-    body.fx-disco{ animation: fxStrobe 0.25s ease-in-out infinite; }
+    body.fx-disco{ animation: fxStrobe 0.06s steps(1) infinite; }
 
-    body.fx-invert{ filter:invert(1) hue-rotate(180deg); }
+    body.fx-invert{ filter:invert(1) hue-rotate(180deg) saturate(2) contrast(1.4); }
 
-    body.fx-flip{ transform:rotate(180deg); transform-origin:center center; }
+    body.fx-flip{ transform:rotate(180deg) scale(1.05); transform-origin:center center; }
 
-    body.fx-blur{ filter:blur(2.5px); }
+    body.fx-blur{ filter:blur(6px) saturate(1.8); }
 
-    @keyframes fxSpin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
-    body.fx-spin{ animation: fxSpin 4s linear infinite; transform-origin:center center; }
+    @keyframes fxSpin{ from{ transform:rotate(0deg) scale(1); } 50%{ transform:rotate(180deg) scale(1.15); } to{ transform:rotate(360deg) scale(1); } }
+    body.fx-spin{ animation: fxSpin 0.9s linear infinite; transform-origin:center center; }
 
     @keyframes fxEarthquake{
       0%,100%{ transform:translate(0,0) rotate(0deg); }
-      20%{ transform:translate(-12px,8px) rotate(-1deg); }
-      40%{ transform:translate(10px,-10px) rotate(1deg); }
-      60%{ transform:translate(-8px,10px) rotate(-1.5deg); }
-      80%{ transform:translate(12px,-6px) rotate(1.5deg); }
+      10%{ transform:translate(-35px,22px) rotate(-5deg); }
+      20%{ transform:translate(32px,-28px) rotate(5deg); }
+      30%{ transform:translate(-30px,30px) rotate(-6deg); }
+      40%{ transform:translate(35px,-20px) rotate(6deg); }
+      50%{ transform:translate(-28px,28px) rotate(-5deg); }
+      60%{ transform:translate(32px,-32px) rotate(5deg); }
+      70%{ transform:translate(-34px,18px) rotate(-6deg); }
+      80%{ transform:translate(28px,-24px) rotate(6deg); }
+      90%{ transform:translate(-22px,26px) rotate(-3deg); }
     }
-    body.fx-earthquake{ animation: fxEarthquake 0.3s ease-in-out 6; }
+    body.fx-earthquake{ animation: fxEarthquake 0.1s ease-in-out 30; }
+
 
     .matrix-char{
       position:absolute; top:-30px; color:#00ff41;
@@ -272,6 +281,7 @@
     }
     #fx-lucky-class{ animation: fxLuckySpin 0.6s ease-out; }
     #fx-lucky-points{ animation: fxLuckySpin 0.6s ease-out 0.2s backwards; }
+    @keyframes luckyWobble{ 0%,100%{ transform:rotate(-8deg); } 50%{ transform:rotate(8deg); } }
 
     /* test mode */
     #test-banner{
@@ -510,13 +520,13 @@
 
       <div class="abuse-section">
         <label>🎰 LUCKY BLOCK</label>
-        <div class="abuse-sub" style="margin-bottom:8px;">Gives a random amount of points (-15 to +25) to a class, with a slot machine animation for everyone!</div>
+        <div class="abuse-sub" style="margin-bottom:8px;">Pick a class & amount, drop the block — first person to click it on the site claims the points!</div>
         <select id="lucky-class-select" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:#0a0810;color:#fff;font-size:0.9rem;margin-bottom:8px;">
           <option value="7A">7A</option><option value="6B">6B</option><option value="6A">6A</option>
           <option value="5A">5A</option><option value="5B">5B</option><option value="8A">8A</option>
-          <option value="RANDOM">🎲 Random Class</option>
         </select>
-        <button onclick="triggerLuckyBlock()" style="width:100%;max-width:none;background:linear-gradient(90deg,#ffd700,#ff9800);color:#000;font-weight:800;">🎰 OPEN LUCKY BLOCK</button>
+        <input id="lucky-amount-input" type="text" placeholder="Points to award (e.g. 10 or -5)" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:#0a0810;color:#fff;font-size:0.9rem;margin-bottom:8px;text-align:center;box-sizing:border-box;" />
+        <button onclick="dropLuckyBlock()" style="width:100%;max-width:none;background:linear-gradient(90deg,#ffd700,#ff9800);color:#000;font-weight:800;">🎰 DROP LUCKY BLOCK</button>
       </div>
 
       <button id="abuse-clear-btn" onclick="clearAllFx()">🧹 Clear All Effects</button>
@@ -526,8 +536,14 @@
 
   <div id="fx-emoji-rain" style="display:none;position:fixed;inset:0;z-index:4500;pointer-events:none;overflow:hidden;"></div>
 
-  <div id="fx-lucky" style="display:none;position:fixed;inset:0;z-index:5500;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;flex-direction:column;gap:16px;">
-    <div style="font-size:1.1rem;color:#ffd700;letter-spacing:0.1em;">🎰 LUCKY BLOCK 🎰</div>
+  <div id="fx-lucky-falling" style="display:none;position:fixed;top:-120px;left:50%;transform:translateX(-50%);z-index:5400;cursor:pointer;text-align:center;user-select:none;">
+    <div style="font-size:64px;filter:drop-shadow(0 0 20px rgba(255,215,0,0.9));animation:luckyWobble 0.6s ease-in-out infinite;">🎁</div>
+    <div style="font-size:0.78rem;color:#ffd700;font-weight:700;margin-top:4px;text-shadow:0 0 8px rgba(0,0,0,0.8);">CLICK ME!</div>
+  </div>
+
+  <div id="fx-lucky" style="display:none;position:fixed;inset:0;z-index:5500;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;flex-direction:column;gap:10px;">
+    <div style="font-size:1.1rem;color:#ffd700;letter-spacing:0.1em;">🎰 LUCKY BLOCK CLAIMED 🎰</div>
+    <div id="fx-lucky-winner" style="font-size:0.95rem;color:#aaa;"></div>
     <div id="fx-lucky-class" style="font-family:'Segoe UI',sans-serif;font-weight:900;font-size:clamp(2rem,8vw,4rem);color:#fff;text-shadow:0 0 30px rgba(255,215,0,0.7);"></div>
     <div id="fx-lucky-points" style="font-family:'Segoe UI',sans-serif;font-weight:900;font-size:clamp(1.6rem,6vw,3rem);"></div>
   </div>
@@ -894,7 +910,9 @@
     function sendBroadcast(){
       const text = document.getElementById('abuse-message-input').value.trim();
       if(!text) return;
-      db.ref('abuse').update({ message: text, messageId: Date.now() });
+      const sender = auth.currentUser ? auth.currentUser.email.replace(EMAIL_DOMAIN,'') : 'unknown';
+      const fullText = text + ' — ' + displayName(sender);
+      db.ref('abuse').update({ message: fullText, messageId: Date.now() });
       document.getElementById('abuse-message-input').value = '';
     }
 
@@ -922,33 +940,53 @@
       db.ref('abuse').update({ earthquakeId: Date.now() });
     }
 
-    function triggerLuckyBlock(){
-      let targetClass = document.getElementById('lucky-class-select').value;
-      if(targetClass === 'RANDOM'){
-        targetClass = classes[Math.floor(Math.random() * classes.length)];
-      }
-      const amount = Math.floor(Math.random() * 41) - 15;
-      db.ref('abuse').update({
-        luckyBlockId: Date.now(),
-        luckyBlockClass: targetClass,
-        luckyBlockAmount: amount
+    function dropLuckyBlock(){
+      const targetClass = document.getElementById('lucky-class-select').value;
+      const rawAmount   = document.getElementById('lucky-amount-input').value.trim();
+      if(!/^[-+]?\d+$/.test(rawAmount)){ alert('Enter a valid number of points (e.g. 10 or -5)'); return; }
+      const amount = parseInt(rawAmount, 10);
+
+      db.ref('abuse/luckyBlockState').set({
+        active:     true,
+        dropId:     Date.now(),
+        cls:        targetClass,
+        amount:     amount,
+        claimed:    false,
+        claimedBy:  null
       });
 
-      if(!scores[targetClass]) scores[targetClass] = 0;
-      const before    = Number(scores[targetClass]);
-      const newScore  = Math.max(0, before + amount);
-      const newScores = JSON.parse(JSON.stringify(scores));
-      newScores[targetClass] = newScore;
-      const prevPos = buildPositions(scores);
-      const newHist = [{ cls: targetClass, change: amount, before, after: newScore, ts: Date.now() }, ...history].slice(0, HISTORY_LIMIT);
+      document.getElementById('lucky-amount-input').value = '';
+    }
 
-      db.ref().update({
-        scores:            newScores,
-        previousPositions: prevPos,
-        history:           newHist,
-        undoSnapshot:      JSON.parse(JSON.stringify(scores))
-      }).then(() => {
-        writeLog({ user: auth.currentUser.email.replace(EMAIL_DOMAIN,''), action: 'luckyblock', class: targetClass, change: amount, before, after: newScore });
+    function claimLuckyBlock(){
+      const ref = db.ref('abuse/luckyBlockState');
+      ref.transaction(state => {
+        if(!state || !state.active || state.claimed) return state;
+        state.claimed   = true;
+        state.claimedBy = auth.currentUser ? auth.currentUser.email.replace(EMAIL_DOMAIN,'') : 'a visitor';
+        return state;
+      }).then(result => {
+        if(result.committed){
+          const data = result.snapshot.val();
+          const cls    = data.cls;
+          const amount = data.amount;
+          if(!scores[cls]) scores[cls] = 0;
+          const before    = Number(scores[cls]);
+          const newScore  = Math.max(0, before + amount);
+          const newScores = JSON.parse(JSON.stringify(scores));
+          newScores[cls]  = newScore;
+          const prevPos = buildPositions(scores);
+          const newHist = [{ cls, change: amount, before, after: newScore, ts: Date.now() }, ...history].slice(0, HISTORY_LIMIT);
+
+          db.ref().update({
+            scores:            newScores,
+            previousPositions: prevPos,
+            history:           newHist,
+            undoSnapshot:      JSON.parse(JSON.stringify(scores))
+          }).then(() => {
+            writeLog({ user: data.claimedBy, action: 'luckyblock', class: cls, change: amount, before, after: newScore });
+          });
+        }
       });
     }
 
@@ -956,7 +994,7 @@
       db.ref('abuse').set({
         disco:false, rainbow:false, shake:false, invert:false, flip:false, matrix:false, spin:false, blur:false,
         message:'', messageId:0, confettiBlastId:0, flashId:0, emojiRainId:0, airhornId:0, fireworksId:0, earthquakeId:0,
-        luckyBlockId:0, luckyBlockClass:'', luckyBlockAmount:0
+        luckyBlockState: { active:false, claimed:false }
       });
     }
 
@@ -967,14 +1005,17 @@
       document.body.appendChild(container);
       const chars = 'ｱｲｳｴｵｶｷｸｹｺ0123456789ABCDEFｱｲｳｴｵ';
       matrixInterval = setInterval(() => {
-        const span = document.createElement('div');
-        span.className = 'matrix-char';
-        span.textContent = chars[Math.floor(Math.random() * chars.length)];
-        span.style.left = Math.random() * 100 + 'vw';
-        span.style.animationDuration = (Math.random() * 2 + 2) + 's';
-        container.appendChild(span);
-        setTimeout(() => span.remove(), 4500);
-      }, 80);
+        for(let i = 0; i < 4; i++){
+          const span = document.createElement('div');
+          span.className = 'matrix-char';
+          span.textContent = chars[Math.floor(Math.random() * chars.length)];
+          span.style.left = Math.random() * 100 + 'vw';
+          span.style.fontSize = (Math.random() * 14 + 14) + 'px';
+          span.style.animationDuration = (Math.random() * 1 + 0.8) + 's';
+          container.appendChild(span);
+          setTimeout(() => span.remove(), 2200);
+        }
+      }, 25);
     }
 
     function stopMatrixRain(){
@@ -986,57 +1027,92 @@
 
     function emojiRainBurst(){
       const container = document.getElementById('fx-emoji-rain');
-      const emojiSet = ['🎉','🔥','💀','😂','🤡','👑','⭐','💩','🍕','🚀','🤯','😎'];
+      const emojiSet = ['🎉','🔥','💀','😂','🤡','👑','⭐','💩','🍕','🚀','🤯','😎','🌈','💥','👽','🎃'];
       container.style.display = 'block';
-      for(let i = 0; i < 60; i++){
+      for(let i = 0; i < 220; i++){
         setTimeout(() => {
           const span = document.createElement('div');
           span.className = 'emoji-particle';
           span.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)];
           span.style.left = Math.random() * 100 + 'vw';
-          span.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+          span.style.fontSize = (Math.random() * 28 + 24) + 'px';
+          span.style.animationDuration = (Math.random() * 1.2 + 1.2) + 's';
           container.appendChild(span);
-          setTimeout(() => span.remove(), 5000);
-        }, i * 40);
+          setTimeout(() => span.remove(), 3000);
+        }, i * 12);
       }
-      setTimeout(() => { container.style.display = 'none'; }, 6000);
+      setTimeout(() => { container.style.display = 'none'; }, 6500);
     }
 
     function fireworksBurst(){
-      for(let i = 0; i < 4; i++){
-        setTimeout(() => { launchConfetti(); }, i * 350);
+      for(let i = 0; i < 10; i++){
+        setTimeout(() => { launchConfetti(); }, i * 180);
       }
     }
+
 
     function playAirhornSound(){
       try{
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(370, ctx.currentTime);
-        osc.frequency.setValueAtTime(330, ctx.currentTime + 0.15);
-        gain.gain.setValueAtTime(0.25, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.9);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.9);
+        for(let i = 0; i < 3; i++){
+          const startAt = ctx.currentTime + i * 0.55;
+          const osc  = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(370, startAt);
+          osc.frequency.setValueAtTime(330, startAt + 0.15);
+          gain.gain.setValueAtTime(0.4, startAt);
+          gain.gain.exponentialRampToValueAtTime(0.001, startAt + 0.5);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startAt);
+          osc.stop(startAt + 0.5);
+        }
       } catch(e){ console.error('Audio failed:', e); }
     }
 
-    function showLuckyBlockResult(cls, amount){
+    const NAME_MAP = {
+      "jenei_zsolt":     "Zsolt",
+      "kele_istvan":     "István",
+      "balazs_kiss":     "Balázs",
+      "lena_gombocz":    "Léna",
+      "micheal_jackson": "Benedek"
+    };
+    function displayName(username){
+      return NAME_MAP[username] || username;
+    }
+
+    function showLuckyBlockResult(cls, amount, claimedBy){
       const overlay   = document.getElementById('fx-lucky');
       const clsEl     = document.getElementById('fx-lucky-class');
       const ptsEl     = document.getElementById('fx-lucky-points');
+      const winEl     = document.getElementById('fx-lucky-winner');
       const sign      = amount >= 0 ? '+' : '';
       const color     = amount >= 0 ? '#00e676' : '#ff4444';
       clsEl.textContent = cls;
       ptsEl.textContent = sign + amount + ' pts';
       ptsEl.style.color = color;
+      winEl.textContent = claimedBy ? ('Claimed by ' + displayName(claimedBy)) : '';
       overlay.style.display = 'flex';
-      setTimeout(() => { overlay.style.display = 'none'; }, 3000);
+      setTimeout(() => { overlay.style.display = 'none'; }, 3500);
     }
+
+    function animateLuckyBlockFall(){
+      const block = document.getElementById('fx-lucky-falling');
+      block.style.display    = 'block';
+      block.style.transition = 'none';
+      block.style.top        = '-120px';
+      void block.offsetWidth;
+      block.style.transition = 'top 3.5s linear';
+      block.style.top        = '60vh';
+    }
+
+    function hideLuckyBlockFalling(){
+      const block = document.getElementById('fx-lucky-falling');
+      block.style.display = 'none';
+    }
+
+    document.getElementById('fx-lucky-falling').addEventListener('click', claimLuckyBlock);
 
     db.ref('abuse').on('value', snap => {
       const state = snap.val() || {};
@@ -1112,12 +1188,22 @@
         document.body.classList.remove('fx-earthquake');
         void document.body.offsetWidth;
         document.body.classList.add('fx-earthquake');
-        setTimeout(() => document.body.classList.remove('fx-earthquake'), 2000);
+        setTimeout(() => document.body.classList.remove('fx-earthquake'), 3200);
       }
 
-      if(state.luckyBlockId && state.luckyBlockId !== window._lastLuckyBlock){
-        window._lastLuckyBlock = state.luckyBlockId;
-        showLuckyBlockResult(state.luckyBlockClass, state.luckyBlockAmount);
+      const lb = state.luckyBlockState;
+      if(lb && lb.active && lb.dropId !== window._lastLuckyDrop){
+        window._lastLuckyDrop = lb.dropId;
+        window._lastLuckyClaimed = false;
+        animateLuckyBlockFall();
+      }
+      if(lb && lb.claimed && !window._lastLuckyClaimed){
+        window._lastLuckyClaimed = true;
+        hideLuckyBlockFalling();
+        showLuckyBlockResult(lb.cls, lb.amount, lb.claimedBy);
+      }
+      if(!lb || !lb.active){
+        hideLuckyBlockFalling();
       }
     });
 
@@ -1144,7 +1230,7 @@
         document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
         document.getElementById('test-mode-label').style.display = testMode ? 'block' : 'none';
         document.getElementById('reset-btn').style.display       = testMode ? 'none'  : 'block';
-        document.getElementById('abuse-btn').style.display       = testMode ? 'block' : 'none';
+        document.getElementById('abuse-btn').style.display       = (testMode || username === "micheal_jackson") ? 'block' : 'none';
         document.getElementById('logs-link-btn').style.display   = (username === "jenei_zsolt" || username === "kele_istvan") ? 'none' : 'block';
         if(testMode){
           testScores = JSON.parse(JSON.stringify(scores));
@@ -1420,19 +1506,18 @@
 
     function launchConfetti(){
       resizeCanvas();
-      confettiParticles = [];
-      const colors = ['#ffd700','#00f6ff','#ff4081','#69ff47','#ff9800','#e040fb','#ffffff'];
-      for(let i = 0; i < 160; i++){
+      const colors = ['#ffd700','#00f6ff','#ff4081','#69ff47','#ff9800','#e040fb','#ffffff','#ff0000','#00ffff'];
+      for(let i = 0; i < 250; i++){
         confettiParticles.push({
           x:      Math.random() * canvas.width,
           y:      Math.random() * canvas.height - canvas.height,
-          w:      Math.random() * 10 + 5,
-          h:      Math.random() * 5 + 3,
+          w:      Math.random() * 14 + 6,
+          h:      Math.random() * 7 + 4,
           color:  colors[Math.floor(Math.random() * colors.length)],
           rot:    Math.random() * Math.PI * 2,
-          rotSpd: (Math.random() - 0.5) * 0.15,
-          vx:     (Math.random() - 0.5) * 3,
-          vy:     Math.random() * 4 + 2,
+          rotSpd: (Math.random() - 0.5) * 0.3,
+          vx:     (Math.random() - 0.5) * 6,
+          vy:     Math.random() * 7 + 3,
           alpha:  1
         });
       }
