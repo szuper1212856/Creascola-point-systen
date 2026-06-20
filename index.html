@@ -143,6 +143,8 @@
     #reset-btn{ margin-top:10px; background:#8b0000; color:#fff; }
     #reset-btn:hover{ background:#cc0000; }
 
+    /* michael jackson portal - styles handled inline */
+
     /* ── admin abuse panel effects ─────────────────────────── */
     #abuse-btn{
       margin-top:10px; background:#9c27b0; color:#fff;
@@ -186,6 +188,7 @@
       color:#888; margin-top:14px;
     }
 
+    /* effect overlays */
     #fx-broadcast{
       display:none; position:fixed; top:0; left:0; right:0; z-index:4000;
       align-items:center; justify-content:center; pointer-events:none;
@@ -227,7 +230,50 @@
     }
     body.fx-disco{ animation: fxStrobe 0.25s ease-in-out infinite; }
 
-    /* test for me so i can mess around but it doesnt work so i need to fix in but im lasy */
+    body.fx-invert{ filter:invert(1) hue-rotate(180deg); }
+
+    body.fx-flip{ transform:rotate(180deg); transform-origin:center center; }
+
+    body.fx-blur{ filter:blur(2.5px); }
+
+    @keyframes fxSpin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+    body.fx-spin{ animation: fxSpin 4s linear infinite; transform-origin:center center; }
+
+    @keyframes fxEarthquake{
+      0%,100%{ transform:translate(0,0) rotate(0deg); }
+      20%{ transform:translate(-12px,8px) rotate(-1deg); }
+      40%{ transform:translate(10px,-10px) rotate(1deg); }
+      60%{ transform:translate(-8px,10px) rotate(-1.5deg); }
+      80%{ transform:translate(12px,-6px) rotate(1.5deg); }
+    }
+    body.fx-earthquake{ animation: fxEarthquake 0.3s ease-in-out 6; }
+
+    .matrix-char{
+      position:absolute; top:-30px; color:#00ff41;
+      font-family:'Courier New',monospace; font-size:18px;
+      text-shadow:0 0 8px #00ff41;
+      animation: matrixFall linear infinite;
+    }
+    @keyframes matrixFall{ from{ transform:translateY(0); } to{ transform:translateY(110vh); } }
+
+    .emoji-particle{
+      position:absolute; top:-50px; font-size:32px;
+      animation: emojiFall linear forwards;
+    }
+    @keyframes emojiFall{
+      from{ transform:translateY(0) rotate(0deg); }
+      to{   transform:translateY(110vh) rotate(360deg); }
+    }
+
+    @keyframes fxLuckySpin{
+      0%{ transform:scale(0.5) rotate(0deg); opacity:0; }
+      50%{ transform:scale(1.2) rotate(10deg); opacity:1; }
+      100%{ transform:scale(1) rotate(0deg); opacity:1; }
+    }
+    #fx-lucky-class{ animation: fxLuckySpin 0.6s ease-out; }
+    #fx-lucky-points{ animation: fxLuckySpin 0.6s ease-out 0.2s backwards; }
+
+    /* test mode */
     #test-banner{
       display:none;
       width:100%; max-width:760px;
@@ -253,6 +299,7 @@
       letter-spacing:0.04em;
     }
 
+    /* reset confirmation modal */
     #reset-modal{
       display:none; position:fixed; inset:0;
       background:rgba(0,0,0,0.75); z-index:1000;
@@ -322,7 +369,7 @@
       <div class="test-mode-label" id="test-mode-label">🧪 Simulated — nothing will be saved</div>
       <button id="undo-btn" onclick="undoLast()" disabled>↩ Undo Last</button>
       <button id="reset-btn" onclick="resetScores()">🗑 Reset All Scores</button>
-      <button onclick="window.location.href='logs.html'" style="margin-top:10px;background:#1a237e;color:#fff;">📋 Access Logs</button>
+      <button id="logs-link-btn" onclick="window.location.href='logs.html'" style="margin-top:10px;background:#1a237e;color:#fff;">📋 Access Logs</button>
       <button id="abuse-btn" onclick="openAbusePanel()">🎛 Admin Abuse Panel</button>
       <button id="logout-btn" onclick="logout()">Logout</button>
     </div>
@@ -414,6 +461,7 @@
         <div style="background:rgba(255,0,100,0.06);border:1px solid rgba(255,0,100,0.15);border-radius:14px;padding:16px;">
           <div style="font-size:0.82rem;color:#ff4081;margin-bottom:10px;letter-spacing:0.05em;">🧠 FOR YOUR BRAINROT</div>
           <div style="aspect-ratio:9/16;border-radius:10px;overflow:hidden;max-height:500px;">
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/L_fcrOyoWZ8?si=D0hWdmHmTw-SO16d&autoplay=1&loop=1&playlist=L_fcrOyoWZ8&mute=0" title="Brainrot" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display:block;"></iframe>
           </div>
           <div style="margin-top:10px;font-size:0.78rem;color:#ff4081;text-align:center;">Plays on loop 🔁</div>
         </div>
@@ -435,12 +483,17 @@
           <button class="abuse-toggle" id="toggle-disco" onclick="toggleFx('disco')">🪩 Disco Strobe</button>
           <button class="abuse-toggle" id="toggle-rainbow" onclick="toggleFx('rainbow')">🌈 Rainbow Mode</button>
           <button class="abuse-toggle" id="toggle-shake" onclick="toggleFx('shake')">📳 Screen Shake</button>
+          <button class="abuse-toggle" id="toggle-invert" onclick="toggleFx('invert')">🌗 Invert Colors</button>
+          <button class="abuse-toggle" id="toggle-flip" onclick="toggleFx('flip')">🙃 Flip Screen</button>
+          <button class="abuse-toggle" id="toggle-matrix" onclick="toggleFx('matrix')">💻 Matrix Rain</button>
+          <button class="abuse-toggle" id="toggle-spin" onclick="toggleFx('spin')">🌀 Spin Page</button>
+          <button class="abuse-toggle" id="toggle-blur" onclick="toggleFx('blur')">😵 Blur Vision</button>
         </div>
       </div>
 
       <div class="abuse-section">
         <label>📢 BROADCAST MESSAGE</label>
-        <input id="abuse-message-input" type="text" placeholder="Type a huge message..." maxlength="60" />
+        <input id="abuse-message-input" type="text" placeholder="Type a message..." maxlength="60" />
         <button onclick="sendBroadcast()" style="width:100%;max-width:none;background:#00f6ff;color:#000;">Send to Everyone</button>
       </div>
 
@@ -449,12 +502,35 @@
         <div class="abuse-row">
           <button class="abuse-toggle" onclick="triggerConfettiBlast()">🎉 Confetti Blast</button>
           <button class="abuse-toggle" onclick="triggerFlash()">⚡ Flash Bang</button>
+          <button class="abuse-toggle" onclick="triggerEmojiRain()">🌧️ Emoji Rain</button>
+          <button class="abuse-toggle" onclick="triggerAirhorn()">📯 Airhorn</button>
+          <button class="abuse-toggle" onclick="triggerFireworks()">🎆 Fireworks</button>
+          <button class="abuse-toggle" onclick="triggerEarthquake()">🌍 Earthquake</button>
         </div>
+      </div>
+
+      <div class="abuse-section">
+        <label>🎰 LUCKY BLOCK</label>
+        <div class="abuse-sub" style="margin-bottom:8px;">Gives a random amount of points (-15 to +25) to a class, with a slot machine animation for everyone!</div>
+        <select id="lucky-class-select" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:#0a0810;color:#fff;font-size:0.9rem;margin-bottom:8px;">
+          <option value="7A">7A</option><option value="6B">6B</option><option value="6A">6A</option>
+          <option value="5A">5A</option><option value="5B">5B</option><option value="8A">8A</option>
+          <option value="RANDOM">🎲 Random Class</option>
+        </select>
+        <button onclick="triggerLuckyBlock()" style="width:100%;max-width:none;background:linear-gradient(90deg,#ffd700,#ff9800);color:#000;font-weight:800;">🎰 OPEN LUCKY BLOCK</button>
       </div>
 
       <button id="abuse-clear-btn" onclick="clearAllFx()">🧹 Clear All Effects</button>
       <button id="abuse-close-btn" onclick="closeAbusePanel()">Close Panel</button>
     </div>
+  </div>
+
+  <div id="fx-emoji-rain" style="display:none;position:fixed;inset:0;z-index:4500;pointer-events:none;overflow:hidden;"></div>
+
+  <div id="fx-lucky" style="display:none;position:fixed;inset:0;z-index:5500;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+    <div style="font-size:1.1rem;color:#ffd700;letter-spacing:0.1em;">🎰 LUCKY BLOCK 🎰</div>
+    <div id="fx-lucky-class" style="font-family:'Segoe UI',sans-serif;font-weight:900;font-size:clamp(2rem,8vw,4rem);color:#fff;text-shadow:0 0 30px rgba(255,215,0,0.7);"></div>
+    <div id="fx-lucky-points" style="font-family:'Segoe UI',sans-serif;font-weight:900;font-size:clamp(1.6rem,6vw,3rem);"></div>
   </div>
 
   <div id="test-banner">🧪 TEST MODE ACTIVE — Changes are simulated and will NOT be saved to Firebase</div>
@@ -497,20 +573,19 @@
     const db   = firebase.database();
     const auth = firebase.auth();
 
-    const classes       = ["7A","6B","6A","5A","5B","8A"];
+    const classes      = ["7A","6B","6A","5A","5B","8A"];
     const EMAIL_DOMAIN  = "@creascola.hu";
     const TEST_USER     = "balazs_kiss";
     const MJ_USER       = "micheal_jackson";
-    const ABUSE_USERS   = ["balazs_kiss", "lena_gombocz"]; // skip over this part, i can explain // 
     let   testMode      = false;
-    let   testScores    = null;
+    let   testScores    = null; // local copy for simulation
     const HISTORY_LIMIT = 10;
 
-    let scores            = {};
+    let scores           = {};
     let previousPositions = {};
-    let history           = [];
-    let lastSnapshot      = null;
-    let displayedScores   = {};
+    let history          = [];
+    let lastSnapshot     = null;
+    let displayedScores  = {}; // tracks currently shown values for animation
 
     function buildPositions(scoresObj){
       const sorted = Object.entries(scoresObj)
@@ -533,7 +608,7 @@
       const start = performance.now();
       (function step(now){
         const p    = Math.min((now - start) / duration, 1);
-        const ease = 1 - Math.pow(1 - p, 3);
+        const ease = 1 - Math.pow(1 - p, 3); // ease-out cubic
         el.textContent = Math.round(from + (to - from) * ease) + ' pts';
         if(p < 1) requestAnimationFrame(step);
       })(start);
@@ -575,9 +650,9 @@
 
     let mjWatched      = new Set();
     let mjUsesLeft     = 0;
-    let mjBonusEp      = null;
+    let mjBonusEp      = null; // which ep is being watched for bonus
     let mjCurrentEp    = null;
-    const MJ_WEEKLY_KEY  = 'mj_week_uses';
+    const MJ_WEEKLY_KEY = 'mj_week_uses';
     const MJ_WATCHED_KEY = 'mj_watched';
 
     function getMjWeekKey(){
@@ -640,11 +715,12 @@
 
     function mjPlayEpisode(ep, index){
       mjCurrentEp = ep;
-      const box    = document.getElementById('mj-player-box');
+      const box = document.getElementById('mj-player-box');
       const iframe = document.getElementById('mj-main-iframe');
       const title  = document.getElementById('mj-now-playing-title');
-      box.style.display = 'block';
-      title.textContent = ep.title;
+      box.style.display    = 'block';
+      iframe.src           = `https://www.youtube.com/embed/${ep.id}?autoplay=1&rel=0`;
+      title.textContent    = ep.title;
       document.getElementById('mj-mark-watched').style.display = mjWatched.has(ep.id) ? 'none' : 'block';
       box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -673,7 +749,7 @@
       const pct   = (count / MJ_EPISODES.length) * 100;
       const bar   = document.getElementById('mj-progress-bar');
       const label = document.getElementById('mj-progress-label');
-      if(bar)   bar.style.width   = pct + '%';
+      if(bar)   bar.style.width  = pct + '%';
       if(label) label.textContent = `${count} / ${MJ_EPISODES.length} episodes watched`;
     }
 
@@ -690,16 +766,16 @@
     function mjCanSubtract(){ return mjWatched.size >= 3; }
 
     function mjUpdateAdminPanel(){
-      const panel    = document.getElementById('mj-admin-panel');
-      const status   = document.getElementById('mj-power-status');
-      const usesEl   = document.getElementById('mj-uses-left');
-      const usesBox  = document.getElementById('mj-actions-left');
-      const bonusBtn = document.getElementById('mj-bonus-btn');
-      const w        = mjWatched.size;
-      const max      = mjGetMaxPoints();
+      const panel     = document.getElementById('mj-admin-panel');
+      const status    = document.getElementById('mj-power-status');
+      const usesEl    = document.getElementById('mj-uses-left');
+      const usesBox   = document.getElementById('mj-actions-left');
+      const bonusBtn  = document.getElementById('mj-bonus-btn');
+      const w         = mjWatched.size;
+      const max       = mjGetMaxPoints();
 
       if(w === 0){
-        panel.style.display   = 'none';
+        panel.style.display  = 'none';
         usesBox.style.display = 'none';
         return;
       }
@@ -761,8 +837,8 @@
       }
 
       if(!scores[selected]) scores[selected] = 0;
-      const before    = Number(scores[selected]);
-      const newScore  = Math.max(0, before + points);
+      const before   = Number(scores[selected]);
+      const newScore = Math.max(0, before + points);
       const newScores = JSON.parse(JSON.stringify(scores));
       newScores[selected] = newScore;
       const prevPos  = buildPositions(scores);
@@ -801,7 +877,8 @@
       auth.signOut();
     }
 
-    let abuseState = { disco:false, rainbow:false, shake:false, message:'', messageId:0 };
+    let abuseState = { disco:false, rainbow:false, shake:false, invert:false, flip:false, matrix:false, spin:false, blur:false, message:'', messageId:0 };
+    let matrixInterval = null;
 
     function openAbusePanel(){
       document.getElementById('abuse-panel').style.display = 'flex';
@@ -831,8 +908,136 @@
       db.ref('abuse').update({ flashId: Date.now() });
     }
 
+    function triggerEmojiRain(){
+      db.ref('abuse').update({ emojiRainId: Date.now() });
+    }
+
+    function triggerAirhorn(){
+      db.ref('abuse').update({ airhornId: Date.now() });
+    }
+
+    function triggerFireworks(){
+      db.ref('abuse').update({ fireworksId: Date.now() });
+    }
+
+    function triggerEarthquake(){
+      db.ref('abuse').update({ earthquakeId: Date.now() });
+    }
+
+    function triggerLuckyBlock(){
+      let targetClass = document.getElementById('lucky-class-select').value;
+      if(targetClass === 'RANDOM'){
+        targetClass = classes[Math.floor(Math.random() * classes.length)];
+      }
+      const amount = Math.floor(Math.random() * 41) - 15;
+      db.ref('abuse').update({
+        luckyBlockId: Date.now(),
+        luckyBlockClass: targetClass,
+        luckyBlockAmount: amount
+      });
+
+      if(!scores[targetClass]) scores[targetClass] = 0;
+      const before    = Number(scores[targetClass]);
+      const newScore  = Math.max(0, before + amount);
+      const newScores = JSON.parse(JSON.stringify(scores));
+      newScores[targetClass] = newScore;
+      const prevPos = buildPositions(scores);
+      const newHist = [{ cls: targetClass, change: amount, before, after: newScore, ts: Date.now() }, ...history].slice(0, HISTORY_LIMIT);
+
+      db.ref().update({
+        scores:            newScores,
+        previousPositions: prevPos,
+        history:           newHist,
+        undoSnapshot:      JSON.parse(JSON.stringify(scores))
+      }).then(() => {
+        writeLog({ user: auth.currentUser.email.replace(EMAIL_DOMAIN,''), action: 'luckyblock', class: targetClass, change: amount, before, after: newScore });
+      });
+    }
+
     function clearAllFx(){
-      db.ref('abuse').set({ disco:false, rainbow:false, shake:false, message:'', messageId:0, confettiBlastId:0, flashId:0 });
+      db.ref('abuse').set({
+        disco:false, rainbow:false, shake:false, invert:false, flip:false, matrix:false, spin:false, blur:false,
+        message:'', messageId:0, confettiBlastId:0, flashId:0, emojiRainId:0, airhornId:0, fireworksId:0, earthquakeId:0,
+        luckyBlockId:0, luckyBlockClass:'', luckyBlockAmount:0
+      });
+    }
+
+    function startMatrixRain(){
+      const container = document.createElement('div');
+      container.id = 'fx-matrix-container';
+      container.style.cssText = 'position:fixed;inset:0;z-index:3500;pointer-events:none;overflow:hidden;';
+      document.body.appendChild(container);
+      const chars = 'ｱｲｳｴｵｶｷｸｹｺ0123456789ABCDEFｱｲｳｴｵ';
+      matrixInterval = setInterval(() => {
+        const span = document.createElement('div');
+        span.className = 'matrix-char';
+        span.textContent = chars[Math.floor(Math.random() * chars.length)];
+        span.style.left = Math.random() * 100 + 'vw';
+        span.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        container.appendChild(span);
+        setTimeout(() => span.remove(), 4500);
+      }, 80);
+    }
+
+    function stopMatrixRain(){
+      if(matrixInterval) clearInterval(matrixInterval);
+      matrixInterval = null;
+      const el = document.getElementById('fx-matrix-container');
+      if(el) el.remove();
+    }
+
+    function emojiRainBurst(){
+      const container = document.getElementById('fx-emoji-rain');
+      const emojiSet = ['🎉','🔥','💀','😂','🤡','👑','⭐','💩','🍕','🚀','🤯','😎'];
+      container.style.display = 'block';
+      for(let i = 0; i < 60; i++){
+        setTimeout(() => {
+          const span = document.createElement('div');
+          span.className = 'emoji-particle';
+          span.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)];
+          span.style.left = Math.random() * 100 + 'vw';
+          span.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+          container.appendChild(span);
+          setTimeout(() => span.remove(), 5000);
+        }, i * 40);
+      }
+      setTimeout(() => { container.style.display = 'none'; }, 6000);
+    }
+
+    function fireworksBurst(){
+      for(let i = 0; i < 4; i++){
+        setTimeout(() => { launchConfetti(); }, i * 350);
+      }
+    }
+
+    function playAirhornSound(){
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(370, ctx.currentTime);
+        osc.frequency.setValueAtTime(330, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.9);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.9);
+      } catch(e){ console.error('Audio failed:', e); }
+    }
+
+    function showLuckyBlockResult(cls, amount){
+      const overlay   = document.getElementById('fx-lucky');
+      const clsEl     = document.getElementById('fx-lucky-class');
+      const ptsEl     = document.getElementById('fx-lucky-points');
+      const sign      = amount >= 0 ? '+' : '';
+      const color     = amount >= 0 ? '#00e676' : '#ff4444';
+      clsEl.textContent = cls;
+      ptsEl.textContent = sign + amount + ' pts';
+      ptsEl.style.color = color;
+      overlay.style.display = 'flex';
+      setTimeout(() => { overlay.style.display = 'none'; }, 3000);
     }
 
     db.ref('abuse').on('value', snap => {
@@ -841,16 +1046,25 @@
       document.body.classList.toggle('fx-disco',   !!state.disco);
       document.body.classList.toggle('fx-rainbow', !!state.rainbow);
       document.body.classList.toggle('fx-shake',   !!state.shake);
+      document.body.classList.toggle('fx-invert',  !!state.invert);
+      document.body.classList.toggle('fx-flip',    !!state.flip);
+      document.body.classList.toggle('fx-spin',    !!state.spin);
+      document.body.classList.toggle('fx-blur',    !!state.blur);
 
-      const dToggle = document.getElementById('toggle-disco');
-      const rToggle = document.getElementById('toggle-rainbow');
-      const sToggle = document.getElementById('toggle-shake');
-      if(dToggle) dToggle.classList.toggle('on', !!state.disco);
-      if(rToggle) rToggle.classList.toggle('on', !!state.rainbow);
-      if(sToggle) sToggle.classList.toggle('on', !!state.shake);
-      abuseState = { disco: !!state.disco, rainbow: !!state.rainbow, shake: !!state.shake };
+      if(state.matrix && !matrixInterval) startMatrixRain();
+      if(!state.matrix && matrixInterval) stopMatrixRain();
 
-      const broadcastEl  = document.getElementById('fx-broadcast');
+      ['disco','rainbow','shake','invert','flip','matrix','spin','blur'].forEach(name => {
+        const btn = document.getElementById('toggle-' + name);
+        if(btn) btn.classList.toggle('on', !!state[name]);
+      });
+      abuseState = {
+        disco: !!state.disco, rainbow: !!state.rainbow, shake: !!state.shake,
+        invert: !!state.invert, flip: !!state.flip, matrix: !!state.matrix,
+        spin: !!state.spin, blur: !!state.blur
+      };
+
+      const broadcastEl = document.getElementById('fx-broadcast');
       const broadcastTxt = document.getElementById('fx-broadcast-text');
       if(state.message && state.messageId){
         if(state.messageId !== window._lastMessageId){
@@ -879,6 +1093,34 @@
         document.body.appendChild(flash);
         setTimeout(() => flash.remove(), 400);
       }
+
+      if(state.emojiRainId && state.emojiRainId !== window._lastEmojiRain){
+        window._lastEmojiRain = state.emojiRainId;
+        emojiRainBurst();
+      }
+
+      if(state.airhornId && state.airhornId !== window._lastAirhorn){
+        window._lastAirhorn = state.airhornId;
+        playAirhornSound();
+      }
+
+      if(state.fireworksId && state.fireworksId !== window._lastFireworks){
+        window._lastFireworks = state.fireworksId;
+        fireworksBurst();
+      }
+
+      if(state.earthquakeId && state.earthquakeId !== window._lastEarthquake){
+        window._lastEarthquake = state.earthquakeId;
+        document.body.classList.remove('fx-earthquake');
+        void document.body.offsetWidth;
+        document.body.classList.add('fx-earthquake');
+        setTimeout(() => document.body.classList.remove('fx-earthquake'), 2000);
+      }
+
+      if(state.luckyBlockId && state.luckyBlockId !== window._lastLuckyBlock){
+        window._lastLuckyBlock = state.luckyBlockId;
+        showLuckyBlockResult(state.luckyBlockClass, state.luckyBlockAmount);
+      }
     });
 
     const flashStyle = document.createElement('style');
@@ -887,7 +1129,7 @@
 
     function logout(){
       if(auth.currentUser){
-        const email    = auth.currentUser.email;
+        const email = auth.currentUser.email;
         const username = email.replace(EMAIL_DOMAIN, '');
         writeLog({ user: username, action: 'logout' });
       }
@@ -904,11 +1146,8 @@
         document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
         document.getElementById('test-mode-label').style.display = testMode ? 'block' : 'none';
         document.getElementById('reset-btn').style.display       = testMode ? 'none'  : 'block';
-
-        // Abuse Panel is available to test user AND lena_gombocz
-        const canAbuse = testMode || ABUSE_USERS.includes(username);
-        document.getElementById('abuse-btn').style.display = canAbuse ? 'block' : 'none';
-
+        document.getElementById('abuse-btn').style.display       = testMode ? 'block' : 'none';
+        document.getElementById('logs-link-btn').style.display   = (username === "jenei_zsolt" || username === "kele_istvan") ? 'none' : 'block';
         if(testMode){
           testScores = JSON.parse(JSON.stringify(scores));
         }
@@ -928,8 +1167,8 @@
       const raw      = document.getElementById('points-input').value.trim();
       if(!/^[-+]?\d+$/.test(raw)){ alert("Please enter a valid integer (e.g. 5 or -2)."); return; }
 
-      const points        = parseInt(raw, 10);
-      const undoSnapshot  = JSON.parse(JSON.stringify(scores));
+      const points       = parseInt(raw, 10);
+      const undoSnapshot = JSON.parse(JSON.stringify(scores));
       const prevPositions = buildPositions(scores);
 
       const newScores = JSON.parse(JSON.stringify(scores));
@@ -1104,17 +1343,17 @@
     function getDeviceInfo(){
       const ua = navigator.userAgent;
       let device = 'Desktop';
-      if(/Android/i.test(ua))        device = 'Android';
-      else if(/iPhone/i.test(ua))    device = 'iPhone';
-      else if(/iPad/i.test(ua))      device = 'iPad';
+      if(/Android/i.test(ua))       device = 'Android';
+      else if(/iPhone/i.test(ua))   device = 'iPhone';
+      else if(/iPad/i.test(ua))     device = 'iPad';
       else if(/Macintosh/i.test(ua)) device = 'Mac';
-      else if(/Windows/i.test(ua))   device = 'Windows';
-      else if(/Linux/i.test(ua))     device = 'Linux';
+      else if(/Windows/i.test(ua))  device = 'Windows';
+      else if(/Linux/i.test(ua))    device = 'Linux';
       let browser = 'Unknown';
-      if(/Edg\//i.test(ua))          browser = 'Edge';
-      else if(/Chrome/i.test(ua))    browser = 'Chrome';
-      else if(/Firefox/i.test(ua))   browser = 'Firefox';
-      else if(/Safari/i.test(ua))    browser = 'Safari';
+      if(/Edg\//i.test(ua))         browser = 'Edge';
+      else if(/Chrome/i.test(ua))   browser = 'Chrome';
+      else if(/Firefox/i.test(ua))  browser = 'Firefox';
+      else if(/Safari/i.test(ua))   browser = 'Safari';
       return device + ' · ' + browser;
     }
 
@@ -1139,12 +1378,12 @@
     }
 
     function confirmReset(){
-      const pass  = document.getElementById('reset-password-input').value;
+      const pass = document.getElementById('reset-password-input').value;
       const error = document.getElementById('reset-error');
       if(!pass){ error.textContent = '❌ Please enter your password.'; return; }
       error.textContent = '⏳ Verifying...';
 
-      const user       = auth.currentUser;
+      const user = auth.currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(user.email, pass);
       user.reauthenticateWithCredential(credential)
         .then(() => {
