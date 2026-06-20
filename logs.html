@@ -278,7 +278,6 @@
 <body>
 <div class="page">
 
-  <!-- login panel (shown before auth) -->
   <div id="login-panel">
     <h2>🔐 Admin Access</h2>
     <p>This page is restricted to admins only.</p>
@@ -288,7 +287,6 @@
     <div id="login-error"></div>
   </div>
 
-  <!-- main content (shown after auth) -->
   <div id="main-content" style="display:none;">
     <div class="header">
       <div class="header-left">
@@ -314,7 +312,6 @@
 
 </div>
 
-  <!-- help button -->
   <button id="help-btn" onclick="toggleHelp()" aria-label="Help">?</button>
   <div id="help-modal" aria-hidden="true">
     <h4>📖 About This Page</h4>
@@ -349,12 +346,17 @@
   let allLogs    = [];
   let activeFilter = 'all';
 
-  // ── auth ────────────────────────────────────────────────────
+  const BLOCKED_FROM_LOGS = ["jenei_zsolt", "kele_istvan"];
+
   function doLogin(){
     const username = document.getElementById('l-user').value.trim().toLowerCase();
     const pass     = document.getElementById('l-pass').value;
     const error    = document.getElementById('login-error');
     if(!username || !pass){ error.textContent = '❌ Enter username and password.'; return; }
+    if(BLOCKED_FROM_LOGS.includes(username)){
+      error.textContent = '🚫 This account does not have access to the logs page.';
+      return;
+    }
     error.textContent = '⏳ Verifying...';
     auth.signInWithEmailAndPassword(username + EMAIL_DOMAIN, pass)
       .catch(err => { error.textContent = '❌ Wrong username or password.'; });
@@ -362,6 +364,12 @@
 
   auth.onAuthStateChanged(user => {
     if(user){
+      const username = user.email.replace(EMAIL_DOMAIN, '');
+      if(BLOCKED_FROM_LOGS.includes(username)){
+        auth.signOut();
+        document.getElementById('login-error').textContent = '🚫 This account does not have access to the logs page.';
+        return;
+      }
       document.getElementById('login-panel').style.display  = 'none';
       document.getElementById('main-content').style.display = 'block';
       loadLogs();
@@ -378,7 +386,6 @@
     }
   });
 
-  // ── load logs ───────────────────────────────────────────────
   function loadLogs(){
     db.ref('logs').on('value', snap => {
       allLogs = snap.val() ? Object.values(snap.val()) : [];
@@ -388,7 +395,6 @@
     });
   }
 
-  // ── stats ───────────────────────────────────────────────────
   function renderStats(){
     const logins  = allLogs.filter(l => l.action === 'login').length;
     const points  = allLogs.filter(l => l.action === 'points').length;
@@ -404,7 +410,6 @@
     `;
   }
 
-  // ── filter ──────────────────────────────────────────────────
   function setFilter(filter, btn){
     activeFilter = filter;
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -412,7 +417,6 @@
     renderLogs();
   }
 
-  // ── render ──────────────────────────────────────────────────
   function formatTime(ts){
     if(!ts) return '—';
     const d   = new Date(ts);
@@ -454,12 +458,10 @@
 
       const t = formatTime(log.time);
 
-      // badge
       const badges = { login:'🟢', logout:'🔴', points:'🔵', reset:'⚠️' };
       const badgeClass = { login:'badge-login', logout:'badge-logout', points:'badge-points', reset:'badge-reset' };
       const badge = `<div class="log-badge ${badgeClass[log.action] || ''}">${badges[log.action] || '⚪'}</div>`;
 
-      // main text
       let main = '', sub = '';
       if(log.action === 'login'){
         main = `<span style="color:var(--green)">${log.user}</span> logged in`;
@@ -493,7 +495,6 @@
     });
   }
 
-  // ── help ──────────────────────────────────────────────────
   function toggleHelp(){
     const modal  = document.getElementById('help-modal');
     const hidden = modal.style.display === 'none' || modal.style.display === '';
