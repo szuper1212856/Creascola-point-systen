@@ -472,7 +472,6 @@
         <div style="background:rgba(255,0,100,0.06);border:1px solid rgba(255,0,100,0.15);border-radius:14px;padding:16px;">
           <div style="font-size:0.82rem;color:#ff4081;margin-bottom:10px;letter-spacing:0.05em;">🧠 FOR YOUR BRAINROT</div>
           <div style="aspect-ratio:9/16;border-radius:10px;overflow:hidden;max-height:500px;">
-            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/L_fcrOyoWZ8?si=D0hWdmHmTw-SO16d&autoplay=1&loop=1&playlist=L_fcrOyoWZ8&mute=0" title="Brainrot" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display:block;"></iframe>
           </div>
           <div style="margin-top:10px;font-size:0.78rem;color:#ff4081;text-align:center;">Plays on loop 🔁</div>
         </div>
@@ -736,7 +735,6 @@
       const iframe = document.getElementById('mj-main-iframe');
       const title  = document.getElementById('mj-now-playing-title');
       box.style.display    = 'block';
-      iframe.src           = `https://www.youtube.com/embed/${ep.id}?autoplay=1&rel=0`;
       title.textContent    = ep.title;
       document.getElementById('mj-mark-watched').style.display = mjWatched.has(ep.id) ? 'none' : 'block';
       box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
