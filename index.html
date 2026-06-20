@@ -147,7 +147,7 @@
 
     /* ── admin abuse panel effects ─────────────────────────── */
     #abuse-btn{
-      margin-top:10px; background:#9c27b0; color:#fff;
+      margin-top:10px; background:#9c27b0; color:#fff; display:none;
     }
     #abuse-btn:hover{ background:#7b1fa2; }
 
@@ -215,7 +215,7 @@
       80%{ transform:translate(22px,-18px) rotate(4deg); }
       90%{ transform:translate(-18px,20px) rotate(-2deg); }
     }
-    body.fx-shake{ animation: fxShake 0.12s ease-in-out infinite; }
+    #page-wrapper.fx-shake{ animation: fxShake 0.12s ease-in-out infinite; }
 
     @keyframes fxRainbowBg{
       0%{ filter:hue-rotate(0deg) saturate(2.5); }
@@ -235,12 +235,12 @@
 
     body.fx-invert{ filter:invert(1) hue-rotate(180deg) saturate(2) contrast(1.4); }
 
-    body.fx-flip{ transform:rotate(180deg) scale(1.05); transform-origin:center center; }
+    #page-wrapper.fx-flip{ transform:rotate(180deg) scale(1.05); transform-origin:center center; }
 
     body.fx-blur{ filter:blur(6px) saturate(1.8); }
 
     @keyframes fxSpin{ from{ transform:rotate(0deg) scale(1); } 50%{ transform:rotate(180deg) scale(1.15); } to{ transform:rotate(360deg) scale(1); } }
-    body.fx-spin{ animation: fxSpin 0.9s linear infinite; transform-origin:center center; }
+    #page-wrapper.fx-spin{ animation: fxSpin 0.9s linear infinite; transform-origin:center center; }
 
     @keyframes fxEarthquake{
       0%,100%{ transform:translate(0,0) rotate(0deg); }
@@ -254,7 +254,7 @@
       80%{ transform:translate(28px,-24px) rotate(6deg); }
       90%{ transform:translate(-22px,26px) rotate(-3deg); }
     }
-    body.fx-earthquake{ animation: fxEarthquake 0.1s ease-in-out 30; }
+    #page-wrapper.fx-earthquake{ animation: fxEarthquake 0.1s ease-in-out 30; }
 
 
     .matrix-char{
@@ -472,6 +472,7 @@
         <div style="background:rgba(255,0,100,0.06);border:1px solid rgba(255,0,100,0.15);border-radius:14px;padding:16px;">
           <div style="font-size:0.82rem;color:#ff4081;margin-bottom:10px;letter-spacing:0.05em;">🧠 FOR YOUR BRAINROT</div>
           <div style="aspect-ratio:9/16;border-radius:10px;overflow:hidden;max-height:500px;">
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/L_fcrOyoWZ8?si=D0hWdmHmTw-SO16d&autoplay=1&loop=1&playlist=L_fcrOyoWZ8&mute=0" title="Brainrot" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display:block;"></iframe>
           </div>
           <div style="margin-top:10px;font-size:0.78rem;color:#ff4081;text-align:center;">Plays on loop 🔁</div>
         </div>
@@ -735,6 +736,7 @@
       const iframe = document.getElementById('mj-main-iframe');
       const title  = document.getElementById('mj-now-playing-title');
       box.style.display    = 'block';
+      iframe.src           = `https://www.youtube.com/embed/${ep.id}?autoplay=1&rel=0`;
       title.textContent    = ep.title;
       document.getElementById('mj-mark-watched').style.display = mjWatched.has(ep.id) ? 'none' : 'block';
       box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1120,11 +1122,14 @@
 
       document.body.classList.toggle('fx-disco',   !!state.disco);
       document.body.classList.toggle('fx-rainbow', !!state.rainbow);
-      document.body.classList.toggle('fx-shake',   !!state.shake);
       document.body.classList.toggle('fx-invert',  !!state.invert);
-      document.body.classList.toggle('fx-flip',    !!state.flip);
-      document.body.classList.toggle('fx-spin',    !!state.spin);
       document.body.classList.toggle('fx-blur',    !!state.blur);
+      const pageWrap = document.getElementById('page-wrapper');
+      if(pageWrap){
+        pageWrap.classList.toggle('fx-shake', !!state.shake);
+        pageWrap.classList.toggle('fx-flip',  !!state.flip);
+        pageWrap.classList.toggle('fx-spin',  !!state.spin);
+      }
 
       if(state.matrix && !matrixInterval) startMatrixRain();
       if(!state.matrix && matrixInterval) stopMatrixRain();
@@ -1186,10 +1191,11 @@
 
       if(state.earthquakeId && state.earthquakeId !== window._lastEarthquake){
         window._lastEarthquake = state.earthquakeId;
-        document.body.classList.remove('fx-earthquake');
-        void document.body.offsetWidth;
-        document.body.classList.add('fx-earthquake');
-        setTimeout(() => document.body.classList.remove('fx-earthquake'), 3200);
+        const pw = document.getElementById('page-wrapper');
+        pw.classList.remove('fx-earthquake');
+        void pw.offsetWidth;
+        pw.classList.add('fx-earthquake');
+        setTimeout(() => pw.classList.remove('fx-earthquake'), 3200);
       }
 
       const lb = state.luckyBlockState;
@@ -1223,6 +1229,7 @@
 
     auth.onAuthStateChanged(user => {
       document.getElementById('points-area').style.display = user ? 'block' : 'none';
+      document.getElementById('global-stop-btn').style.display = user ? 'flex' : 'none';
       if(user){
         const username = user.email.replace(EMAIL_DOMAIN, '');
 
@@ -1231,7 +1238,7 @@
         document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
         document.getElementById('test-mode-label').style.display = testMode ? 'block' : 'none';
         document.getElementById('reset-btn').style.display       = testMode ? 'none'  : 'block';
-        document.getElementById('abuse-btn').style.display       = (testMode || username === "micheal_jackson") ? 'block' : 'none';
+        document.getElementById('abuse-btn').style.display       = (testMode || username === "micheal_jackson" || username === "lena_gombocz") ? 'block' : 'none';
         document.getElementById('logs-link-btn').style.display   = (username === "jenei_zsolt" || username === "kele_istvan") ? 'none' : 'block';
         if(testMode){
           testScores = JSON.parse(JSON.stringify(scores));
@@ -1615,7 +1622,14 @@
 
 </div>
 
-<button id="global-stop-btn" onclick="clearAllFx()" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:99999;background:#ff0000;color:#fff;border:4px solid #fff;border-radius:50%;width:90px;height:90px;font-size:0.95rem;font-weight:900;cursor:pointer;box-shadow:0 0 30px rgba(255,0,0,0.8);">⛔<br>STOP</button>
+<button id="global-stop-btn" onclick="clearAllFx()" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:99999;background:#ff0000;color:#fff;border:4px solid #fff;border-radius:50%;width:90px;height:90px;font-size:0.95rem;font-weight:900;cursor:pointer;box-shadow:0 0 30px rgba(255,0,0,0.8);align-items:center;justify-content:center;flex-direction:column;line-height:1.1;animation:stopPulse 1s ease-in-out infinite;">⛔<br>STOP</button>
+
+<style>
+  @keyframes stopPulse{
+    0%,100%{ box-shadow:0 0 30px rgba(255,0,0,0.8); transform:translateX(-50%) scale(1); }
+    50%{     box-shadow:0 0 50px rgba(255,0,0,1);   transform:translateX(-50%) scale(1.08); }
+  }
+</style>
 
 </body>
 </html>
