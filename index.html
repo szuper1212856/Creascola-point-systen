@@ -552,6 +552,76 @@
       .row-right { padding: 10px 12px; }
       .admin-row select, .admin-row input { min-width: 80px; }
     }
+    /* ── premium popups ─────────────────────────────────────── */
+    .popup {
+      position: fixed;
+      background: linear-gradient(135deg, #1a0a2e, #0d1225);
+      border: 1px solid rgba(245,197,24,0.4);
+      border-radius: 14px;
+      padding: 18px 20px;
+      width: 280px;
+      max-width: 88vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 20px rgba(245,197,24,0.08);
+      z-index: 8000;
+      animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.6) rotate(-4deg); opacity: 0; }
+      to   { transform: scale(1)   rotate(0deg);  opacity: 1; }
+    }
+    .popup-crown { font-size: 2rem; margin-bottom: 6px; }
+    .popup-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 0.06em;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .popup-body {
+      font-size: 0.78rem;
+      color: #8fa3be;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .popup-body strong { color: var(--text); }
+    .popup-btns { display: flex; gap: 8px; }
+    .popup-yes {
+      flex: 2;
+      padding: 9px;
+      border-radius: 8px;
+      border: none;
+      background: var(--gold);
+      color: #000;
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .popup-yes:hover { background: #ffd700; }
+    .popup-no {
+      flex: 1;
+      padding: 9px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: transparent;
+      color: #3d5270;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .popup-no:hover { color: var(--text); }
+    .popup-badge {
+      display: inline-block;
+      background: rgba(247,64,64,0.15);
+      border: 1px solid rgba(247,64,64,0.3);
+      color: #f74040;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
   </style>
 </head>
 <body>
@@ -1065,6 +1135,113 @@
         else if(a && a.id === 'reset-password-input')               confirmReset();
       }
       if(e.key === 'Escape') closeResetModal();
+    });
+  </script>
+  <script>
+    const POPUPS = [
+      {
+        title: "CREA CREDIT PREMIUM",
+        badge: "LIMITED OFFER",
+        body: "Boost your class to <strong>1st place instantly</strong> with Premium Points! Only available today. Don't let the other classes win! 🏆",
+        yes: "🔥 GET PREMIUM FREE",
+        no: "No thanks"
+      },
+      {
+        title: "YOU'VE BEEN CHOSEN",
+        badge: "EXCLUSIVE",
+        body: "Your class has been pre-selected for a <strong>FREE 50 point bonus</strong>. Click below before this offer disappears forever!",
+        yes: "✅ CLAIM MY POINTS",
+        no: "I don't want free points"
+      },
+      {
+        title: "PREMIUM ALERT ⚡",
+        badge: "URGENT",
+        body: "Another class just purchased Premium! Act now to <strong>protect your position</strong> on the leaderboard.",
+        yes: "💳 UPGRADE NOW — FREE",
+        no: "Let them win"
+      },
+      {
+        title: "CONGRATULATIONS!",
+        badge: "WINNER",
+        body: "You are our <strong>1,000,000th visitor</strong>! Claim your FREE Crea Credit Premium subscription and get unlimited points added to your class!",
+        yes: "🎉 CLAIM PRIZE",
+        no: "This seems fake"
+      },
+      {
+        title: "CREA PREMIUM PRO MAX",
+        badge: "NEW TIER",
+        body: "Introducing the all-new <strong>Premium Pro Max Ultra</strong> plan — get 999 points daily for just <strong>€0.00</strong>. Subscribe before your teacher finds out.",
+        yes: "🚀 SUBSCRIBE FREE",
+        no: "Maybe later"
+      },
+      {
+        title: "YOUR CLASS IS LOSING",
+        badge: "WARNING",
+        body: "According to our algorithm, your class will <strong>finish last</strong> unless you activate Premium Boost in the next 60 seconds. Don't panic. Just click.",
+        yes: "😤 ACTIVATE BOOST",
+        no: "I accept defeat"
+      },
+      {
+        title: "FREE POINTS INSIDE",
+        badge: "GIFT",
+        body: "A generous anonymous donor has reserved <strong>25 free points</strong> for your class. Simply confirm your subscription (100% free) to unlock them.",
+        yes: "🎁 UNLOCK POINTS",
+        no: "Who is this donor"
+      }
+    ];
+
+    const positions = [
+      { top:'12%',  left:'4%'   },
+      { top:'12%',  right:'4%'  },
+      { top:'50%',  left:'3%',  transform:'translateY(-50%)' },
+      { top:'50%',  right:'3%', transform:'translateY(-50%)' },
+      { bottom:'8%',left:'4%'  },
+      { bottom:'8%',right:'4%' },
+      { top:'35%',  left:'50%', transform:'translateX(-50%)' }
+    ];
+
+    function closePopup(el) {
+      el.style.transition = 'all 0.2s ease';
+      el.style.transform  = 'scale(0.8)';
+      el.style.opacity    = '0';
+      setTimeout(() => el.remove(), 200);
+      setTimeout(() => spawnPopup(), 800 + Math.random() * 1200);
+    }
+
+    function yesClicked(el) {
+      el.querySelector('.popup-yes').textContent = '🎉 Processing...';
+      setTimeout(() => {
+        el.querySelector('.popup-body').innerHTML = '<strong>ERROR 402: Payment Required</strong><br>Please enter card details to claim your free offer 😂';
+        el.querySelector('.popup-yes').textContent = '💳 Enter Card';
+        el.querySelector('.popup-yes').onclick = () => closePopup(el);
+      }, 1200);
+    }
+
+    function spawnPopup() {
+      const data = POPUPS[Math.floor(Math.random() * POPUPS.length)];
+      const pos  = positions[Math.floor(Math.random() * positions.length)];
+      const div  = document.createElement('div');
+      div.className = 'popup';
+      Object.entries(pos).forEach(([k,v]) => div.style[k] = v);
+      div.innerHTML = `
+        <div class="popup-crown">👑</div>
+        <div class="popup-badge">${data.badge}</div>
+        <div class="popup-title">${data.title}</div>
+        <div class="popup-body">${data.body}</div>
+        <div class="popup-btns">
+          <button class="popup-yes" onclick="yesClicked(this.closest('.popup'))">${data.yes}</button>
+          <button class="popup-no"  onclick="closePopup(this.closest('.popup'))">${data.no}</button>
+        </div>
+      `;
+      document.body.appendChild(div);
+    }
+
+    window.addEventListener('load', () => {
+      let delay = 600;
+      for(let i = 0; i < 4; i++){
+        setTimeout(spawnPopup, delay);
+        delay += 400 + Math.random() * 300;
+      }
     });
   </script>
 </body>
