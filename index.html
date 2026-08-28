@@ -40,7 +40,6 @@
       overflow-x: hidden;
     }
 
-    /* ── header ──────────────────────────────────────────────── */
     .site-header {
       background: linear-gradient(180deg, #09162b 0%, var(--bg) 100%);
       border-bottom: 1px solid var(--border);
@@ -71,13 +70,10 @@
       letter-spacing: 0.06em;
     }
 
-    /* ── key icon ────────────────────────────────────────────── */
     #login-icon {
       position: fixed;
-      top: 16px;
-      right: 16px;
-      width: 40px;
-      height: 40px;
+      top: 16px; right: 16px;
+      width: 40px; height: 40px;
       border-radius: 50%;
       background: var(--card);
       border: 1px solid var(--border);
@@ -92,12 +88,10 @@
     }
     #login-icon:hover { border-color: var(--gold); background: var(--gold-dim); }
 
-    /* ── login panel ─────────────────────────────────────────── */
     #login-panel {
       display: none;
       position: fixed;
-      top: 64px;
-      right: 14px;
+      top: 64px; right: 14px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
@@ -130,14 +124,12 @@
     #login-panel input::placeholder { color: var(--muted); }
     #login-status { font-size: 0.82rem; min-height: 1.2em; margin-top: 4px; }
 
-    /* ── main layout ─────────────────────────────────────────── */
     .main {
       max-width: 780px;
       margin: 0 auto;
       padding: 32px 16px 100px;
     }
 
-    /* ── leaderboard ─────────────────────────────────────────── */
     .board-header {
       display: flex;
       align-items: center;
@@ -152,51 +144,41 @@
       color: var(--muted);
       text-transform: uppercase;
     }
-    #last-updated {
-      font-size: 0.68rem;
-      color: var(--muted);
-    }
+    #last-updated { font-size: 0.68rem; color: var(--muted); }
 
-    .board {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .board { display: flex; flex-direction: column; gap: 6px; }
 
     .row {
       position: relative;
       display: flex;
       align-items: center;
-      gap: 0;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      cursor: default;
-      transition: border-color 0.2s;
       min-height: 64px;
+      transition: border-color 0.2s;
     }
     .row:hover { border-color: rgba(255,255,255,0.12); }
-
-    .row.rank-1 {
-      min-height: 80px;
-      background: linear-gradient(135deg, #0f1e36 0%, #161d30 100%);
-      border-color: rgba(245,197,24,0.25);
-      box-shadow: 0 4px 24px rgba(245,197,24,0.06);
-    }
+    .row.rank-1 { min-height: 80px; background: linear-gradient(135deg,#0f1e36 0%,#161d30 100%); border-color: rgba(245,197,24,0.25); box-shadow: 0 4px 24px rgba(245,197,24,0.06); }
     .row.rank-1:hover { border-color: rgba(245,197,24,0.45); }
     .row.rank-2 { border-color: rgba(143,163,190,0.18); }
     .row.rank-3 { border-color: rgba(160,106,58,0.2); }
 
-    .row-accent {
-      width: 4px;
-      align-self: stretch;
-      flex-shrink: 0;
-      background: var(--muted);
-    }
+    .row-accent { width: 4px; align-self: stretch; flex-shrink: 0; background: var(--muted); }
     .rank-1 .row-accent { background: var(--gold); }
     .rank-2 .row-accent { background: var(--silver); }
     .rank-3 .row-accent { background: var(--bronze); }
+
+    .row[data-cls="7A"] { --cls-color: #4e8ef7; }
+    .row[data-cls="6B"] { --cls-color: #10d97c; }
+    .row[data-cls="6A"] { --cls-color: #f74040; }
+    .row[data-cls="5A"] { --cls-color: #ff9800; }
+    .row[data-cls="5B"] { --cls-color: #b388ff; }
+    .row[data-cls="8A"] { --cls-color: #f5c518; }
+    .row:not(.rank-1):not(.rank-2):not(.rank-3) .row-accent { background: var(--cls-color, var(--muted)); }
+    .row:not(.rank-1):not(.rank-2):not(.rank-3) .row-rank   { color: color-mix(in srgb, var(--cls-color, var(--muted)) 18%, transparent); }
+    .row:not(.rank-1):not(.rank-2):not(.rank-3) .row-bar    { background: var(--cls-color, var(--muted)); }
 
     .row-rank {
       font-family: 'Bebas Neue', sans-serif;
@@ -207,149 +189,55 @@
       text-align: center;
       flex-shrink: 0;
       user-select: none;
-      letter-spacing: 0.02em;
     }
     .rank-1 .row-rank { font-size: 3.2rem; color: rgba(245,197,24,0.18); }
 
-    .row-medal {
-      font-size: 1.4rem;
-      margin-right: 2px;
-      flex-shrink: 0;
-      display: none;
-    }
-    .rank-1 .row-medal,
-    .rank-2 .row-medal,
-    .rank-3 .row-medal { display: block; }
+    .row-medal { font-size: 1.4rem; margin-right: 2px; flex-shrink: 0; display: none; }
+    .rank-1 .row-medal, .rank-2 .row-medal, .rank-3 .row-medal { display: block; }
 
-    .row-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      padding: 10px 0;
-      min-width: 0;
-    }
-    .row-class {
-      font-weight: 700;
-      font-size: 1.05rem;
-      letter-spacing: 0.03em;
-      white-space: nowrap;
-    }
+    .row-body { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 10px 0; min-width: 0; }
+    .row-class { font-weight: 700; font-size: 1.05rem; letter-spacing: 0.03em; }
     .rank-1 .row-class { font-size: 1.2rem; }
 
-    .row-trend {
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-    }
+    .row-trend { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; }
     .row-trend.up   { color: var(--green); }
     .row-trend.down { color: var(--red); }
     .row-trend.same { color: var(--muted); }
 
-    .row-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      padding: 10px 18px 10px 12px;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-    .row-pts {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.8rem;
-      letter-spacing: 0.04em;
-      line-height: 1;
-      color: var(--text);
-      font-variant-numeric: tabular-nums;
-    }
-    .rank-1 .row-pts { font-size: 2.2rem; color: var(--gold); }
-    .row-pts-label {
-      font-size: 0.62rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
+    .row-behind { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em; color: var(--muted); margin-top: 2px; }
 
-    /* progress bar inside row */
-    .row-bar-wrap {
-      position: absolute;
-      bottom: 0;
-      left: 4px;
-      right: 0;
-      height: 2px;
-      background: rgba(255,255,255,0.04);
-      border-radius: 0 0 12px 12px;
-    }
-    .row-bar {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
+    .row-right { display: flex; flex-direction: column; align-items: flex-end; padding: 10px 18px 10px 12px; gap: 4px; flex-shrink: 0; }
+    .row-pts { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.04em; line-height: 1; color: var(--text); font-variant-numeric: tabular-nums; }
+    .rank-1 .row-pts { font-size: 2.2rem; color: var(--gold); }
+    .row-pts-label { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; }
+
+    .row-bar-wrap { position: absolute; bottom: 0; left: 4px; right: 0; height: 2px; background: rgba(255,255,255,0.04); }
+    .row-bar { height: 100%; border-radius: 2px; transition: width 0.8s cubic-bezier(0.25,0.46,0.45,0.94); }
     .rank-1 .row-bar { background: var(--gold); }
     .rank-2 .row-bar { background: var(--silver); }
     .rank-3 .row-bar { background: var(--bronze); }
-    .row:not(.rank-1):not(.rank-2):not(.rank-3) .row-bar { background: var(--muted); }
 
-    /* ── admin panel ─────────────────────────────────────────── */
-    #admin-panel {
-      display: none;
-      margin-top: 28px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 22px;
-    }
-    .admin-label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
+    #admin-panel { display: none; margin-top: 28px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+    .admin-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; margin-bottom: 16px; }
 
-    .admin-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: flex-end;
-      margin-bottom: 12px;
-    }
+    .admin-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 12px; }
     .admin-row select, .admin-row input {
-      flex: 1;
-      min-width: 110px;
-      padding: 10px 14px;
-      border-radius: 8px;
+      flex: 1; min-width: 110px;
+      padding: 10px 14px; border-radius: 8px;
       border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
+      background: var(--surface); color: var(--text);
+      font-family: 'Inter', sans-serif; font-size: 0.9rem;
     }
     .admin-row select:focus, .admin-row input:focus { outline: none; border-color: rgba(245,197,24,0.4); }
     .admin-row select option { background: var(--surface); }
 
-    .admin-btn-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .admin-btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 10px 18px;
-      border-radius: 8px;
-      border: none;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.84rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 18px; border-radius: 8px; border: none;
+      font-family: 'Inter', sans-serif; font-size: 0.84rem; font-weight: 700;
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
     }
     .btn-primary { background: var(--gold); color: #000; }
     .btn-primary:hover { background: #ffd700; }
@@ -361,44 +249,12 @@
     .btn-orange:hover { background: rgba(255,152,0,0.1); }
     .btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-    /* ── test mode banner ────────────────────────────────────── */
-    #test-banner {
-      display: none;
-      margin-top: 14px;
-      padding: 10px 16px;
-      background: rgba(255,152,0,0.08);
-      border: 1px solid rgba(255,152,0,0.25);
-      border-radius: 8px;
-      font-size: 0.78rem;
-      color: #ff9800;
-      font-weight: 600;
-    }
-    #test-mode-label {
-      display: none;
-      font-size: 0.72rem;
-      color: #ff9800;
-      margin-top: 6px;
-    }
+    #test-banner { display: none; margin-top: 14px; padding: 10px 16px; background: rgba(255,152,0,0.08); border: 1px solid rgba(255,152,0,0.25); border-radius: 8px; font-size: 0.78rem; color: #ff9800; font-weight: 600; }
+    #test-mode-label { display: none; font-size: 0.72rem; color: #ff9800; margin-top: 6px; }
 
-    /* ── history log ─────────────────────────────────────────── */
-    #history-box {
-      display: none;
-      margin-top: 16px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 22px;
-    }
+    #history-box { display: none; margin-top: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
     #history-box .admin-label { margin-bottom: 14px; }
-    .history-row {
-      display: grid;
-      grid-template-columns: 48px 1fr auto auto;
-      align-items: center;
-      gap: 12px;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.82rem;
-    }
+    .history-row { display: grid; grid-template-columns: 48px 1fr auto auto; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
     .history-row:last-child { border-bottom: none; }
     .h-cls { font-weight: 700; font-size: 0.95rem; }
     .h-change { font-weight: 700; }
@@ -407,143 +263,42 @@
     .h-arrow { color: var(--muted); font-size: 0.78rem; }
     .h-time { color: var(--muted); font-size: 0.75rem; text-align: right; }
 
-    /* ── reset modal ─────────────────────────────────────────── */
-    #reset-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    #reset-modal-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px 24px;
-      width: 320px;
-      max-width: 92vw;
-      text-align: center;
-    }
-    #reset-modal-box h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--red);
-      margin-bottom: 8px;
-    }
-    #reset-modal-box p {
-      font-size: 0.82rem;
-      color: var(--muted);
-      margin-bottom: 16px;
-      line-height: 1.5;
-    }
-    #reset-password-input {
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      margin-bottom: 8px;
-      text-align: center;
-    }
+    #reset-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+    #reset-modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px 24px; width: 320px; max-width: 92vw; text-align: center; }
+    #reset-modal-box h3 { font-size: 1rem; font-weight: 700; color: var(--red); margin-bottom: 8px; }
+    #reset-modal-box p { font-size: 0.82rem; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+    #reset-password-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.9rem; margin-bottom: 8px; text-align: center; }
     #reset-error { font-size: 0.8rem; color: var(--red); min-height: 1.2em; margin-bottom: 10px; }
     .reset-btns { display: flex; gap: 8px; }
     .reset-btns .btn { flex: 1; }
 
-    /* ── help button + modal ─────────────────────────────────── */
     #help-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      z-index: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: fixed; bottom: 20px; right: 20px;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); font-size: 1rem; font-weight: 700;
+      cursor: pointer; z-index: 800;
+      display: flex; align-items: center; justify-content: center;
       transition: border-color 0.15s, color 0.15s;
     }
     #help-btn:hover { border-color: var(--text); color: var(--text); }
 
     #help-modal {
-      display: none;
-      position: fixed;
-      bottom: 70px;
-      right: 16px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 20px;
-      width: 240px;
-      max-width: 88vw;
-      z-index: 800;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      display: none; position: fixed; bottom: 70px; right: 16px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px 20px; width: 240px; max-width: 88vw;
+      z-index: 800; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
     }
-    #help-modal h4 {
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      color: var(--gold);
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .help-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 7px 0;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
+    #help-modal h4 { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; margin-bottom: 12px; }
+    .help-item { display: flex; align-items: center; gap: 10px; margin: 7px 0; font-size: 0.82rem; color: var(--muted); }
     .help-item .hi { font-size: 1rem; flex-shrink: 0; }
 
-    /* ── confetti canvas ─────────────────────────────────────── */
-    #confetti-canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 9999;
-    }
+    #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
 
-    /* ── class accent colors ────────────────────────────────── */
-    .row[data-cls="7A"] { --cls-color: #4e8ef7; }
-    .row[data-cls="6B"] { --cls-color: #10d97c; }
-    .row[data-cls="6A"] { --cls-color: #f74040; }
-    .row[data-cls="5A"] { --cls-color: #ff9800; }
-    .row[data-cls="5B"] { --cls-color: #b388ff; }
-    .row[data-cls="8A"] { --cls-color: #f5c518; }
-
-    .row:not(.rank-1):not(.rank-2):not(.rank-3) .row-accent { background: var(--cls-color, var(--muted)); }
-    .row:not(.rank-1):not(.rank-2):not(.rank-3) .row-rank   { color: color-mix(in srgb, var(--cls-color, var(--muted)) 18%, transparent); }
-    .row:not(.rank-1):not(.rank-2):not(.rank-3) .row-bar    { background: var(--cls-color, var(--muted)); }
-
-    /* ── behind label ────────────────────────────────────────── */
-    .row-behind {
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    /* ── scrollbar ───────────────────────────────────────────── */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
 
-    /* ── responsive ──────────────────────────────────────────── */
     @media (max-width: 520px) {
       .row-rank { width: 44px; font-size: 2rem; }
       .rank-1 .row-rank { font-size: 2.6rem; }
@@ -551,76 +306,6 @@
       .rank-1 .row-pts { font-size: 1.8rem; }
       .row-right { padding: 10px 12px; }
       .admin-row select, .admin-row input { min-width: 80px; }
-    }
-    /* ── premium popups ─────────────────────────────────────── */
-    .popup {
-      position: fixed;
-      background: linear-gradient(135deg, #1a0a2e, #0d1225);
-      border: 1px solid rgba(245,197,24,0.4);
-      border-radius: 14px;
-      padding: 18px 20px;
-      width: 280px;
-      max-width: 88vw;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 20px rgba(245,197,24,0.08);
-      z-index: 8000;
-      animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards;
-    }
-    @keyframes popIn {
-      from { transform: scale(0.6) rotate(-4deg); opacity: 0; }
-      to   { transform: scale(1)   rotate(0deg);  opacity: 1; }
-    }
-    .popup-crown { font-size: 2rem; margin-bottom: 6px; }
-    .popup-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.3rem;
-      letter-spacing: 0.06em;
-      color: var(--gold);
-      margin-bottom: 4px;
-    }
-    .popup-body {
-      font-size: 0.78rem;
-      color: #8fa3be;
-      line-height: 1.5;
-      margin-bottom: 12px;
-    }
-    .popup-body strong { color: var(--text); }
-    .popup-btns { display: flex; gap: 8px; }
-    .popup-yes {
-      flex: 2;
-      padding: 9px;
-      border-radius: 8px;
-      border: none;
-      background: var(--gold);
-      color: #000;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-    .popup-yes:hover { background: #ffd700; }
-    .popup-no {
-      flex: 1;
-      padding: 9px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: transparent;
-      color: #3d5270;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
-    .popup-no:hover { color: var(--text); }
-    .popup-badge {
-      display: inline-block;
-      background: rgba(247,64,64,0.15);
-      border: 1px solid rgba(247,64,64,0.3);
-      color: #f74040;
-      font-size: 0.62rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-bottom: 8px;
     }
   </style>
 </head>
@@ -687,7 +372,7 @@
 
   <div id="reset-modal">
     <div id="reset-modal-box">
-      <h3>⚠️ Reset Scores állítás</h3>
+      <h3>⚠️ Reset All Scores</h3>
       <p>This will set every class back to 0 and clear all history. Enter your password to confirm.</p>
       <input id="reset-password-input" type="password" placeholder="Password" autocomplete="off" />
       <div id="reset-error"></div>
@@ -721,6 +406,7 @@
     const EMAIL_DOMAIN  = "@creascola.hu";
     const TEST_USER     = "balazs_kiss";
     const HISTORY_LIMIT = 10;
+    const MEDALS        = { 0:"🏆", 1:"🥈", 2:"🥉" };
 
     let scores            = {};
     let previousPositions = {};
@@ -730,12 +416,8 @@
     let testMode          = false;
     let testScores        = null;
 
-    const MEDALS = { 0: "🏆", 1: "🥈", 2: "🥉" };
-
     function buildPositions(s) {
-      const sorted = Object.entries(s)
-        .filter(([c]) => classes.includes(c))
-        .sort((a,b) => Number(b[1]) - Number(a[1]));
+      const sorted = Object.entries(s).filter(([c]) => classes.includes(c)).sort((a,b) => Number(b[1]) - Number(a[1]));
       const pos = {};
       sorted.forEach(([c], i) => pos[c] = i);
       return pos;
@@ -743,8 +425,7 @@
 
     function formatTime(ts) {
       if(!ts) return '';
-      const d = new Date(ts);
-      const p = n => String(n).padStart(2,'0');
+      const d = new Date(ts), p = n => String(n).padStart(2,'0');
       return `${p(d.getHours())}:${p(d.getMinutes())} · ${p(d.getDate())}/${p(d.getMonth()+1)}`;
     }
 
@@ -752,8 +433,7 @@
       if(from === to) { el.textContent = to; return; }
       const start = performance.now();
       (function step(now) {
-        const p    = Math.min((now - start) / dur, 1);
-        const ease = 1 - Math.pow(1 - p, 3);
+        const p = Math.min((now - start) / dur, 1), ease = 1 - Math.pow(1-p, 3);
         el.textContent = Math.round(from + (to - from) * ease);
         if(p < 1) requestAnimationFrame(step);
       })(start);
@@ -761,16 +441,15 @@
 
     function toggleLogin() {
       const p = document.getElementById('login-panel');
-      const hidden = p.style.display === 'none' || !p.style.display;
-      p.style.display = hidden ? 'block' : 'none';
+      p.style.display = (p.style.display === 'block') ? 'none' : 'block';
     }
 
     function login() {
-      const user   = document.getElementById('username').value.trim().toLowerCase();
-      const pass   = document.getElementById('password').value;
+      const user = document.getElementById('username').value.trim().toLowerCase();
+      const pass = document.getElementById('password').value;
       const status = document.getElementById('login-status');
       if(!user || !pass) { status.textContent = '❌ Please enter username and password.'; return; }
-      status.textContent = '⏳ Login…';
+      status.textContent = '⏳ Logging in…';
       auth.signInWithEmailAndPassword(user + EMAIL_DOMAIN, pass)
         .then(() => {
           document.getElementById('login-panel').style.display = 'none';
@@ -789,12 +468,11 @@
         testMode = (uname === TEST_USER);
         document.getElementById('test-banner').style.display     = testMode ? 'block' : 'none';
         document.getElementById('test-mode-label').style.display = testMode ? 'block' : 'none';
-        document.getElementById('reset-btn').style.display       = testMode ? 'none'  : 'inline-flex';
+        document.getElementById('reset-btn').style.display       = testMode ? 'none' : 'inline-flex';
         document.getElementById('logs-link-btn').style.display   = (uname === "jenei_zsolt" || uname === "kele_istvan") ? 'none' : 'inline-flex';
         if(testMode) testScores = JSON.parse(JSON.stringify(scores));
       } else {
-        testMode   = false;
-        testScores = null;
+        testMode = false; testScores = null;
         document.getElementById('test-banner').style.display     = 'none';
         document.getElementById('test-mode-label').style.display = 'none';
         document.getElementById('history-box').style.display     = 'none';
@@ -808,32 +486,26 @@
       const raw = document.getElementById('points-input').value.trim();
       if(!/^[-+]?\d+$/.test(raw)) { alert('Please enter a valid integer (e.g. 5 or -2).'); return; }
       const pts = parseInt(raw, 10);
-
       if(testMode) {
         if(!testScores) testScores = JSON.parse(JSON.stringify(scores));
-        const prevPos = buildPositions(testScores);
-        const before  = Number(testScores[sel] || 0);
+        const prevPos = buildPositions(testScores), before = Number(testScores[sel] || 0);
         testScores[sel] = Math.max(0, before + pts);
         previousPositions = prevPos;
         scores = JSON.parse(JSON.stringify(testScores));
         history = [{ cls:sel, change:pts, before, after:testScores[sel], ts:Date.now() }, ...history].slice(0, HISTORY_LIMIT);
-        renderBoard();
-        renderHistory();
+        renderBoard(); renderHistory();
         document.getElementById('points-input').value = '';
         return;
       }
-
-      const snap      = JSON.parse(JSON.stringify(scores));
-      const prevPos   = buildPositions(scores);
+      const snap    = JSON.parse(JSON.stringify(scores));
+      const prevPos = buildPositions(scores);
       const newScores = JSON.parse(JSON.stringify(scores));
-      const before    = Number(newScores[sel] || 0);
-      newScores[sel]  = Math.max(0, before + pts);
-      const newHist   = [{ cls:sel, change:pts, before, after:newScores[sel], ts:Date.now() }, ...history].slice(0, HISTORY_LIMIT);
-
+      const before  = Number(newScores[sel] || 0);
+      newScores[sel] = Math.max(0, before + pts);
+      const newHist = [{ cls:sel, change:pts, before, after:newScores[sel], ts:Date.now() }, ...history].slice(0, HISTORY_LIMIT);
       db.ref().update({ scores:newScores, previousPositions:prevPos, history:newHist, undoSnapshot:snap })
         .then(() => writeLog({ user:auth.currentUser.email.replace(EMAIL_DOMAIN,''), action:'points', class:sel, change:pts, before, after:newScores[sel] }))
-        .catch(err => { console.error(err); alert('Failed to save. Check console.'); });
-
+        .catch(err => { console.error(err); alert('Failed to save.'); });
       document.getElementById('points-input').value = '';
     }
 
@@ -855,7 +527,7 @@
     }
 
     function confirmReset() {
-      const pass  = document.getElementById('reset-password-input').value;
+      const pass = document.getElementById('reset-password-input').value;
       const error = document.getElementById('reset-error');
       if(!pass) { error.textContent = '❌ Please enter your password.'; return; }
       error.textContent = '⏳ Verifying…';
@@ -884,10 +556,10 @@
       else if(/Mac/i.test(ua))    device = 'Mac';
       else if(/Windows/i.test(ua)) device = 'Windows';
       let browser = 'Unknown';
-      if(/Edg\//i.test(ua))       browser = 'Edge';
-      else if(/Chrome/i.test(ua)) browser = 'Chrome';
+      if(/Edg\//i.test(ua))        browser = 'Edge';
+      else if(/Chrome/i.test(ua))  browser = 'Chrome';
       else if(/Firefox/i.test(ua)) browser = 'Firefox';
-      else if(/Safari/i.test(ua)) browser = 'Safari';
+      else if(/Safari/i.test(ua))  browser = 'Safari';
       const ref = db.ref('logs');
       ref.once('value').then(snap => {
         let logs = snap.val() ? Object.values(snap.val()) : [];
@@ -902,47 +574,35 @@
     function renderBoard() {
       const board = document.getElementById('board');
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
-
-      const sorted = Object.entries(scores)
-        .filter(([c]) => classes.includes(c))
-        .sort((a,b) => Number(b[1]) - Number(a[1]));
-
+      const sorted = Object.entries(scores).filter(([c]) => classes.includes(c)).sort((a,b) => Number(b[1]) - Number(a[1]));
       const maxPts = sorted.length > 0 ? Math.max(Number(sorted[0][1]), 1) : 1;
 
       const firstRects = {};
-      board.querySelectorAll('.row[data-cls]').forEach(r => {
-        firstRects[r.dataset.cls] = r.getBoundingClientRect();
-      });
-
-      if(!board.querySelector('.row[data-cls="' + sorted[0]?.[0] + '"]')) {
-        board.innerHTML = '';
-      }
+      board.querySelectorAll('.row[data-cls]').forEach(r => { firstRects[r.dataset.cls] = r.getBoundingClientRect(); });
 
       classes.forEach(cls => {
         if(!board.querySelector(`.row[data-cls="${cls}"]`)) {
           const r = document.createElement('div');
-          r.dataset.cls = cls;
-          r.className   = 'row';
+          r.dataset.cls = cls; r.className = 'row';
           board.appendChild(r);
         }
       });
 
       sorted.forEach(([cls, pts], index) => {
-        const numPts  = Number(pts) || 0;
-        const row     = board.querySelector(`.row[data-cls="${cls}"]`);
+        const numPts = Number(pts) || 0;
+        const row    = board.querySelector(`.row[data-cls="${cls}"]`);
         row.className = 'row' + (index < 3 ? ` rank-${index+1}` : '');
 
         let trendTxt = '—', trendCls = 'same';
         if(previousPositions[cls] !== undefined) {
           const prev = previousPositions[cls];
-          if(index < prev)      { trendTxt = '▲ Up'; trendCls = 'up'; }
+          if(index < prev)      { trendTxt = '▲ Up';   trendCls = 'up'; }
           else if(index > prev) { trendTxt = '▼ Down'; trendCls = 'down'; }
         }
 
-        const pct = Math.round((numPts / maxPts) * 100);
-
-        const topPts  = Number(sorted[0]?.[1] || 0);
-        const behind  = index === 0 ? '' : (topPts - numPts > 0 ? `${topPts - numPts} pts behind` : 'Tied for 1st');
+        const topPts = Number(sorted[0]?.[1] || 0);
+        const behind = index === 0 ? '' : (topPts - numPts > 0 ? `${topPts - numPts} pts behind` : 'Tied for 1st');
+        const pct    = Math.round((numPts / maxPts) * 100);
 
         row.innerHTML = `
           <div class="row-accent"></div>
@@ -963,16 +623,9 @@
         const ptsEl = row.querySelector(`[data-cls-pts="${cls}"]`);
         const barEl = row.querySelector('.row-bar');
         const prev  = displayedScores[cls];
-        if(prev === undefined) {
-          animateCounter(ptsEl, 0, numPts, 1200);
-          setTimeout(() => { barEl.style.width = pct + '%'; }, 100);
-        } else if(prev !== numPts) {
-          animateCounter(ptsEl, prev, numPts, 800);
-          barEl.style.width = pct + '%';
-        } else {
-          ptsEl.textContent  = numPts;
-          barEl.style.width  = pct + '%';
-        }
+        if(prev === undefined)  { animateCounter(ptsEl, 0, numPts, 1200); setTimeout(() => { barEl.style.width = pct + '%'; }, 100); }
+        else if(prev !== numPts){ animateCounter(ptsEl, prev, numPts, 800); barEl.style.width = pct + '%'; }
+        else                    { ptsEl.textContent = numPts; barEl.style.width = pct + '%'; }
         displayedScores[cls] = numPts;
 
         board.appendChild(row);
@@ -980,27 +633,22 @@
 
       requestAnimationFrame(() => {
         board.querySelectorAll('.row[data-cls]').forEach(row => {
-          const cls   = row.dataset.cls;
-          const first = firstRects[cls];
+          const cls = row.dataset.cls, first = firstRects[cls];
           if(!first) return;
-          const last = row.getBoundingClientRect();
-          const dy   = first.top - last.top;
+          const dy = first.top - row.getBoundingClientRect().top;
           if(Math.abs(dy) < 1) return;
           row.style.transition = 'none';
           row.style.transform  = `translateY(${dy}px)`;
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              row.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-              row.style.transform  = 'translateY(0)';
-            });
-          });
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            row.style.transition = 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)';
+            row.style.transform  = 'translateY(0)';
+          }));
         });
       });
     }
 
     function renderHistory() {
-      const box  = document.getElementById('history-box');
-      const list = document.getElementById('history-list');
+      const box = document.getElementById('history-box'), list = document.getElementById('history-list');
       if(!auth.currentUser || !history || !history.length) { box.style.display = 'none'; return; }
       box.style.display = 'block';
       list.innerHTML = '';
@@ -1008,81 +656,40 @@
         const div = document.createElement('div');
         div.className = 'history-row';
         const sign = e.change > 0 ? '+' : '';
-        div.innerHTML = `
-          <span class="h-cls">${e.cls}</span>
-          <span class="h-change ${e.change >= 0 ? 'pos' : 'neg'}">${sign}${e.change} pt</span>
-          <span class="h-arrow">${e.before} → ${e.after}</span>
-          <span class="h-time">${formatTime(e.ts)}</span>
-        `;
+        div.innerHTML = `<span class="h-cls">${e.cls}</span><span class="h-change ${e.change >= 0 ? 'pos' : 'neg'}">${sign}${e.change} pt</span><span class="h-arrow">${e.before} → ${e.after}</span><span class="h-time">${formatTime(e.ts)}</span>`;
         list.appendChild(div);
       });
     }
 
-    function updateLastUpdated(ts) {
-      const el = document.getElementById('last-updated');
-      if(!ts) { el.textContent = ''; return; }
-      el.textContent = 'Updated: ' + formatTime(ts);
-    }
-
     let seenLeader = localStorage.getItem('seenLeader') || null;
-
     function checkConfetti() {
-      const sorted = Object.entries(scores)
-        .filter(([c]) => classes.includes(c))
-        .sort((a,b) => Number(b[1]) - Number(a[1]));
+      const sorted = Object.entries(scores).filter(([c]) => classes.includes(c)).sort((a,b) => Number(b[1]) - Number(a[1]));
       if(!sorted.length) return;
       const leader = sorted[0][0];
-      if(leader !== seenLeader) {
-        seenLeader = leader;
-        localStorage.setItem('seenLeader', leader);
-        launchConfetti();
-      }
+      if(leader !== seenLeader) { seenLeader = leader; localStorage.setItem('seenLeader', leader); launchConfetti(); }
     }
 
-    const canvas = document.getElementById('confetti-canvas');
-    const ctx    = canvas.getContext('2d');
-    let confettiParticles = [];
-    let confettiRunning   = false;
-
+    const canvas = document.getElementById('confetti-canvas'), ctx = canvas.getContext('2d');
+    let confettiParticles = [], confettiRunning = false;
     function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-
     function launchConfetti() {
       resizeCanvas();
       const colors = ['#f5c518','#4e8ef7','#10d97c','#f74040','#ff9800','#fff','#b388ff'];
       for(let i = 0; i < 200; i++) {
-        confettiParticles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height - canvas.height,
-          w: Math.random() * 12 + 5,
-          h: Math.random() * 6 + 3,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          rot:    Math.random() * Math.PI * 2,
-          rotSpd: (Math.random() - 0.5) * 0.2,
-          vx:     (Math.random() - 0.5) * 4,
-          vy:     Math.random() * 5 + 2,
-          alpha:  1
-        });
+        confettiParticles.push({ x:Math.random()*canvas.width, y:Math.random()*canvas.height-canvas.height, w:Math.random()*12+5, h:Math.random()*6+3, color:colors[Math.floor(Math.random()*colors.length)], rot:Math.random()*Math.PI*2, rotSpd:(Math.random()-0.5)*0.2, vx:(Math.random()-0.5)*4, vy:Math.random()*5+2, alpha:1 });
       }
       if(!confettiRunning) animateConfetti();
     }
-
     function animateConfetti() {
       confettiRunning = true;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       confettiParticles.forEach(p => {
-        p.x   += p.vx;
-        p.y   += p.vy;
-        p.rot += p.rotSpd;
+        p.x += p.vx; p.y += p.vy; p.rot += p.rotSpd;
         if(p.y > canvas.height * 0.75) p.alpha -= 0.014;
-        ctx.save();
-        ctx.globalAlpha = Math.max(0, p.alpha);
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-        ctx.restore();
+        ctx.save(); ctx.globalAlpha = Math.max(0, p.alpha); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.fillStyle = p.color; ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h); ctx.restore();
       });
       confettiParticles = confettiParticles.filter(p => p.alpha > 0);
       if(confettiParticles.length > 0) requestAnimationFrame(animateConfetti);
@@ -1091,22 +698,17 @@
 
     function toggleHelp() {
       const m = document.getElementById('help-modal');
-      const hidden = m.style.display === 'none' || !m.style.display;
-      m.style.display = hidden ? 'block' : 'none';
+      m.style.display = m.style.display === 'block' ? 'none' : 'block';
     }
-
     document.addEventListener('click', e => {
-      const modal = document.getElementById('help-modal');
-      const btn   = document.getElementById('help-btn');
-      if(modal.style.display === 'block' && !modal.contains(e.target) && e.target !== btn)
-        modal.style.display = 'none';
+      const m = document.getElementById('help-modal'), btn = document.getElementById('help-btn');
+      if(m.style.display === 'block' && !m.contains(e.target) && e.target !== btn) m.style.display = 'none';
     });
 
     db.ref('scores').on('value', snap => {
       scores = snap.val() || {};
       classes.forEach(c => { if(scores[c] === undefined) scores[c] = 0; });
-      renderBoard();
-      checkConfetti();
+      renderBoard(); checkConfetti();
     }, err => console.error('scores read failed:', err));
 
     db.ref('previousPositions').on('value', snap => {
@@ -1118,7 +720,7 @@
       history = snap.val() ? Object.values(snap.val()) : [];
       history.sort((a,b) => b.ts - a.ts);
       renderHistory();
-      if(history.length > 0) updateLastUpdated(history[0].ts);
+      if(history.length > 0) document.getElementById('last-updated').textContent = 'Updated: ' + formatTime(history[0].ts);
     }, err => console.error('history read failed:', err));
 
     db.ref('undoSnapshot').on('value', snap => {
@@ -1130,73 +732,12 @@
     document.addEventListener('keydown', e => {
       const a = document.activeElement;
       if(e.key === 'Enter') {
-        if(a && (a.id === 'username' || a.id === 'password'))       login();
-        else if(a && a.id === 'points-input')                       updatePoints();
-        else if(a && a.id === 'reset-password-input')               confirmReset();
+        if(a && (a.id === 'username' || a.id === 'password')) login();
+        else if(a && a.id === 'points-input')                 updatePoints();
+        else if(a && a.id === 'reset-password-input')         confirmReset();
       }
       if(e.key === 'Escape') closeResetModal();
     });
-
-
-  </script>
-
-  <script>
-    var POPUPS = [
-      { title:"CREA CREDIT PREMIUM", badge:"LIMITED OFFER", body:"Boost your class to <strong>1st place instantly</strong> with Premium Points! Only available today. Don't let the other classes win! 🏆", yes:"🔥 GET PREMIUM FREE", no:"No thanks" },
-      { title:"YOU'VE BEEN CHOSEN", badge:"EXCLUSIVE", body:"Your class has been pre-selected for a <strong>FREE 50 point bonus</strong>. Click below before this offer disappears forever!", yes:"✅ CLAIM MY POINTS", no:"I don't want free points" },
-      { title:"PREMIUM ALERT ⚡", badge:"URGENT", body:"Another class just purchased Premium! Act now to <strong>protect your position</strong> on the leaderboard.", yes:"💳 UPGRADE NOW — FREE", no:"Let them win" },
-      { title:"CONGRATULATIONS!", badge:"WINNER", body:"You are our <strong>1,000,000th visitor</strong>! Claim your FREE Crea Credit Premium subscription and get unlimited points!", yes:"🎉 CLAIM PRIZE", no:"This seems fake" },
-      { title:"CREA PREMIUM PRO MAX", badge:"NEW TIER", body:"Introducing <strong>Premium Pro Max Ultra</strong> — 999 points daily for just <strong>€0.00</strong>. Subscribe before your teacher finds out.", yes:"🚀 SUBSCRIBE FREE", no:"Maybe later" },
-      { title:"YOUR CLASS IS LOSING", badge:"WARNING", body:"According to our algorithm, your class will <strong>finish last</strong> unless you activate Premium Boost in the next 60 seconds.", yes:"😤 ACTIVATE BOOST", no:"I accept defeat" },
-      { title:"FREE POINTS INSIDE", badge:"GIFT", body:"A generous anonymous donor has reserved <strong>25 free points</strong> for your class. Confirm your subscription (100% free) to unlock them.", yes:"🎁 UNLOCK POINTS", no:"Who is this donor" }
-    ];
-    var POPUP_POSITIONS = [
-      { top:'10%',  left:'2%'  },
-      { top:'10%',  right:'2%' },
-      { top:'40%',  left:'2%' },
-      { top:'40%',  right:'2%' },
-      { bottom:'6%',left:'2%'  },
-      { bottom:'6%',right:'2%' }
-    ];
-    function closePopup(el) {
-      el.style.transition = 'all 0.18s ease';
-      el.style.transform  = 'scale(0.8)';
-      el.style.opacity    = '0';
-      setTimeout(function(){ el.remove(); }, 200);
-      setTimeout(spawnPopup, 1200);
-    }
-    function yesClicked(el) {
-      el.querySelector('.popup-yes').textContent = '🎉 Processing...';
-      setTimeout(function(){
-        el.querySelector('.popup-body').innerHTML = '<strong>ERROR 402: Payment Required</strong><br>Please enter card details to claim your free offer 😂';
-        el.querySelector('.popup-yes').textContent = '💳 Enter Card';
-        el.querySelector('.popup-yes').onclick = function(){ closePopup(el); };
-      }, 1200);
-    }
-    function spawnPopup() {
-      var data = POPUPS[Math.floor(Math.random() * POPUPS.length)];
-      var pos  = POPUP_POSITIONS[Math.floor(Math.random() * POPUP_POSITIONS.length)];
-      var div  = document.createElement('div');
-      div.className = 'popup';
-      if(pos.top)    div.style.top    = pos.top;
-      if(pos.bottom) div.style.bottom = pos.bottom;
-      if(pos.left)   div.style.left   = pos.left;
-      if(pos.right)  div.style.right  = pos.right;
-      div.innerHTML =
-        '<div class="popup-crown">👑</div>' +
-        '<div class="popup-badge">' + data.badge + '</div>' +
-        '<div class="popup-title">' + data.title + '</div>' +
-        '<div class="popup-body">'  + data.body  + '</div>' +
-        '<div class="popup-btns">' +
-          '<button class="popup-yes" onclick="yesClicked(this.closest(\'.popup\'))">' + data.yes + '</button>' +
-          '<button class="popup-no"  onclick="closePopup(this.closest(\'.popup\'))">' + data.no  + '</button>' +
-        '</div>';
-      document.body.appendChild(div);
-    }
-    setTimeout(spawnPopup, 800);
-    setTimeout(spawnPopup, 1300);
-    setTimeout(spawnPopup, 1800);
-    setTimeout(spawnPopup, 2200);
   </script>
 </body>
 </html>
