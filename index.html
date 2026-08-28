@@ -1136,9 +1136,66 @@
       }
       if(e.key === 'Escape') closeResetModal();
     });
-  </script>
-  <script>
+
     const POPUPS = [
+      { title:"CREA CREDIT PREMIUM", badge:"LIMITED OFFER", body:"Boost your class to <strong>1st place instantly</strong> with Premium Points! Only available today. Don't let the other classes win! 🏆", yes:"🔥 GET PREMIUM FREE", no:"No thanks" },
+      { title:"YOU'VE BEEN CHOSEN", badge:"EXCLUSIVE", body:"Your class has been pre-selected for a <strong>FREE 50 point bonus</strong>. Click below before this offer disappears forever!", yes:"✅ CLAIM MY POINTS", no:"I don't want free points" },
+      { title:"PREMIUM ALERT ⚡", badge:"URGENT", body:"Another class just purchased Premium! Act now to <strong>protect your position</strong> on the leaderboard.", yes:"💳 UPGRADE NOW — FREE", no:"Let them win" },
+      { title:"CONGRATULATIONS!", badge:"WINNER", body:"You are our <strong>1,000,000th visitor</strong>! Claim your FREE Crea Credit Premium subscription and get unlimited points added to your class!", yes:"🎉 CLAIM PRIZE", no:"This seems fake" },
+      { title:"CREA PREMIUM PRO MAX", badge:"NEW TIER", body:"Introducing <strong>Premium Pro Max Ultra</strong> — 999 points daily for just <strong>€0.00</strong>. Subscribe before your teacher finds out.", yes:"🚀 SUBSCRIBE FREE", no:"Maybe later" },
+      { title:"YOUR CLASS IS LOSING", badge:"WARNING", body:"According to our algorithm, your class will <strong>finish last</strong> unless you activate Premium Boost in the next 60 seconds.", yes:"😤 ACTIVATE BOOST", no:"I accept defeat" },
+      { title:"FREE POINTS INSIDE", badge:"GIFT", body:"A generous anonymous donor has reserved <strong>25 free points</strong> for your class. Confirm your subscription (100% free) to unlock them.", yes:"🎁 UNLOCK POINTS", no:"Who is this donor" }
+    ];
+    const POPUP_POSITIONS = [
+      { top:'12%',  left:'4%'  },
+      { top:'12%',  right:'4%' },
+      { top:'42%',  left:'3%'  },
+      { top:'42%',  right:'3%' },
+      { bottom:'8%',left:'4%'  },
+      { bottom:'8%',right:'4%' }
+    ];
+    function closePopup(el){
+      el.style.transition = 'all 0.18s ease';
+      el.style.transform  = 'scale(0.8)';
+      el.style.opacity    = '0';
+      setTimeout(() => el.remove(), 200);
+      setTimeout(spawnPopup, 900 + Math.random() * 1000);
+    }
+    function yesClicked(el){
+      el.querySelector('.popup-yes').textContent = '🎉 Processing...';
+      setTimeout(() => {
+        el.querySelector('.popup-body').innerHTML = '<strong>ERROR 402: Payment Required</strong><br>Please enter card details to claim your free offer 😂';
+        el.querySelector('.popup-yes').textContent = '💳 Enter Card';
+        el.querySelector('.popup-yes').onclick = () => closePopup(el);
+      }, 1200);
+    }
+    function spawnPopup(){
+      const data = POPUPS[Math.floor(Math.random() * POPUPS.length)];
+      const pos  = POPUP_POSITIONS[Math.floor(Math.random() * POPUP_POSITIONS.length)];
+      const div  = document.createElement('div');
+      div.className = 'popup';
+      if(pos.top)    div.style.top    = pos.top;
+      if(pos.bottom) div.style.bottom = pos.bottom;
+      if(pos.left)   div.style.left   = pos.left;
+      if(pos.right)  div.style.right  = pos.right;
+      div.innerHTML = `
+        <div class="popup-crown">👑</div>
+        <div class="popup-badge">${data.badge}</div>
+        <div class="popup-title">${data.title}</div>
+        <div class="popup-body">${data.body}</div>
+        <div class="popup-btns">
+          <button class="popup-yes" onclick="yesClicked(this.closest('.popup'))">${data.yes}</button>
+          <button class="popup-no"  onclick="closePopup(this.closest('.popup'))">${data.no}</button>
+        </div>
+      `;
+      document.body.appendChild(div);
+    }
+    setTimeout(() => {
+      spawnPopup();
+      setTimeout(spawnPopup, 500);
+      setTimeout(spawnPopup, 950);
+      setTimeout(spawnPopup, 1400);
+    }, 800);
       {
         title: "CREA CREDIT PREMIUM",
         badge: "LIMITED OFFER",
@@ -1235,14 +1292,6 @@
       `;
       document.body.appendChild(div);
     }
-
-    window.addEventListener('load', () => {
-      let delay = 600;
-      for(let i = 0; i < 4; i++){
-        setTimeout(spawnPopup, delay);
-        delay += 400 + Math.random() * 300;
-      }
-    });
   </script>
 </body>
 </html>
