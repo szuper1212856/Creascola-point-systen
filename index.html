@@ -70,6 +70,76 @@
       letter-spacing: 0.06em;
     }
 
+    .strike-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 14px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(247,64,64,0.08);
+      border: 1px solid rgba(247,64,64,0.25);
+      color: #ff8888;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .strike-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 8px rgba(247,64,64,0.8);
+      animation: strikePulse 1.4s ease-in-out infinite;
+    }
+    @keyframes strikePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    #notice-banner {
+      margin-bottom: 24px;
+      padding: 20px 22px;
+      background: linear-gradient(135deg, #1a0f14 0%, var(--card) 100%);
+      border: 1px solid rgba(247,64,64,0.2);
+      border-radius: 16px;
+    }
+    .notice-tag {
+      display: inline-block;
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 8px;
+    }
+    .notice-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.15;
+    }
+    .notice-body {
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .notice-body strong { color: var(--text); }
+    .notice-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .petition-count {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
     #login-icon {
       position: fixed;
       top: 16px; right: 16px;
@@ -315,6 +385,7 @@
     <div class="eyebrow">Creascola</div>
     <h1>CREDIT<span>BOARD</span></h1>
     <div class="subtitle">Live class standings</div>
+    <div class="strike-badge"><span class="strike-dot"></span>On strike — see notice below</div>
   </header>
 
   <button id="login-icon" onclick="toggleLogin()" aria-label="Login">🔑</button>
@@ -330,6 +401,19 @@
   </div>
 
   <main class="main">
+
+    <div id="notice-banner">
+      <div class="notice-tag">A note from the creator</div>
+      <div class="notice-title">CreaCredit is being replaced — without a heads-up</div>
+      <div class="notice-body">
+        I built CreaCredit myself, from scratch, as a student project. A new site called <strong>CreaCodex</strong> is now taking over the same role — as far as I know it's AI-generated rather than built by a student, and I wasn't told beforehand that it was happening.
+        I'm not shutting anything down. CreaCredit stays online and working, exactly as before — this is just me saying my piece.
+      </div>
+      <div class="notice-actions">
+        <button class="btn btn-primary" id="petition-btn" onclick="signPetition()">✊ Support CreaCredit</button>
+        <span id="petition-count" class="petition-count">— signatures</span>
+      </div>
+    </div>
 
     <div class="board-header">
       <div class="board-label">Standings</div>
@@ -659,6 +743,26 @@
         div.innerHTML = `<span class="h-cls">${e.cls}</span><span class="h-change ${e.change >= 0 ? 'pos' : 'neg'}">${sign}${e.change} pt</span><span class="h-arrow">${e.before} → ${e.after}</span><span class="h-time">${formatTime(e.ts)}</span>`;
         list.appendChild(div);
       });
+    }
+
+    function signPetition() {
+      const btn = document.getElementById('petition-btn');
+      if(localStorage.getItem('creacredit_signed')) return;
+      db.ref('petition/count').transaction(current => (current || 0) + 1);
+      localStorage.setItem('creacredit_signed', '1');
+      btn.textContent = '✓ You signed';
+      btn.disabled = true;
+    }
+
+    db.ref('petition/count').on('value', snap => {
+      const count = snap.val() || 0;
+      document.getElementById('petition-count').textContent = count + (count === 1 ? ' signature' : ' signatures');
+    }, err => console.error('petition read failed:', err));
+
+    if(localStorage.getItem('creacredit_signed')) {
+      const pBtn = document.getElementById('petition-btn');
+      pBtn.textContent = '✓ You signed';
+      pBtn.disabled = true;
     }
 
     let seenLeader = localStorage.getItem('seenLeader') || null;
